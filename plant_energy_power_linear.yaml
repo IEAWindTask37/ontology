@@ -1,0 +1,81 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: IEA Wind Task 37 Wind Plant Ontology version 0.1
+description: flow model that aggregates wakes to calculate plant power for a particular inflow state (speed, direction, TI)
+
+
+# Draft schema definitions for energy model power production
+definitions:
+  power conversion:
+    type: object
+    description: power conversion model aggregates the wake effects across the plant against pad-specific unobstructed wind speed to estimate overall turbine / plant power output
+    
+    properties:
+		  wake_combination:
+		    type: object
+		    description: wake combination for total velicity turbine of a specific turbine
+
+		    properties:
+		      wind_speed:
+		        type: number
+		        description: The unobstructed wind speed at hub height for a specific turbine at a specific location in the plant
+		        units: m / s
+		 
+		      velocity_deficit:
+		        type: array
+		        description: velocity deficits for all upstream turbines of the specific turbine being analyzed
+		        units: m / s   
+		      
+		      effective_velocity:
+		        type: number
+		        description: effective velocity for a specific turbines at a specific location in the plant
+		        units: m / s
+		               
+
+    	turbine_power:
+    	  type: object
+    	  description: calculate the power for an individual turbine	
+    	  
+    	  properties:  
+		      c_t:
+		        type: number
+		        description: The current thrust coefficient of the wind turbine
+		        minimum: 0.0
+		        maximum: 1.2
+		        expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
+		
+		      c_p:
+		        type: number
+		        description: The current power coefficient of the wind turbine
+		        minimum: 0.0
+		        maximum: 0.599
+		        expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
+		
+		      thrust:
+		        type: number
+		        description: The wind turbine axial thrust
+		        units: N
+		        minimum: 0.0
+		        expr: 1/2 * air_density * rotor_area * c_t * wake_combination:effective_velocity**2.0
+		
+		      power:
+		        type: number
+		        description: The wind turbine electrical power
+		        units: kW
+		        minimum: 0.0
+		        maximum: 100000
+		        expr: 1/2 * air_density * rotor_area * c_p * hub_wind_speed**3.0
+
+		  plant_power:
+		    type: object
+		    properties:  
+		      turbine_powers:
+		        type: array
+		        description: array of power output for turbines in wind plant for a given inflow directin, speed (and TI)
+			      items:
+			        - $ref: "#/definitions/turbine_power/power"
+		
+				  total_plant_power:
+				    type: number
+				    description: wind plant power for a single inflow direction, speed (and turbulence intensity) combination
+				    units: W
+				    minimum: 0.0

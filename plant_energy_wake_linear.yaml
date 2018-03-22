@@ -1,0 +1,62 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+title: IEA Wind Task 37 Wind Plant Ontology version 0.1
+description: wake definition for a plant energy production model
+
+# Draft schema definitions for energy model
+definitions:
+  wake:
+    type: object
+    description: an individual wind turbine wake
+
+    properties:
+      #inputs
+      air_density:
+        type: number
+        description: air density associated with operating mode
+        units: kg / m^3
+        default: 1.225
+        minimum: 0.5
+        maximum: 2.0
+    
+      ambient_average_turbulence_intensity:
+        type: number
+        description: ambient average turbulence intensity at hub height #Larsen
+        units: nondimensional
+        default: 0.10
+        minimum: 0.03
+        maximum: 0.40
+      
+      wake_decay_coefficient:
+        type: number
+        description: wake decay coefficient #Jensen
+        default: 0.075
+        minimum: 0.01
+        maximum: 0.09
+
+      wind_speed:
+        anyOf:
+          - oneOf:
+            - type: number
+              description: A wind speed
+            - $ref: "#/definitions/distributions/weibull"
+          - minimum: 0.0
+            maximum: 100.0
+            units: m/s
+
+      power_curve:
+      # reference wind turbine yaml
+
+      c_t_curve:
+      # reference wind turbine yaml
+          
+      #outputs
+      velocity_deficit:
+        description: velocity deficit of the wake
+        type: number
+        units: m/s
+     
+     #Ewan suggests including this (for discussion)   
+      yaw:
+        description: turbine specific yaw angle (should be 0 for non-FLORIS models as a cross-check)
+        type: number
+        units: degrees

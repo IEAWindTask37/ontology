@@ -4,16 +4,84 @@ description: turbine definition for a plant energy production model
 
 # Draft schema definitions for energy model
 definitions:
+
+  wind_turbine_lookup:
+    type: object
+    description: look-up table model fidelity for a wind turbine in a energy production workflow
+    
+    properties:
+      # inputs
+      wind_turbine_id:
+        type: string #could be enumerated, integer, etc
+        description: identifer of wind turbine for look-up
+        
+      operating_mode_id:
+        type: identifer of operating model for look-up
+        description: 
+
+      air_density:
+        type: number
+        description: current air density for lookup of turbine operating state
+        units: kg / m^3
+        default: 1.225
+        minimum: 0.5
+        maximum: 2.0      
+
+      wind_speed:
+        type: number
+        description: The current wind speed at hub height
+        minimum: 0.0
+        maximum: 200.0
+        units: m/s      
+
+      # outputs
+      c_p:
+        type: number
+        description: The current power coefficient of the wind turbine
+        minimum: 0.0
+        maximum: 0.599
+        expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
+
+      c_t:
+        type: number
+        description: The current thrust coefficient of the wind turbine
+        minimum: 0.0
+        maximum: 1.2
+        expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
+	
+      power:
+        type: number
+        description: The wind turbine electrical power
+        units: kW
+        minimum: 0.0
+        maximum: 100000
+        expr: 1/2 * air_density * rotor_area * c_p * hub_wind_speed**3.0
+
+      thrust:
+        type: number
+        description: The wind turbine axial thrust
+        units: N
+        minimum: 0.0
+        expr: 1/2 * air_density * rotor_area * c_t * wake_combination:effective_velocity**2.0
+
+# turbine definition
   wind_turbine:
     type: object
     description: An object describing a wind turbine
 
     properties:
+      # name doesn't seem appropriate for a unique identifier; consider adding id (for disucssion)
+      id:
+        type: string #could be enumerated, integer, etc
+        description: unique identifier for a turbine model
+
+      # perhaps not necessary or is a longer form version of the id (for discussion)
       name:
         type: string
         description: The wind turbine name given by the wind power plant owner
 
-      turbine_type:
+      # rename description?
+      turbine_type: 
         type: string
         description: Link to complementary information about the turbine
 
@@ -85,15 +153,6 @@ definitions:
         expr_min: rotor_diameter / 2.0
         minimum: 0.0
 
-# Ewan and I think this should not be a property of the hub but should be at a higher level (currently in power conversion yaml)
-#      wind_speed:
-#        type: number
-#        description: The current wind speed at hub height
-#        minimum: 0.0
-#        maximum: 200.0
-#        units: m/s
-
-
 # operating mode can vary and the power/thrust curves will change as a result
 
   operating_mode:
@@ -101,11 +160,16 @@ definitions:
     description: the operating mode of the turbine
 
     properties:
+      id:
+        type: string # could be enum or int
+        description: unique identifier of the operating mode
+
       name:
         description: name of the operating mode
         type: str
         default: normal operation
 
+      # is this really necessary for a check in our first draft implementation?
       wind_direction:
         type: range..
         description: wind direction range of power curve validity
@@ -149,7 +213,7 @@ definitions:
         minimum: 0.5
         maximum: 2.0
 
-# may want to consider this and leave as a default      
+# may want to consider this and leave as a default  - expands operating state to another dimension (for discussion)    
 #      turbulence_intensity:
 #        type: number
 #        description: turbulence intensity
@@ -158,6 +222,7 @@ definitions:
 #        minimum: 0.03
 #        maximum: 0.40
 
+      # is this information necessary to contain?
       rated_wind_speed:
         type: number
         description: The wind speed where the turbine reaches its rated power

@@ -4,7 +4,7 @@ description: wake definition for a plant energy production model
 
 # Draft schema definitions for energy model
 definitions:
-  wake:
+  wake_linear:
     type: object
     description: an individual wind turbine wake
 
@@ -17,7 +17,45 @@ definitions:
         default: 1.225
         minimum: 0.5
         maximum: 2.0
-    
+
+      wind_speed:
+        type: number
+        description: The current wind speed at hub height
+        minimum: 0.0
+        maximum: 200.0
+        units: m/s
+
+      c_p:
+        type: number
+        description: The current power coefficient of the wind turbine
+        minimum: 0.0
+        maximum: 0.599
+        expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
+
+      c_t:
+        type: number
+        description: The current thrust coefficient of the wind turbine
+        minimum: 0.0
+        maximum: 1.2
+        expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
+          
+      #outputs
+      velocity_deficit:
+        description: velocity deficit of the wake
+        type: number
+        units: m/s
+
+
+     ############     
+     #Ewan suggests including this (for discussion)   
+      yaw:
+        description: turbine specific yaw angle (should be 0 for non-FLORIS models as a cross-check)
+        type: number
+        units: degrees
+
+
+     #################
+     # Extensions or examples to include Larsen, Jensen, Floris?, Porte Agel?
       ambient_average_turbulence_intensity:
         type: number
         description: ambient average turbulence intensity at hub height #Larsen
@@ -32,31 +70,3 @@ definitions:
         default: 0.075
         minimum: 0.01
         maximum: 0.09
-
-      wind_speed:
-        anyOf:
-          - oneOf:
-            - type: number
-              description: A wind speed
-            - $ref: "#/definitions/distributions/weibull"
-          - minimum: 0.0
-            maximum: 100.0
-            units: m/s
-
-      power_curve:
-      # reference wind turbine yaml
-
-      c_t_curve:
-      # reference wind turbine yaml
-          
-      #outputs
-      velocity_deficit:
-        description: velocity deficit of the wake
-        type: number
-        units: m/s
-     
-     #Ewan suggests including this (for discussion)   
-      yaw:
-        description: turbine specific yaw angle (should be 0 for non-FLORIS models as a cross-check)
-        type: number
-        units: degrees

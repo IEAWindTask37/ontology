@@ -5,8 +5,10 @@ description: wind resource conditions for a wind plant energy production model
 # Draft schema definitions for energy model # not sure this is needed? # using location specific inflow?
 definitions:
 # wind inflow definitions
-  wind:
+  wind_inflow:
     type: object
+    description: inflow for current wind conditions
+    
     properties:
       direction:
         id: "wind_direction"

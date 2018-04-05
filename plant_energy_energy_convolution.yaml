@@ -2,12 +2,17 @@ $schema: "http://json-schema.org/draft-04/schema#"
 title: IEA Wind Task 37 Wind Plant Ontology version 0.1
 description: A file used as input or output of a wind plant model (for overall energy production estimation)
 
+### update to use wind inflow defintions from inflow lookup
+
+
 # Draft schema definitions for energy model
 definitions:
   plant_energy:
     type: object
     description: energy production estimate combining information for layout, turbine, site and other losses
+
     properties:
+      # inputs / sub-models used in plant energy calculation
 		  wind_plant:
 		    type: object
 		    description: specific plant design including turbine selection and placement
@@ -18,22 +23,25 @@ definitions:
 		          - $ref: "#/definitions/position"
 		          - $ref: "plant_energy_turbine_lookup/definitions/wind_turbine"      
 
-		  wind_rose:
-		    type: object
-		    oneOf:
-		      - $ref: "#/definitions/weibull_wind_rose"
-		      - $ref: "#/definitions/probability_wind_rose"
-		      - $ref: "#/definitions/weibull_wind_and_turbulence_rose"
+      wind_resource:
+        type: object
+        oneOf:
+      		- $ref: "#/definitions/single_wind_rose"
+      		- #ref: "#/definitions/multiple_wind_rose"
 		  
-		  other_losses:
+		  total_losses:
 		  # reference plant energy losses
-		  
+
+
+      # outputs		  
 		  plant_power:
 		  # array that references plant_power by speed, direction (and TI)
 
+      # output
       plant_energy:
         type: number
         description: total (annual) energy production for a wind plant given a layout and wind rose
+
 
   position:
     type: array
@@ -44,7 +52,26 @@ definitions:
     description: The [x,y] position of a wind turbine in UTM coordinates
     units: m          
 
+
  # Wind rose definitions
+
+  single_wind_rose:
+    type: object
+    oneOf:
+      - $ref: "#/definitions/weibull_wind_rose"
+      - $ref: "#/definitions/probability_wind_rose"
+      - $ref: "#/definitions/weibull_wind_and_turbulence_rose"
+
+  multiple_wind_rose:
+    type: object
+    description: Tarray of wind roses by location
+    type: array #ndarray([[position], [single_wind_rose]])
+    items:
+      type: array
+      items:
+        - $ref: "#/definitions/position"
+        - $ref: "#/definitions/single_wind_rose"  
+
   weibull_wind_rose:
     description: A wind rose descrived as an array of weibull distributions
     type: array #ndarray([[wind:direction], [probability], [distribution:weibull:A], [distribution:weibull:k]])

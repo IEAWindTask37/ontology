@@ -5,16 +5,69 @@ description: flow model that aggregates wakes to calculate plant power for a par
 
 # Draft schema definitions for energy model power production
 definitions:
-  power conversion:
+  power_conversion:
     type: object
     description: power conversion model aggregates the wake effects across the plant against pad-specific unobstructed wind speed to estimate overall turbine / plant power output
     
     properties:
+      # sub-models include current inflow, turbine lookup, wake, and wake combination
+
+      wind_inflow:
+      # reference wind inflow model
+
+
+      turbine_ordering:
+        type: object
+        description: order the turbines based on the inflow direction
+        
+        properties:
+          #inputs
+	        wind_direction:
+		        type: number
+		        description: The wind direction in degree, with North as the 0.
+		        units: deg
+		        minimum: 0.0
+		        maximum: 360.0
+          
+          wind_plant_layout:
+          # reference wind plant layout positions array
+
+          # outputs
+          turbine_order:
+		        description: order for power calculation based on current inflow direction
+		        type: array #ndarray([turbine_index])
+	          items:
+	            # index to the wind_plant array of turbines in order of execution       
+
+
+      # if using multiple wind roses
+      wind_speed_interpolation
+        type: object
+        description: interpolate incoming wind speed for a given turbine based on inflow direction for plant and wind resource grid
+        
+        properties:
+          # inputs
+          position
+          # reference position in energy yaml
+          
+          wind_rose
+          # reference position dependent wind rose
+          
+          # outputs
+          adjusted_wind_speed
+		        type: number
+		        description: The current wind speed at hub height
+		        minimum: 0.0
+		        maximum: 200.0
+		        units: m/s
+         
+
 		  wake_combination:
 		    type: object
 		    description: wake combination for total velicity turbine of a specific turbine
 
 		    properties:
+		      # inputs
 		      wind_speed:
 		        type: number
 		        description: The unobstructed wind speed at hub height for a specific turbine at a specific location in the plant
@@ -24,55 +77,29 @@ definitions:
 		        type: array
 		        description: velocity deficits for all upstream turbines of the specific turbine being analyzed
 		        units: m / s   
-		      
+
+          # outputs		      
 		      effective_velocity:
 		        type: number
 		        description: effective velocity for a specific turbines at a specific location in the plant
 		        units: m / s
-		               
 
-    	turbine_power:
-    	  type: object
-    	  description: calculate the power for an individual turbine	
-    	  
-    	  properties:  
-		      c_t:
-		        type: number
-		        description: The current thrust coefficient of the wind turbine
-		        minimum: 0.0
-		        maximum: 1.2
-		        expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
-		
-		      c_p:
-		        type: number
-		        description: The current power coefficient of the wind turbine
-		        minimum: 0.0
-		        maximum: 0.599
-		        expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
-		
-		      thrust:
-		        type: number
-		        description: The wind turbine axial thrust
-		        units: N
-		        minimum: 0.0
-		        expr: 1/2 * air_density * rotor_area * c_t * wake_combination:effective_velocity**2.0
-		
-		      power:
-		        type: number
-		        description: The wind turbine electrical power
-		        units: kW
-		        minimum: 0.0
-		        maximum: 100000
-		        expr: 1/2 * air_density * rotor_area * c_p * hub_wind_speed**3.0
 
+      wind_turbine_lookup:
+      # reference wind turbine look_up
+
+
+      # outputs
 		  plant_power:
 		    type: object
+        description: object with individual turbine power output calculations and overall plant power output for given inflow conditions and layout
+
 		    properties:  
 		      turbine_powers:
 		        type: array
 		        description: array of power output for turbines in wind plant for a given inflow directin, speed (and TI)
 			      items:
-			        - $ref: "#/definitions/turbine_power/power"
+			        - $ref: "#/definitions/wind_turbine_lookup/power"
 		
 				  total_plant_power:
 				    type: number

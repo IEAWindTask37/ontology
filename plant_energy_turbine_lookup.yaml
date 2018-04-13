@@ -66,50 +66,52 @@ definitions:
 
 # turbine definition
   wind_turbine:
-    type: object
-    description: An object describing a wind turbine
+    meta:
+        description: "General description for a wind turbine"
+        type: collection # or object?
 
-    properties:
-      # name doesn't seem appropriate for a unique identifier; consider adding id (for disucssion)
-      id:
-        type: string #could be enumerated, integer, etc
-        description: unique identifier for a turbine model
+    # name doesn't seem appropriate for a unique identifier; consider adding id (for disucssion)
+    # is this redundant to wind_turbine itself?
+    id:
+      meta:
+	      type: string #could be enumerated, integer, etc
+	      description: unique identifier for a turbine model
 
-      # perhaps not necessary or is a longer form version of the id (for discussion)
-      name:
-        type: string
-        description: The wind turbine name given by the wind power plant owner
+    # perhaps not necessary or is a longer form version of the id (for discussion)
+    name:
+      type: string
+      description: The wind turbine name given by the wind power plant owner
 
-      # rename description?
-      turbine_type: 
-        type: string
-        description: Link to complementary information about the turbine
+    # rename description?
+    turbine_type: 
+      type: string
+      description: Link to complementary information about the turbine
 
-      rated_power:
-        type: number
-        description: The rotor diameter
-        units: kW
-        minimum: 0.0
-        expr_max: power_curve.max(1)
+    rated_power:
+      type: number
+      description: The rotor diameter
+      units: kW
+      minimum: 0.0
+      expr_max: power_curve.max(1)
 
-      c_t_idle:
-        type: number
-        description: The thrust coefficient of an idle wind turbine
-        default: 0.056
-        minimum: 0.0
-        maximum: 1.0
+    c_t_idle:
+      type: number
+      description: The thrust coefficient of an idle wind turbine
+      default: 0.056
+      minimum: 0.0
+      maximum: 1.0
 
-      hub:
-        $ref: "#/definitions/hub"
+    hub:
+      $ref: "#/definitions/hub"
 
-      rotor:
-        $ref: "#/definitions/rotor"
+    rotor:
+      $ref: "#/definitions/rotor"
 
-      operating_modes:
-        type: array
-        description: operating modes for the turbine
-        items:
-          $ref: "#/definitions/operating_mode"
+    operating_modes:
+      type: array
+      description: operating modes for the turbine
+      items:
+        $ref: "#/definitions/operating_mode"
 
 
 # rotor definition

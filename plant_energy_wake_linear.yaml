@@ -4,50 +4,73 @@ description: wake definition for a plant energy production model
 
 # Draft schema definitions for energy model
 definitions:
-  wake_linear:
-    type: object
-    description: an individual wind turbine wake
+  wake_steady: # sebastian - Was it called linear for the linear decay of Jensen?
+    type: model
+    description: an individual wind turbine wake model
 
-    properties:
-      #inputs
-      air_density:
-        type: number
-        description: air density associated with operating mode
-        units: kg / m^3
-        default: 1.225
-        minimum: 0.5
-        maximum: 2.0
+      # sebastian - I changed properties to inputs and outputs.
+    inputs:
+      # sebastian - I don't think air_density is an input to any of the common steady wake models.
+      # air_density:
+      #   type: number
+      #   description: air density associated with operating mode
+      #   units: kg / m^3
+      #   default: 1.225
+      #   minimum: 0.5
+      #   maximum: 2.0
 
       wind_speed:
         type: number
         description: The current wind speed at hub height
         minimum: 0.0
-        maximum: 200.0
+        # maximum: 200.0 # Sebastian - I don't think we need to preset a maximum wind speed.
         units: m/s
 
-      c_p:
-        type: number
-        description: The current power coefficient of the wind turbine
-        minimum: 0.0
-        maximum: 0.599
-        expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
+      # Sebastian - I don't know wake models that are functions of C_p.
+      # c_p:
+      #   type: number
+      #   description: The current power coefficient of the wind turbine
+      #   minimum: 0.0
+      #   maximum: 0.599
+      #   expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
 
       c_t:
         type: number
         description: The current thrust coefficient of the wind turbine
         minimum: 0.0
-        maximum: 1.2
+        maximum: 1.2 # sebastian - Why 1.2?
         expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
+
+      # sebastian - I added this
+      ct_curve:
+        type: array
+        description: The thrust coefficient curve of the wind turbine
+        wind_speed_array: []
+        ct_array: []
+
+      # sebastian - I added this
+      downstream_distance:
+        type: number
+        description: Downstream distance where deficit is to be calculated. Frame of reference rotated with upstream wind direction.
+        minimum: 0.0
+
+      # sebastian - I added this
+      crosswind_distance:
+        type: number
+        description: Crosswind distance from wake centerline to where deficit is to be calculated. Perpendicular to downstream distance.
+        minimum : 0.0
+
           
-      #outputs
+    outputs:
       velocity_deficit:
-        description: velocity deficit of the wake
+        description: wind velocity deficit in the downstream wake at X distance downstream and Y distance crosswind.
         type: number
         units: m/s
 
 
      ############     
-     #Ewan suggests including this (for discussion)   
+     #Ewan suggests including this (for discussion)
+     # Sebastian - I agree, as this is an input to FLORIS.
       yaw:
         description: turbine specific yaw angle (should be 0 for non-FLORIS models as a cross-check)
         type: number
@@ -60,13 +83,15 @@ definitions:
         type: number
         description: ambient average turbulence intensity at hub height #Larsen
         units: nondimensional
-        default: 0.10
+        # Sebastian - I don't think we need to set defaults or maxima. These are very case specific, and whoever needs them, will define them.
+        # default: 0.10
         minimum: 0.03
-        maximum: 0.40
+        # maximum: 0.40
       
-      wake_decay_coefficient:
-        type: number
-        description: wake decay coefficient #Jensen
-        default: 0.075
-        minimum: 0.01
-        maximum: 0.09
+
+      # This one opens up a whole suite of model calibration parameters for every other model out there. I suggest to remove these parameters from the ontology, as they are part of the model. Not output from another tool.
+      #   type: number
+      #   description: wake decay coefficient #Jensen        
+      #   # default: 0.075
+      #   # minimum: 0.01
+      #   # maximum: 0.09

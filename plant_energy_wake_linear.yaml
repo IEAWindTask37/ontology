@@ -54,7 +54,7 @@ definitions:
         minimum : 0.0
 
           
-    outputs:
+      # outputs
       velocity_deficit:
         description: wind velocity deficit in the downstream wake at X distance downstream and Y distance crosswind.
         type: number

@@ -66,16 +66,14 @@ definitions:
 
 # turbine definition
   wind_turbine:
-    meta:
-        description: "General description for a wind turbine"
-        type: collection # or object?
+    description: "General description for a wind turbine"
+    type: collection # or object?
 
     # name doesn't seem appropriate for a unique identifier; consider adding id (for disucssion)
     # is this redundant to wind_turbine itself?
     id:
-      meta:
-	      type: string #could be enumerated, integer, etc
-	      description: unique identifier for a turbine model
+      type: string #could be enumerated, integer, etc
+      description: unique identifier for a turbine model
 
     # perhaps not necessary or is a longer form version of the id (for discussion)
     name:

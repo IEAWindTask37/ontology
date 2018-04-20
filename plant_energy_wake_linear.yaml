@@ -42,13 +42,6 @@ definitions:
         expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
 
       # sebastian - I added this
-      ct_curve:
-        type: array
-        description: The thrust coefficient curve of the wind turbine
-        wind_speed_array: []
-        ct_array: []
-
-      # sebastian - I added this
       downstream_distance:
         type: number
         description: Downstream distance where deficit is to be calculated. Frame of reference rotated with upstream wind direction.
@@ -89,7 +82,8 @@ definitions:
         # maximum: 0.40
       
 
-      # This one opens up a whole suite of model calibration parameters for every other model out there. I suggest to remove these parameters from the ontology, as they are part of the model. Not output from another tool.
+
+      # This one opens up a whole suite of model calibration parameters for all other models out there. I suggest to remove these parameters from the ontology, as they are part of the model. Not output from another tool.
       #   type: number
       #   description: wake decay coefficient #Jensen        
       #   # default: 0.075

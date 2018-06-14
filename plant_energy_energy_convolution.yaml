@@ -32,12 +32,12 @@ definitions:
 		  total_losses:
 		  # reference plant energy losses
 
-      array_efficiency:
-        # reference the loss in efficiency due to wake effects
-
       # outputs		  
 		  plant_power:
 		  # array that references plant_power by speed, direction (and TI)
+
+      array_efficiency:
+        # reference the loss in efficiency due to wake effects
 
       # output
       plant_energy:

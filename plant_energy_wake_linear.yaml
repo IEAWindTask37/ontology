@@ -4,7 +4,7 @@ description: wake definition for a plant energy production model
 
 # Draft schema definitions for energy model
 definitions:
-  wake_steady: # sebastian - Was it called linear for the linear expansion of Jensen?
+  wake_steady: # sebastian - Was it called linear for the linear decay of Jensen?
     type: model
     description: an individual wind turbine wake model
 
@@ -41,7 +41,6 @@ definitions:
         maximum: 1.2 # sebastian - Why 1.2?
         expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
 
-
       # sebastian - I added this
       downstream_position:
         type: number
@@ -52,7 +51,7 @@ definitions:
         # z: 0.0
 
           
-    outputs:
+      # outputs
       velocity_deficit:
         description: wind velocity deficit in the downstream wake at X distance downstream and Y distance crosswind.
         type: number
@@ -78,6 +77,7 @@ definitions:
         # default: 0.10
         minimum: 0.03
         # maximum: 0.40
+
 
 
       # This one opens up a whole suite of model calibration parameters for all other models out there. I suggest to remove these parameters from the ontology, as they are part of the model. Not output from another tool.

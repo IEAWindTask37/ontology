@@ -40,7 +40,7 @@ definitions:
         # reference the loss in efficiency due to wake effects
 
       # output
-      plant_energy:
+      annual_energy_production:
         type: number
         description: total (annual) energy production for a wind plant given a layout and wind rose
 

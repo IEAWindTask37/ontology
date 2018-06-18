@@ -1,4 +1,4 @@
-$schema: "http://json-schema.org/draft-04/schema#"
+input_format_version: 0
 title: IEA Wind Task 37 Wind Plant Ontology version 0.1
 description: electrical and other losses not due to wakes in a wind plant
 

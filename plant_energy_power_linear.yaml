@@ -1,4 +1,4 @@
-$schema: "http://json-schema.org/draft-04/schema#"
+input_format_version: 0
 title: IEA Wind Task 37 Wind Plant Ontology version 0.1
 description: flow model that aggregates wakes to calculate plant power for a particular inflow state (speed, direction, TI)
 
@@ -14,7 +14,6 @@ definitions:
 
       wind_inflow:
       # reference wind inflow model
-
 
       turbine_ordering:
         type: object
@@ -72,6 +71,9 @@ definitions:
 		        type: number
 		        description: The unobstructed wind speed at hub height for a specific turbine at a specific location in the plant
 		        units: m / s
+
+          wake_model:
+            # reference wake model
 		 
 		      velocity_deficit:
 		        type: array

@@ -1,4 +1,4 @@
-$schema: "http://json-schema.org/draft-04/schema#"
+input_format_version: 0
 title: IEA Wind Task 37 Wind Plant Ontology version 0.1
 description: wake definition for a plant energy production model
 
@@ -42,13 +42,16 @@ definitions:
         expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
 
       # sebastian - I added this
-      downstream_position:
+      downstream_distance:
         type: number
-        description: Downstream three-dimensional position vector where deficit is to be calculated. Origin at upstream wind turbine.
-        units: m
-        # x: 0.0
-        # y: 0.0
-        # z: 0.0
+        description: Downstream distance where deficit is to be calculated. Frame of reference rotated with upstream wind direction.
+        minimum: 0.0
+
+      # sebastian - I added this
+      crosswind_distance:
+        type: number
+        description: Crosswind distance from wake centerline to where deficit is to be calculated. Perpendicular to downstream distance.
+        minimum : 0.0
 
           
       # outputs
@@ -77,7 +80,7 @@ definitions:
         # default: 0.10
         minimum: 0.03
         # maximum: 0.40
-
+      
 
 
       # This one opens up a whole suite of model calibration parameters for all other models out there. I suggest to remove these parameters from the ontology, as they are part of the model. Not output from another tool.

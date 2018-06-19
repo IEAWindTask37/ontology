@@ -29,20 +29,21 @@ definitions:
   plant_energy:
     type: object
     description: energy production estimate combining information for layout, turbine, site and other losses
+    # currently designed for basic AEP convolution, but could be extended to any sort of sophisticated UQ approach
 
     properties:
       
       #inputs
-      wind_plant:
+      wind_plant_selection:
       # reference wind plant
 
-      wind_resource:
+      wind_resource_selection:
       # reference wind resources
       
-      wake_model
+      wake_model_selection
       # reference wake model
 		  
-		  total_losses:
+		  loss_model_selection:
 		  # reference plant energy losses
 
       # outputs		  
@@ -50,7 +51,7 @@ definitions:
 		  # array that references plant_power by speed, direction (and TI)
 
       array_efficiency:
-        # reference the loss in efficiency due to wake effects
+      # reference the loss in efficiency due to wake effects
 
       # output
       annual_energy_production:

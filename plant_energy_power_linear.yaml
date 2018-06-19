@@ -5,15 +5,49 @@ description: flow model that aggregates wakes to calculate plant power for a par
 
 # Draft schema definitions for energy model power production
 definitions:
+
+    # input to power conversion model
+	  wind_inflow:
+	    type: object
+	    description: inflow for current wind conditions
+	    
+	    properties:
+	      direction:
+	        id: "wind_direction"
+	        type: number
+	        description: The wind direction in degree, with North as the 0.
+	        units: deg
+	        minimum: 0.0
+	        maximum: 360.0
+	
+	      speed:
+	        anyOf:
+	          - oneOf:
+	            - type: number
+	              description: A wind speed
+	            - $ref: "#/definitions/distributions/weibull"
+	          - minimum: 0.0
+	            maximum: 100.0
+	            units: m/s
+	
+	      ti:
+	        type: number
+	        description: Turbulence intensity
+	        minimum: 0.0
+	        maximum: 1.0
+	      
+	      shear:
+	        type: number
+	        desciprtion: Wind shear
+	        minimum: 0.05
+	        maximum: 0.50
+
   power_conversion:
     type: object
     description: power conversion model aggregates the wake effects across the plant against pad-specific unobstructed wind speed to estimate overall turbine / plant power output
     
     properties:
       # sub-models include current inflow, turbine lookup, wake, and wake combination
-
-      wind_inflow:
-      # reference wind inflow model
 
       turbine_ordering:
         type: object
@@ -40,6 +74,7 @@ definitions:
 
 
       # if using multiple wind roses
+      # unnecessary if you only have a single wind rose for the plant
       wind_speed_interpolation
         type: object
         description: interpolate incoming wind speed for a given turbine based on inflow direction for plant and wind resource grid

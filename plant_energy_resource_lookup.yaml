@@ -16,36 +16,40 @@ definitions:
         
         properties:
           positions:
-			    # [n_p x n_d] array of the locations of the resource points in UTM
-			    # where n_p is the number of resource points
-			    #and n_d is the number of dimensions (usually 3 for x, y, and z)
-
-          wsp or wsp_edg:
-          # either array of centers of wind speed bins or array of wind speed bin edges
+              type: ndarray
+              description: [np x nd] array of locations of resource points in UTM, nd is number of dimensions
+              
+          wsp_edg:
+              type: ndarray
+              description: edges of wind speed bins for wind rose
           
-          wdir or wdir_edg:
-          # either array of centers of wind direction bins or array of wind dir bin edges
+          wdir_edg:
+              type: ndarray
+              description: edges of wind direction edges for wind rose
 
 			probability:
 			  type: array
-        # [n_p x n_wd x n_ws] array of the wind rose probabilities at each resource point
+        description: [n_p x n_wd x n_ws] array of the wind rose probabilities at each resource point
 
       variables:
         type: object
         
         properties:
           wsp_loc
-          # [n_p x n_wd x n_ws] array of wind speeds at each resource point
+              type: ndarray
+              description: [n_p x n_wd x n_ws] array of wind speeds at each resource point
           
           wdir_loc
-          # [n_p x n_wd x n_ws] array of wind directions at each resource point
+              type: ndarray
+              description: [n_p x n_wd x n_ws] array of wind directions at each resource point
           
           ti_loc
-          # [n_p x n_wd x n_ws] array of turbulence intensities at each resource point
+              type: ndarray
+              description: [n_p x n_wd x n_ws] array of turbulence intensities at each resource point
 			    
 
 
-  #### Older wind resource model
+  #### Older wind resource model - may be a pre-processing model now for wind resource
   wind_resource:
     type: object
     oneOf:
@@ -264,39 +268,3 @@ definitions:
     minimum: 0.0
     maximum: 1.0
 
-	###### Older content
-	# wind inflow definitions
-  wind_inflow:
-    type: object
-    description: inflow for current wind conditions
-    
-    properties:
-      direction:
-        id: "wind_direction"
-        type: number
-        description: The wind direction in degree, with North as the 0.
-        units: deg
-        minimum: 0.0
-        maximum: 360.0
-
-      speed:
-        anyOf:
-          - oneOf:
-            - type: number
-              description: A wind speed
-            - $ref: "#/definitions/distributions/weibull"
-          - minimum: 0.0
-            maximum: 100.0
-            units: m/s
-
-      ti:
-        type: number
-        description: Turbulence intensity
-        minimum: 0.0
-        maximum: 1.0
-      
-      shear:
-        type: number
-        desciprtion: Wind shear
-        minimum: 0.05
-        maximum: 0.50

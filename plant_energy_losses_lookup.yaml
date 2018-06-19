@@ -13,33 +13,34 @@ definitions:
         description: Losses in the electrical array and interconnection
         units: percentage
         minimum: 0.0
-        maximum: 1.0
+        maximum: 100.0
 
       availability:
         type: number
         description: average turbine availability (1 - average turbine downtime)
         units: percentage
         minimum: 0.0
-        maximum: 1.0
+        maximum: 100.0
 
       curtailment:
         type: number
         description: average turbine curtailment
         units: percentage
         minimum: 0.0
-        maximum: 1.0
+        maximum: 100.0
+
 
       other_losses:
         type: number
         description: other plant losses
         units: percentage
         minimum: 0.0
-        maximum: 1.0
+        maximum: 100.0
   
 		  total_losses:
 		    type: number
 		    description: total non-wake energy losses for the plant (aggregation of energy losses)
 		    units: percentage
 		    minimum: 0.0
-		    maximum: 1.0
+		    maximum: 100.0
    

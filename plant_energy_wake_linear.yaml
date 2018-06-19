@@ -8,31 +8,12 @@ definitions:
     type: model
     description: an individual wind turbine wake model
 
-      # sebastian - I changed properties to inputs and outputs.
-    inputs:
-      # sebastian - I don't think air_density is an input to any of the common steady wake models.
-      # air_density:
-      #   type: number
-      #   description: air density associated with operating mode
-      #   units: kg / m^3
-      #   default: 1.225
-      #   minimum: 0.5
-      #   maximum: 2.0
-
       wind_speed:
         type: number
         description: The current wind speed at hub height
         minimum: 0.0
         # maximum: 200.0 # Sebastian - I don't think we need to preset a maximum wind speed.
         units: m/s
-
-      # Sebastian - I don't know wake models that are functions of C_p.
-      # c_p:
-      #   type: number
-      #   description: The current power coefficient of the wind turbine
-      #   minimum: 0.0
-      #   maximum: 0.599
-      #   expr: power / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**3.0)
 
       c_t:
         type: number
@@ -41,18 +22,20 @@ definitions:
         maximum: 1.2 # sebastian - Why 1.2?
         expr: thrust / (1/2 * air_density * rotor_area * wake_combination:effective_velocity**2.0)
 
-      # sebastian - I added this
+      # potentially change to [x,y,z] downstream
       downstream_distance:
         type: number
         description: Downstream distance where deficit is to be calculated. Frame of reference rotated with upstream wind direction.
         minimum: 0.0
 
-      # sebastian - I added this
       crosswind_distance:
         type: number
         description: Crosswind distance from wake centerline to where deficit is to be calculated. Perpendicular to downstream distance.
         minimum : 0.0
 
+      vertical_distance:
+        type: number
+        description: vertical distance from wake centerline to where deficit is to be calculated.
           
       # outputs
       velocity_deficit:
@@ -61,17 +44,8 @@ definitions:
         units: m/s
 
 
-     ############     
-     #Ewan suggests including this (for discussion)
-     # Sebastian - I agree, as this is an input to FLORIS.
-      yaw:
-        description: turbine specific yaw angle (should be 0 for non-FLORIS models as a cross-check)
-        type: number
-        units: degrees
-
-
      #################
-     # Extensions or examples to include Larsen, Jensen, Floris?, Porte Agel?
+     # Extensions or examples to include Larsen, Jensen, Floris, Porte Agel
       ambient_average_turbulence_intensity:
         type: number
         description: ambient average turbulence intensity at hub height #Larsen
@@ -80,12 +54,3 @@ definitions:
         # default: 0.10
         minimum: 0.03
         # maximum: 0.40
-      
-
-
-      # This one opens up a whole suite of model calibration parameters for all other models out there. I suggest to remove these parameters from the ontology, as they are part of the model. Not output from another tool.
-      #   type: number
-      #   description: wake decay coefficient #Jensen        
-      #   # default: 0.075
-      #   # minimum: 0.01
-      #   # maximum: 0.09

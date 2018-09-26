@@ -6,26 +6,6 @@ description: A file used as input or output of a wind plant model (for overall e
 
 # Draft schema definitions for energy model
 definitions:
-  wind_plant:
-    type: object
-    description: specific plant design including turbine selection and placement
-    properties:
-      layout:
-        type: array
-        items:
-          - $ref: "#/definitions/position"
-          - $ref: "plant_energy_turbine_lookup/definitions/wind_turbine"
-
-  position:
-    type: array
-    items:
-      - type: number
-      - type: number
-    additionalItems: false
-    description: The [x,y] position of a wind turbine in UTM coordinates
-    units: m          
-
-
   plant_energy:
     type: object
     description: energy production estimate combining information for layout, turbine, site and other losses
@@ -33,7 +13,7 @@ definitions:
 
     properties:
       
-      #inputs
+      #inputs ## inputs need updating
       wind_plant_selection:
       # reference wind plant
 
@@ -53,7 +33,6 @@ definitions:
       array_efficiency:
       # reference the loss in efficiency due to wake effects
 
-      # output
       annual_energy_production:
         type: number
         description: total (annual) energy production for a wind plant given a layout and wind rose

@@ -63,3 +63,11 @@ definitions:
         units: N
         minimum: 0.0
         expr: 1/2 * air_density * rotor_area * c_t * wake_combination:effective_velocity**2.0
+      
+      rotor_diameter:
+        type: number
+        description: The rotor diameter
+        units: m
+        minimum: 0.0
+        expr_min: hub:height * 2.0
+        expr: radius * 2.0

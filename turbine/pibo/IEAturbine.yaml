@@ -40,15 +40,16 @@ components:
             twist:
                 grid: [0.0, 0.25, 0.5, 0.75, 1.0]
                 values: [20.0, 15.0, 10.0, 3.0, 1.0]
-            x:
-                grid: [0, 0.25, 0.5, 0.75, 1.0]
-                values: [0.0, 25.0, 50.0, 75.0, 100.0]
-            y:
-                grid: [0.0, 1.0]
-                values: [0.0, 0.0]
-            z:
-                grid: [0.0, 1.0]
-                values: [0.0, 0.0]
+            coordinates:
+                x:
+                    grid: [0, 0.25, 0.5, 0.75, 1.0]
+                    values: [0.0, 25.0, 50.0, 75.0, 100.0]
+                y:
+                    grid: [0.0, 1.0]
+                    values: [0.0, 0.0]
+                z:
+                    grid: [0.0, 1.0]
+                    values: [0.0, 0.0]
         multi_body:
             timoschenko_hawc:
                 grid:  [0.0, 1.0]
@@ -103,3 +104,31 @@ components:
                 stiff_matrix:
                     - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
                     - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                    
+                    
+        2d_fem:
+            coordinates:
+                x:
+                    grid:   [0, 0.25, 0.5, 0.75, 1.0]
+                    values: [0.0, 25.0, 50.0, 75.0, 100.0]
+                y:
+                    grid:   [0.0, 1.0]
+                    values: [0.0, 0.0]
+                z:
+                    grid:   [0.0, 1.0]
+                    values: [0.0, 0.0]
+            sections:
+                - position:       0.0
+                  webs_positions: [0.3, 0.43, 0.57, 0.7]
+                  segments:
+                    - id:   0
+                      layup:
+                        - name:   lamina_1
+                          material_name: biax
+                          start: 0.0
+                          end:   1.0
+                          thickness: 0.001
+                          orientation: 0.0
+                
+                
+                

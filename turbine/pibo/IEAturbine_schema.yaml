@@ -33,9 +33,7 @@ properties:
                             - airfoil_position
                             - chord
                             - twist
-                            - x
-                            - y
-                            - z
+                            - coordinates
                         properties: 
                             airfoils:
                                 $ref: "#/definitions/airfoils"
@@ -69,36 +67,9 @@ properties:
                                         $ref: "#/definitions/distributed_data/grid"
                                     values: 
                                         $ref: "#/definitions/distributed_data/angle"
-                            x:
-                                type: object
-                                required:
-                                    - grid
-                                    - values
-                                properties: 
-                                    grid: 
-                                        $ref: "#/definitions/distributed_data/grid"
-                                    values: 
-                                        $ref: "#/definitions/distributed_data/length"
-                            y:
-                                type: object
-                                required:
-                                    - grid
-                                    - values
-                                properties: 
-                                    grid: 
-                                        $ref: "#/definitions/distributed_data/grid"
-                                    values: 
-                                        $ref: "#/definitions/distributed_data/length"
-                            z:
-                                type: object
-                                required:
-                                    - grid
-                                    - values
-                                properties: 
-                                    grid: 
-                                        $ref: "#/definitions/distributed_data/grid"
-                                    values: 
-                                        $ref: "#/definitions/distributed_data/length"
+                            coordinates:
+                                    $ref: "#/definitions/distributed_data/coordinates"
+                            
         
                     multi_body:
                         type: object
@@ -109,10 +80,21 @@ properties:
                                 $ref: "#/definitions/beam/cp_lambda_beam"
                             six_x_six:
                                 $ref: "#/definitions/beam/six_x_six"
+                    2d_fem:
+                        type: object
+                        required:
+                            - coordinates
+                            - sections
+                        properties: 
+                            coordinates:
+                                $ref: "#/definitions/distributed_data/coordinates"
+                            sections:
+                                $ref: "#/definitions/sections"
+    
                     # cfd_geometry:
                         # type: object
                         # TODO
-                    # fem:
+                    # 3D_fem:
                         # type: object
                         # TODO
 
@@ -339,7 +321,47 @@ definitions:
                 type: number
                 unit: N/m2
                 minItems: 2
-                uniqueItems: false     
+                uniqueItems: false
+        
+        
+        coordinates:
+            type: object
+            required:
+                - x
+                - y
+                - z
+            properties:
+                x:
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
+                y:
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
+                z:
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
+        
                 
                 
                     
@@ -513,4 +535,105 @@ definitions:
                         minItems: 21
                         maxItems: 21
                         uniqueItems: false
+                        
+                        
+                        
+                        
+                        
+    sections:
+        type: array
+        description: Database of airfoils following the convention of SONATA. Airfoils are placed with the LE on the left and the TE on the right and "segments" are defined non-dimensional. For the airfoil shape, a main segment (number 0) is defined from 0 (trailing edge, suction side) to 1 (trailing edge, pressure side). The main segment is then sub-divided by the webs into sub-segments. With one web, two sub-sgments are generated, segment 1 on the left towards the LE and segment 2 on the right towards the TE. With two webs, segments 1, 2 and 3 are generated, numbered always from left to right. An arbitrary number of webs can be defined.
+        items:
+            type: object
+            required:
+                - position
+                - webs_positions
+                - segments
+            properties:
+                position:
+                    type: number
+                    unit: none
+                    minimum: 0.0
+                    maximum: 1.0
+                    description: non-dimensional location of the section along the 3d line
+                webs_positions:
+                    type: array
+                    description: Positions of the webs along the airfoil line expressed non-dimensional. The array must be even (2 points - 1 web, 4 points - 2 webs,  etc) and it is defined between 0+eps and 1-eps
+                    items: 
+                        type: number
+                        unit: none
+                        minItems: 2
+                        minimum: 0.000001
+                        maximum: 0.999999
+                        uniqueItems: true
+                segments:
+                    type: array
+                    description: layup data for each segment
+                    items:
+                        type: object
+                        description: each segment is defined with an id (marking its position within the section) and a layup sequence
+                        required:
+                            - id
+                            - layup
+                        properties:
+                            id:
+                                type: number
+                                unit: none
+                                minimum: 0
+                                description: segment identifier
+                            layup:
+                                type: array
+                                description: layup data
+                                items:
+                                    type: object
+                                    description: layup sequence
+                                    required:
+                                        - name
+                                        - material_name
+                                        - start
+                                        - end
+                                        - thickness
+                                        - orientation
+                                    properties:
+                                        name:
+                                            type: string
+                                            description: lamina identifier
+                                        material_name:
+                                            type: string
+                                            description: material identifier
+                                        start:
+                                            type: number
+                                            unit: none
+                                            minimum: 0.0
+                                            maximum: 1.0
+                                            description: start coordinate of the lamina along the segment line (expressed always anti-clockwise)
+                                        end:
+                                            type: number
+                                            unit: none
+                                            minimum: 0.0
+                                            maximum: 1.0
+                                            description: end coordinate of the lamina along the segment line (expressed always anti-clockwise)
+                                        thickness:
+                                            type: number
+                                            unit: m
+                                            exclusiveMinimum: 0
+                                            description: thickness of the lamina
+                                        orientation:
+                                            type: number
+                                            unit: deg
+                                            description: orientation of the fibers in the lamina
+                                        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+                        
                 

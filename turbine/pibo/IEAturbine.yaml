@@ -24,7 +24,16 @@ components:
                     values: [0.0, 0.0]
         multi_body:
             timoschenko_hawc:
-                grid:
+                coordinates:
+                    x:
+                        grid: [0, 0.25, 0.5, 0.75, 1.0]
+                        values: [0.0, 25.0, 50.0, 75.0, 100.0]
+                    y:
+                        grid: [0.0, 1.0]
+                        values: [0.0, 0.0]
+                    z:
+                        grid: [0.0, 1.0]
+                        values: [0.0, 0.0]
                 A:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
@@ -61,9 +70,6 @@ components:
                 ri_y:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
-                x:
-                    grid: [0.0, 1.0]
-                    values: [0.0, 0.0]
                 x_cg:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
@@ -71,9 +77,6 @@ components:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
                 x_sh:
-                    grid: [0.0, 1.0]
-                    values: [0.0, 0.0]
-                y:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
                 y_cg:
@@ -85,10 +88,17 @@ components:
                 y_sh:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
-                z:
-                    grid: [0.0, 1.0]
-                    values: [0.0, 0.0]
             cp_lambda_beam:
+                coordinates:
+                    x:
+                        grid: [0, 0.25, 0.5, 0.75, 1.0]
+                        values: [0.0, 25.0, 50.0, 75.0, 100.0]
+                    y:
+                        grid: [0.0, 1.0]
+                        values: [0.0, 0.0]
+                    z:
+                        grid: [0.0, 1.0]
+                        values: [0.0, 0.0]
                 T11:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
@@ -138,15 +148,6 @@ components:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
                 y_cg:
-                    grid: [0.0, 1.0]
-                    values: [0.0, 0.0]
-                x:
-                    grid: [0.0, 1.0]
-                    values: [0.0, 0.0]
-                y:
-                    grid: [0.0, 1.0]
-                    values: [0.0, 0.0]
-                z:
                     grid: [0.0, 1.0]
                     values: [0.0, 0.0]
             six_x_six:

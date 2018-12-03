@@ -394,6 +394,7 @@ definitions:
             type: object
             description: Timoschenko beam as in HAWC2
             required:
+                - coordinates
                 - A
                 - E
                 - G
@@ -406,16 +407,15 @@ definitions:
                 - pitch
                 - ri_x
                 - ri_y
-                - x
                 - x_cg
                 - x_e
                 - x_sh
-                - y
                 - y_cg
                 - y_e
                 - y_sh
-                - z
             properties:
+                coordinates:
+                    $ref: "#/definitions/distributed_data/coordinates"
                 A:
                     type: object
                     required:
@@ -536,16 +536,6 @@ definitions:
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/length"
-                x:
-                    type: object
-                    required:
-                        - grid
-                        - values
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
                 x_cg:
                     type: object
                     required:
@@ -567,16 +557,6 @@ definitions:
                         values: 
                             $ref: "#/definitions/distributed_data/length"
                 x_sh:
-                    type: object
-                    required:
-                        - grid
-                        - values
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
-                y:
                     type: object
                     required:
                         - grid
@@ -616,21 +596,11 @@ definitions:
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/length"
-                z:
-                    type: object
-                    required:
-                        - grid
-                        - values
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
-
         cp_lambda_beam:
             type: object
             description: Geometrically exact beams with simplified properties
             required:
+                - coordinates
                 - T11
                 - T22
                 - EA
@@ -648,10 +618,9 @@ definitions:
                 - J3
                 - x_cg
                 - y_cg
-                - x
-                - y
-                - z
             properties:
+                coordinates:
+                    $ref: "#/definitions/distributed_data/coordinates"
                 T11:
                     type: object
                     required:
@@ -821,40 +790,7 @@ definitions:
                         grid: 
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
-                            $ref: "#/definitions/distributed_data/length"
-                x:
-                    type: object
-                    required:
-                        - grid
-                        - values
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
-                y:
-                    type: object
-                    required:
-                        - grid
-                        - values
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
-                z:
-                    type: object
-                    required:
-                        - grid
-                        - values
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
-                    
-                    
-                    
+                            $ref: "#/definitions/distributed_data/length"                    
                     
         six_x_six:
             type: object

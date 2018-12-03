@@ -11,9 +11,9 @@ description: Ontology definition for wind turbines as defined in WP1 of IEA Wind
 type: object
 required: 
     - name
-    - components
-    - airfoils
-    #- materials
+    # - components
+    # - airfoils
+    # - materials
 additionalProperties: false
 
 properties:
@@ -102,9 +102,9 @@ properties:
 
     airfoils:
         $ref: "#/definitions/airfoils"
-    
-    #materials:
-    
+    materials:
+        $ref: "#/definitions/materials"
+        
 definitions:
     airfoils:
         type: array
@@ -905,20 +905,85 @@ definitions:
                                             
                                             
 
-    # materials:
-        # type: array
-        # description: Database of the materials
-        # items:
-            # type: object
-            # required:
-                # - material_name
-            # properties:
-                # material_name:
-        
-        
-        
-        
-        
+    materials:
+        type: array
+        description: Database of the materials
+        items:
+            type: object
+            required:
+                - name
+                - orth
+                - rho
+                - E
+                - G
+                - nu
+                - alpha
+            properties:
+                name:
+                    type: string
+                    description: Name of the material
+                orth:
+                    type: number
+                    description: Flag to switch between isotropic (0) and orthotropic (1) materials
+                rho:
+                    description: Density
+                    type: number
+                    unit: kg/m3
+                    minimum: 0
+                E:  
+                    description: Stiffness modulus. For orthotropic materials, it consists of an array with E11, E22 and E33
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                G:  
+                    description: Shear stiffness modulus. For orthotropic materials, it consists of an array with G12, G13 and G23
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                nu: 
+                    description: Poisson ratio. For orthotropic materials, it consists of an array with nu12, nu13 and nu23
+                    oneOf:
+                        - type: number
+                          unit: none
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                alpha:
+                    description: Lamination angle for composite materials
+                    oneOf:
+                        - type: number
+                          unit: radians
+                        - type: array
+                          items: 
+                            type: number
+                            unit: radians
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
         
         
         

@@ -5982,6 +5982,7 @@ input_format_version:
   meta:
     description: The describes the version of the yaml scheme
     type: integer
+    
 multi_body_assembly:
   data:
     bodies:

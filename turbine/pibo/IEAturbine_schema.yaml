@@ -12,6 +12,8 @@ type: object
 required: 
     - name
     - components
+    - airfoils
+    #- materials
 additionalProperties: false
 
 properties:
@@ -29,14 +31,11 @@ properties:
                     bem_aero:                    
                         type: object
                         required:
-                            - airfoils
                             - airfoil_position
                             - chord
                             - twist
                             - coordinates
-                        properties: 
-                            airfoils:
-                                $ref: "#/definitions/airfoils"
+                        properties:                              
                             airfoil_position:
                                 type: object
                                 required:
@@ -44,7 +43,7 @@ properties:
                                     - label
                                 properties: 
                                     grid: 
-                                        $ref: "#/definitions/distributed_data/grid"
+                                        $ref: "#/definitions/distributed_data/grid_nd"
                                     label: 
                                         $ref: "#/definitions/distributed_data/strings"
                             chord:
@@ -54,7 +53,7 @@ properties:
                                     - values
                                 properties: 
                                     grid: 
-                                        $ref: "#/definitions/distributed_data/grid"
+                                        $ref: "#/definitions/distributed_data/grid_nd"
                                     values: 
                                         $ref: "#/definitions/distributed_data/length"
                             twist:
@@ -64,7 +63,7 @@ properties:
                                     - values
                                 properties: 
                                     grid: 
-                                        $ref: "#/definitions/distributed_data/grid"
+                                        $ref: "#/definitions/distributed_data/grid_nd"
                                     values: 
                                         $ref: "#/definitions/distributed_data/angle"
                             coordinates:
@@ -90,7 +89,8 @@ properties:
                                 $ref: "#/definitions/distributed_data/coordinates"
                             sections:
                                 $ref: "#/definitions/sections"
-    
+                            materials:
+                                $ref: "#/definitions/materials"
                     # cfd_geometry:
                         # type: object
                         # TODO
@@ -99,6 +99,12 @@ properties:
                         # TODO
 
         
+
+    airfoils:
+        $ref: "#/definitions/airfoils"
+    
+    #materials:
+    
 definitions:
     airfoils:
         type: array
@@ -148,7 +154,6 @@ definitions:
                         description: Lift, drag and moment coefficients expressed in terms of angles of attack
                         required:
                             - configuration
-                            - angle_of_attack
                             - c_l
                             - c_d
                             - c_m
@@ -156,38 +161,40 @@ definitions:
                             configuration:
                                 type: string
                                 description: Text to identify the setup for the definition of the polars
-                            angle_of_attack:
-                                type: array
-                                items: 
-                                    type: number
-                                    unit: radians
-                                    minItems: 2
-                                    minimum: -3.14159265359
-                                    maximum: 3.14159265359
-                                    uniqueItems: true
                             c_l:
-                                type: array
-                                items: 
-                                    type: number
-                                    unit: none
-                                    minItems: 2
-                                    uniqueItems: false
+                                type: object
+                                required:
+                                    - grid
+                                    - values
+                                properties: 
+                                    grid: 
+                                        $ref: "#/definitions/distributed_data/grid_aoa"
+                                    values: 
+                                        $ref: "#/definitions/distributed_data/polar_coeff"
                             c_d:
-                                type: array
-                                items: 
-                                    type: number
-                                    unit: none
-                                    minItems: 2
-                                    uniqueItems: false
+                                type: object
+                                required:
+                                    - grid
+                                    - values
+                                properties: 
+                                    grid: 
+                                        $ref: "#/definitions/distributed_data/grid_aoa"
+                                    values: 
+                                        $ref: "#/definitions/distributed_data/polar_coeff"
                             c_m:
-                                type: array
-                                items: 
-                                    type: number
-                                    unit: none
-                                    minItems: 2
-                                    uniqueItems: false
+                                type: object
+                                required:
+                                    - grid
+                                    - values
+                                properties: 
+                                    grid: 
+                                        $ref: "#/definitions/distributed_data/grid_aoa"
+                                    values: 
+                                        $ref: "#/definitions/distributed_data/polar_coeff"
+    
+    
     distributed_data:
-        grid: 
+        grid_nd: 
             type: array
             description: Grid along a beam expressed non-dimensional from 0 to 1 
             items: 
@@ -197,7 +204,24 @@ definitions:
                 minimum: 0.0
                 maximum: 1.0
                 uniqueItems: true
-                
+        grid_aoa: 
+            type: array
+            description: Grid of angles of attack to describe polars
+            items: 
+                type: number
+                unit: radians
+                minItems: 2
+                minimum: -3.14159265359
+                maximum:  3.14159265359
+                uniqueItems: true
+        polar_coeff:
+            type: array
+            description: Lift, drag and moment coefficients
+            items: 
+                type: number
+                unit: none
+                minItems: 2
+                uniqueItems: false
         strings: 
             type: array
             items: 
@@ -338,7 +362,7 @@ definitions:
                         - values
                     properties: 
                         grid: 
-                            $ref: "#/definitions/distributed_data/grid"
+                            $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/length"
                 y:
@@ -348,7 +372,7 @@ definitions:
                         - values
                     properties: 
                         grid: 
-                            $ref: "#/definitions/distributed_data/grid"
+                            $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/length"
                 z:
@@ -358,7 +382,7 @@ definitions:
                         - values
                     properties: 
                         grid: 
-                            $ref: "#/definitions/distributed_data/grid"
+                            $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/length"
         
@@ -370,7 +394,6 @@ definitions:
             type: object
             description: Timoschenko beam as in HAWC2
             required:
-                - grid
                 - A
                 - E
                 - G
@@ -393,56 +416,221 @@ definitions:
                 - y_sh
                 - z
             properties:
-                grid: 
-                    $ref: "#/definitions/distributed_data/grid"
                 A:
-                    $ref: "#/definitions/distributed_data/area"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/area"
                 E:
-                    $ref: "#/definitions/distributed_data/elast_mod"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/elast_mod"
                 G:
-                    $ref: "#/definitions/distributed_data/shear_mod"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/shear_mod"
                 I_x:
-                    $ref: "#/definitions/distributed_data/area_moment"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/area_moment"
                 I_y:
-                    $ref: "#/definitions/distributed_data/area_moment"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/area_moment"
                 K:
-                    $ref: "#/definitions/distributed_data/tors_stiff_const"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/tors_stiff_const"
                 dm:
-                    $ref: "#/definitions/distributed_data/mass_length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/mass_length"
                 k_x:
-                    $ref: "#/definitions/distributed_data/nd"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/nd"
                 k_y:
-                    $ref: "#/definitions/distributed_data/nd"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/nd"
                 pitch:
-                    $ref: "#/definitions/distributed_data/angle"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/angle"
                 ri_x:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 ri_y:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 x:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 x_cg:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 x_e:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 x_sh:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y_cg:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y_e:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y_sh:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 z:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
 
         cp_lambda_beam:
             type: object
             description: Geometrically exact beams with simplified properties
             required:
-                - grid
                 - T11
                 - T22
                 - EA
@@ -464,48 +652,206 @@ definitions:
                 - y
                 - z
             properties:
-                grid: 
-                    $ref: "#/definitions/distributed_data/grid"
                 T11:
-                    $ref: "#/definitions/distributed_data/shear_stiff"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/shear_stiff"                
                 T22:
-                    $ref: "#/definitions/distributed_data/shear_stiff"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/shear_stiff"
                 EA:
-                    $ref: "#/definitions/distributed_data/axial_stiff"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/axial_stiff"
                 E11:
-                    $ref: "#/definitions/distributed_data/bending_stiff"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/bending_stiff"
                 E22:
-                    $ref: "#/definitions/distributed_data/bending_stiff"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/bending_stiff"
                 GJ:
-                    $ref: "#/definitions/distributed_data/tors_stiff"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/tors_stiff"
                 x_ce:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y_ce:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 dm:
-                    $ref: "#/definitions/distributed_data/mass_length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/mass_length"
                 delta_theta:
-                    $ref: "#/definitions/distributed_data/angle"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/angle"
                 x_sh:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y_sh:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 J1:
-                    $ref: "#/definitions/distributed_data/mass_moment"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/mass_moment"
                 J2:
-                    $ref: "#/definitions/distributed_data/mass_moment"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/mass_moment"
                 J3:
-                    $ref: "#/definitions/distributed_data/mass_moment"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/mass_moment"
                 x_cg:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y_cg:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 x:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 y:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                 z:
-                    $ref: "#/definitions/distributed_data/length"
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
                     
                     
                     
@@ -513,32 +859,27 @@ definitions:
         six_x_six:
             type: object
             required:
-                - grid
-                - x
-                - y
-                - z
+                - coordinates
                 - stiff_matrix
             properties:
-                grid: 
-                    $ref: "#/definitions/distributed_data/grid"
-                x:
-                    $ref: "#/definitions/distributed_data/length"
-                y:
-                    $ref: "#/definitions/distributed_data/length"
-                z:
-                    $ref: "#/definitions/distributed_data/length"
+                coordinates:
+                    $ref: "#/definitions/distributed_data/coordinates"
                 stiff_matrix:
-                    type: array
-                    items: 
-                        type: array
-                        description: Stiffness matrix 6x6, only upper diagonal reported line by line (21 elements), specified at each grid point
-                        minItems: 21
-                        maxItems: 21
-                        uniqueItems: false
-                        
-                        
-                        
-                        
+                    type: object
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            type: array
+                            items: 
+                                type: array
+                                description: Stiffness matrix 6x6, only upper diagonal reported line by line (21 elements), specified at each grid point
+                                minItems: 21
+                                maxItems: 21
+                                uniqueItems: false               
                         
     sections:
         type: array
@@ -622,8 +963,21 @@ definitions:
                                             type: number
                                             unit: deg
                                             description: orientation of the fibers in the lamina
-                                        
-        
+                                            
+                                            
+                                            
+                                            
+                                            
+
+    # materials:
+        # type: array
+        # description: Database of the materials
+        # items:
+            # type: object
+            # required:
+                # - material_name
+            # properties:
+                # material_name:
         
         
         

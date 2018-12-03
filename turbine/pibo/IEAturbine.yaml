@@ -14,79 +14,79 @@ components:
                 values: [20.0, 15.0, 10.0, 3.0, 1.0]
             coordinates:
                 x:
-                    grid: [0, 0.25, 0.5, 0.75, 1.0]
+                    grid: &grid001 [0, 0.25, 0.5, 0.75, 1.0]
                     values: [0.0, 25.0, 50.0, 75.0, 100.0]
                 y:
-                    grid: [0.0, 1.0]
+                    grid: *grid001
                     values: [0.0, 0.0]
                 z:
-                    grid: [0.0, 1.0]
+                    grid: *grid001
                     values: [0.0, 0.0]
         multi_body:
             timoschenko_hawc:
                 coordinates:
                     x:
-                        grid: [0, 0.25, 0.5, 0.75, 1.0]
+                        grid: *grid001
                         values: [0.0, 25.0, 50.0, 75.0, 100.0]
                     y:
-                        grid: [0.0, 1.0]
-                        values: [0.0, 0.0]
+                        grid: *grid001
+                        values: [0.0, 25.0, 50.0, 75.0, 100.0]
                     z:
-                        grid: [0.0, 1.0]
-                        values: [0.0, 0.0]
+                        grid: *grid001
+                        values: [0.0, 25.0, 50.0, 75.0, 100.0]
                 A:
-                    grid: [0.0, 1.0]
+                    grid: &grid002 [0.0, 1.0]
                     values: [0.0, 0.0]
                 E:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 G:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 I_x:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 I_y:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 K:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 dm:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 k_x:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 k_y:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 pitch:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 ri_x:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 ri_y:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 x_cg:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 x_e:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 x_sh:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 y_cg:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 y_e:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
                 y_sh:
-                    grid: [0.0, 1.0]
+                    grid: *grid002
                     values: [0.0, 0.0]
             cp_lambda_beam:
                 coordinates:

@@ -16,6 +16,4 @@ validate(yaml.load(inputs), yaml.load(schema))
 
 wt_data= yaml.load(inputs)
 
-print(wt_data['components']['blade']['bem_aero']['coordinates']['y']['grid'])
-print(wt_data['components']['blade']['2d_fem']['sections'][0])
-print(wt_data['airfoils'])
+print(wt_data['components']['blade']['bem_aero']['coordinates'])

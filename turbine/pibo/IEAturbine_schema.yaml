@@ -137,8 +137,8 @@ definitions:
                                 type: number
                                 unit: none
                                 minItems: 3
-                                minimum: 0.0
-                                maximum: 1.0
+                                minimum: -1.0
+                                maximum:  1.0
                                 uniqueItems: false
                 relative_thickness:
                     type: number

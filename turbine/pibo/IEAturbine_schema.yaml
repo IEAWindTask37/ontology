@@ -143,7 +143,7 @@ definitions:
                 relative_thickness:
                     type: number
                     unit: none
-                    exclusiveMinimum: 0
+                    # exclusiveMinimum: 0
                     maximum: 1
                     description: Thickness of the airfoil expressed non-dimensional
                 polars:
@@ -893,7 +893,7 @@ definitions:
                                         thickness:
                                             type: number
                                             unit: m
-                                            exclusiveMinimum: 0
+                                            # exclusiveMinimum: 0
                                             description: thickness of the lamina
                                         orientation:
                                             type: number

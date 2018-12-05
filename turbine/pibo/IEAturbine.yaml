@@ -184,6 +184,7 @@ components:
                   webs_positions: [0.3, 0.43, 0.57, 0.7]
                   segments:
                     - id:   0
+                      filler: 0
                       layup:
                         - name:   lamina_1
                           material_name: biax

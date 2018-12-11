@@ -5,7 +5,7 @@ import os
 clear = lambda: os.system('cls')
 clear()
 
-with open('IEAturbine.yaml', 'r') as myfile:
+with open('IEAonshoreWT.yaml', 'r') as myfile:
   inputs = myfile.read()
 
 with open('IEAturbine_schema.yaml', 'r') as myfile:

@@ -20,6 +20,7 @@ properties:
     name: 
         description: Name of the turbine
         type: string
+    
     components: 
         type: object
         required:
@@ -40,11 +41,11 @@ properties:
                                 type: object
                                 required:
                                     - grid
-                                    - label
+                                    - labels
                                 properties: 
                                     grid: 
                                         $ref: "#/definitions/distributed_data/grid_nd"
-                                    label: 
+                                    labels: 
                                         $ref: "#/definitions/distributed_data/strings"
                             chord:
                                 type: object
@@ -67,6 +68,7 @@ properties:
                                     values: 
                                         $ref: "#/definitions/distributed_data/angle"
                             coordinates:
+                                    description: Coordinates expressed in the blade root coordinate system. 
                                     $ref: "#/definitions/distributed_data/coordinates"
                             
         
@@ -97,8 +99,6 @@ properties:
                     # 3D_fem:
                         # type: object
                         # TODO
-
-        
 
     airfoils:
         $ref: "#/definitions/airfoils"
@@ -154,6 +154,7 @@ definitions:
                         description: Lift, drag and moment coefficients expressed in terms of angles of attack
                         required:
                             - configuration
+                            - re
                             - c_l
                             - c_d
                             - c_m
@@ -161,6 +162,9 @@ definitions:
                             configuration:
                                 type: string
                                 description: Text to identify the setup for the definition of the polars
+                            re:
+                                type: number
+                                description: Reynolds number of the polars
                             c_l:
                                 type: object
                                 required:

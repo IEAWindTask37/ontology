@@ -133,7 +133,7 @@ components:
                           thickness: 0.065
                           orientation: 0.0
                 - position: 0.7
-                  webs_positions: [0.05, 0.247, 0.253, 0.392, 0.398, 0.6, 0.606, 0.747, 0.753, 0.95]
+                  webs_positions: [0.05, 0.248, 0.254, 0.390, 0.396, 0.602, 0.608, 0.747, 0.753, 0.95]
                   segments:
                     - id:   0
                       filler: none
@@ -153,12 +153,12 @@ components:
                         - name:   te_ss
                           material_name: balsa
                           start: 0.08
-                          end:   0.225
+                          end:   0.23
                           thickness: 0.04
                           orientation: 0.0  
                         - name:   spar_ss
                           material_name: ud
-                          start: 0.225
+                          start: 0.23
                           end:   0.41
                           thickness: 0.02
                           orientation: 0.0  
@@ -183,18 +183,18 @@ components:
                         - name:   le_ps
                           material_name: balsa
                           start: 0.52
-                          end:   0.58
+                          end:   0.585
                           thickness: 0.03
                           orientation: 0.0
                         - name:   spar_ps
                           material_name: ud
-                          start: 0.58
-                          end:   0.765
+                          start: 0.585
+                          end:   0.77
                           thickness: 0.02
                           orientation: 0.0
                         - name:   te_ps
                           material_name: balsa
-                          start: 0.765
+                          start: 0.77
                           end:   0.9
                           thickness: 0.025
                           orientation: 0.0
@@ -218,20 +218,20 @@ components:
                           orientation: 0.0
                         - name:   adhesive_rw_ss
                           material_name: adhesive
-                          start: 0.238
-                          end:   0.258
+                          start: 0.24
+                          end:   0.26
                           thickness: 0.006
                           orientation: 0.0
                         - name:   adhesive_fw_ss
                           material_name: adhesive
-                          start: 0.386
-                          end:   0.406
+                          start: 0.382
+                          end:   0.402
                           thickness: 0.006
                           orientation: 0.0
                         - name:   adhesive_fw_ps
                           material_name: adhesive
-                          start: 0.59
-                          end:   0.615
+                          start: 0.595
+                          end:   0.62
                           thickness: 0.006
                           orientation: 0.0
                         - name:   adhesive_fw_ps
@@ -245,7 +245,7 @@ components:
                       layup:
                         - name:   skin_fw_le
                           material_name: biax
-                          start: 0.59
+                          start: 0.595
                           end:   0.405
                           thickness: 0.003
                           orientation: 0.0
@@ -264,7 +264,7 @@ components:
                         - name:   skin_fw_te
                           material_name: biax
                           start: 0.385
-                          end:   0.61
+                          end:   0.615
                           thickness: 0.003
                           orientation: 0.0
                         - name:   skin_rw_le
@@ -273,7 +273,7 @@ components:
                           end:   0.257
                           thickness: 0.003
                           orientation: 0.0
-                    - id:   6
+                    - id:   4
                       filler: foam
                       layup:
                         - name:   skin_rw_te

@@ -381,6 +381,7 @@ airfoils:
       relative_thickness: 0.25
       polars:
         - configuration: Default
+          re: 3.00E+6
           angle_of_attack: [-3, 3]
           c_l:
             grid: [-3.14, 3.14]
@@ -392,6 +393,7 @@ airfoils:
             grid: [-3.14, 3.14]
             values: [0.0, 0.0]
         - configuration: Laminar flow
+          re: 3.00E+6
           c_l:
             grid: [-3.14, 3.14]
             values: [0.0, 0.0]
@@ -408,6 +410,7 @@ airfoils:
       relative_thickness: 1
       polars:
         - configuration: Default
+          re: 3.00E+6
           c_l:
             grid: [-3.14, 3.14]
             values: [0.0, 0.0]

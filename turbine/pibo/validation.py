@@ -8,7 +8,7 @@ clear()
 with open('IEAonshoreWT.yaml', 'r') as myfile:
   inputs = myfile.read()
 
-with open('IEAturbine_schema.yaml', 'r') as myfile:
+with open('IEAontology_schema.yaml', 'r') as myfile:
   schema = myfile.read()
 
 validate(yaml.load(inputs), yaml.load(schema))

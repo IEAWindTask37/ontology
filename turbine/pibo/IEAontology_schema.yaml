@@ -35,6 +35,7 @@ properties:
                             - airfoil_position
                             - chord
                             - twist
+                            - pitch_axis
                             - coordinates
                         properties:                              
                             airfoil_position:
@@ -67,6 +68,16 @@ properties:
                                         $ref: "#/definitions/distributed_data/grid_nd"
                                     values: 
                                         $ref: "#/definitions/distributed_data/angle"
+                            pitch_axis:
+                                type: object
+                                required:
+                                    - grid
+                                    - values
+                                properties: 
+                                    grid: 
+                                        $ref: "#/definitions/distributed_data/grid_nd"
+                                    values: 
+                                        $ref: "#/definitions/distributed_data/grid_nd"
                             coordinates:
                                     description: Coordinates expressed in the blade root coordinate system. 
                                     $ref: "#/definitions/distributed_data/coordinates"
@@ -143,9 +154,15 @@ definitions:
                 relative_thickness:
                     type: number
                     unit: none
-                    # exclusiveMinimum: 0
+                    minimum: 0
                     maximum: 1
                     description: Thickness of the airfoil expressed non-dimensional
+                aerodynamic_center:
+                    type: number
+                    unit: none
+                    minimum: 0
+                    maximum: 1
+                    description: Non-dimensional chordwise coordinate of the aerodynamic center
                 polars:
                     type: array
                     description: Different sets of polars at varying conditions

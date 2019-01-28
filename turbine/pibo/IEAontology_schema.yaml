@@ -81,7 +81,16 @@ properties:
                             coordinates:
                                     description: Coordinates expressed in the blade root coordinate system. 
                                     $ref: "#/definitions/distributed_data/coordinates"
-                            
+                            rthick:
+                                type: object
+                                required:
+                                    - grid
+                                    - values
+                                properties: 
+                                    grid: 
+                                        $ref: "#/definitions/distributed_data/grid_nd"
+                                    values: 
+                                        $ref: "#/definitions/distributed_data/grid_nd"
         
                     multi_body:
                         type: object
@@ -96,14 +105,12 @@ properties:
                         type: object
                         required:
                             - coordinates
-                            - sections
+                            # - components
                         properties: 
                             coordinates:
                                 $ref: "#/definitions/distributed_data/coordinates"
-                            sections:
-                                $ref: "#/definitions/sections"
-                            materials:
-                                $ref: "#/definitions/materials"
+                            components:
+                                $ref: "#/definitions/struct_components"
                     # cfd_geometry:
                         # type: object
                         # TODO
@@ -223,6 +230,16 @@ definitions:
                 unit: none
                 minItems: 2
                 minimum: 0.0
+                maximum: 1.0
+                uniqueItems: true
+        grid_al: 
+            type: array
+            description: Grid along an arc length, expressed non dimensionally where 0 is the leading edge, -1 is the trailing edge on the pressure side and +1 the trailing edge on the pressure side 
+            items: 
+                type: number
+                unit: none
+                minItems: 2
+                minimum: -1.0
                 maximum: 1.0
                 uniqueItems: true
         grid_aoa: 
@@ -838,95 +855,104 @@ definitions:
                                 maxItems: 21
                                 uniqueItems: false               
                         
-    sections:
+    struct_components:
         type: array
-        description: Database of airfoils following the convention of SONATA. Airfoils are placed with the LE on the left and the TE on the right and "segments" are defined non-dimensional. For the airfoil shape, a main segment (number 0) is defined from 0 (trailing edge, suction side) to 1 (trailing edge, pressure side). The main segment is then sub-divided by the webs into sub-segments. With one web, two sub-sgments are generated, segment 1 on the left towards the LE and segment 2 on the right towards the TE. With two webs, segments 1, 2 and 3 are generated, numbered always from left to right. An arbitrary number of webs can be defined.
+        description: ...
         items:
             type: object
             required:
-                - position
-                - segments
+                - name
+                - material
+                - thickness
             properties:
-                position:
-                    type: number
-                    unit: none
-                    minimum: 0.0
-                    maximum: 1.0
-                    description: non-dimensional location of the section along the 3d line
-                webs_positions:
-                    type: array
-                    description: Positions of the webs along the airfoil line expressed non-dimensional. The array must be even (2 points - 1 web, 4 points - 2 webs,  etc) and it is defined between 0+eps and 1-eps
-                    items: 
-                        type: number
-                        unit: none
-                        minItems: 2
-                        minimum: 0.000001
-                        maximum: 0.999999
-                        uniqueItems: true
-                segments:
-                    type: array
-                    description: layup data for each segment
-                    items:
-                        type: object
-                        description: each segment is defined with an id (marking its position within the section) and a layup sequence
-                        required:
-                            - id
-                            - filler
-                            - layup
-                        properties:
-                            id:
-                                type: number
-                                unit: none
-                                minimum: 0
-                                description: segment identifier
-                            filler:
-                                type: string
-                                description: material identifier to fill the cavity
-                            layup:
-                                type: array
-                                description: layup data
-                                items:
-                                    type: object
-                                    description: layup sequence
-                                    required:
-                                        - name
-                                        - material_name
-                                        - start
-                                        - end
-                                        - thickness
-                                        - orientation
-                                    properties:
-                                        name:
-                                            type: string
-                                            description: lamina identifier
-                                        material_name:
-                                            type: string
-                                            description: material identifier
-                                        start:
-                                            type: number
-                                            unit: none
-                                            minimum: 0.0
-                                            maximum: 1.0
-                                            description: start coordinate of the lamina along the segment line (expressed always anti-clockwise)
-                                        end:
-                                            type: number
-                                            unit: none
-                                            minimum: 0.0
-                                            maximum: 1.0
-                                            description: end coordinate of the lamina along the segment line (expressed always anti-clockwise)
-                                        thickness:
-                                            type: number
-                                            unit: meter
-                                            # exclusiveMinimum: 0
-                                            description: thickness of the lamina
-                                        orientation:
-                                            type: number
-                                            unit: radians
-                                            description: orientation of the fibers in the lamina
-                                            
-                                            
-                                            
-                                            
+                name:
+                    type: string
+                    description: structural component identifier
+                material:
+                    type: string
+                    description: material identifier
+                web_flag:
+                    type: boolean
+                    description: web flag
+                thickness:
+                    type: object
+                    description: thickness of the laminate
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
+                n_plies:
+                    type: object
+                    description: number of plies of the laminate
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/nd"
+                fiber_orientation:
+                    type: object
+                    description: orientation of the fibers
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/angle"
+                midpoint:
+                    type: object
+                    description: non-dimensional location of the center line of the component along the non-dimensional arc length
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/grid_al"
+                width:
+                    type: object
+                    description: dimensional width of the component along the arc
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
+                ss_point:
+                    type: object
+                    description: non-dimensional location of the web connection point along the non-dimensional arc length, suction side
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/grid_al"
+                ps_point:
+                    type: object
+                    description: non-dimensional location of the web connection point along the non-dimensional arc length, pressure side
+                    required:
+                        - grid
+                        - values
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/grid_al"
+                
+                
                                             
 
     materials:
@@ -941,7 +967,6 @@ definitions:
                 - E
                 - G
                 - nu
-                - alpha
             properties:
                 name:
                     type: string
@@ -997,17 +1022,23 @@ definitions:
                             uniqueItems: false
                             minimum: 0
                 alpha:
-                    description: Lamination angle for composite materials
+                    description: Thermal coefficient of expansion
                     oneOf:
                         - type: number
-                          unit: radians
+                          unit: none
                         - type: array
                           items: 
                             type: number
-                            unit: radians
+                            unit: none
                             minItems: 3
                             maxItems: 3
                             uniqueItems: false
+                ply_thickness:
+                    type: number
+                    description: Ply thickness for composite materials
+                    unit: m
+                    
+                           
         
         
         

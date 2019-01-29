@@ -105,11 +105,11 @@ properties:
                         type: object
                         required:
                             - coordinates
-                            # - components
+                            - layers
                         properties: 
                             coordinates:
                                 $ref: "#/definitions/distributed_data/coordinates"
-                            components:
+                            layers:
                                 $ref: "#/definitions/struct_components"
                     # cfd_geometry:
                         # type: object
@@ -929,7 +929,7 @@ definitions:
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/length"
-                ss_point:
+                start:
                     type: object
                     description: non-dimensional location of the web connection point along the non-dimensional arc length, suction side
                     required:
@@ -940,7 +940,7 @@ definitions:
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/grid_al"
-                ps_point:
+                end:
                     type: object
                     description: non-dimensional location of the web connection point along the non-dimensional arc length, pressure side
                     required:

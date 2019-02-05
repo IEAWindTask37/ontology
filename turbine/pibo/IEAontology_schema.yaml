@@ -931,26 +931,28 @@ definitions:
                             $ref: "#/definitions/distributed_data/length"
                 start:
                     type: object
-                    description: non-dimensional location of the web connection point along the non-dimensional arc length, suction side
+                    description: non-dimensional location of the point along the non-dimensional arc length
                     required:
                         - grid
-                        - values
                     properties: 
                         grid: 
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/grid_al"
+                        fixed: 
+                            $ref: "#/definitions/distributed_data/strings"
                 end:
                     type: object
-                    description: non-dimensional location of the web connection point along the non-dimensional arc length, pressure side
+                    description: non-dimensional location of the point along the non-dimensional arc length
                     required:
                         - grid
-                        - values
                     properties: 
                         grid: 
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/grid_al"
+                        fixed: 
+                            $ref: "#/definitions/distributed_data/strings"
                 
                 
                                             

@@ -109,6 +109,8 @@ properties:
                         properties: 
                             coordinates:
                                 $ref: "#/definitions/distributed_data/coordinates"
+                            webs:
+                                $ref: "#/definitions/webs_definition"
                             layers:
                                 $ref: "#/definitions/struct_components"
                     # cfd_geometry:
@@ -932,31 +934,65 @@ definitions:
                 start:
                     type: object
                     description: non-dimensional location of the point along the non-dimensional arc length
-                    required:
-                        - grid
                     properties: 
                         grid: 
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/grid_al"
                         fixed: 
-                            $ref: "#/definitions/distributed_data/strings"
+                            type: string
+                            description: Name of the layer to lock the edge
                 end:
                     type: object
                     description: non-dimensional location of the point along the non-dimensional arc length
-                    required:
-                        - grid
                     properties: 
                         grid: 
                             $ref: "#/definitions/distributed_data/grid_nd"
                         values: 
                             $ref: "#/definitions/distributed_data/grid_al"
                         fixed: 
-                            $ref: "#/definitions/distributed_data/strings"
+                            type: string
+                            description: Name of the layer to lock the edge
                 
                 
                                             
-
+    
+    webs_definition:
+        type: array
+        description: ...
+        items:
+            type: object
+            required:
+                - name
+                - start
+                - end
+            properties:
+                name:
+                    type: string
+                    description: structural component identifier
+                start:
+                    type: object
+                    description: non-dimensional location of the point along the non-dimensional arc length
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/grid_al"
+                        # fixed: 
+                            # type: string
+                            # description: Name of the layer to lock the edge
+                end:
+                    type: object
+                    description: non-dimensional location of the point along the non-dimensional arc length
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/grid_al"
+                        # fixed: 
+                            # type: string
+                            # description: Name of the layer to lock the edge
+    
     materials:
         type: array
         description: Database of the materials

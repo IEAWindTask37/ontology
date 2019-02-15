@@ -16,4 +16,4 @@ validate(yaml.load(inputs), yaml.load(schema))
 
 wt_data= yaml.load(inputs)
 
-print(wt_data['components']['blade']['bem_aero']['coordinates'])
+print(wt_data['components']['blade']['outer_shape_bem']['reference_axis'])

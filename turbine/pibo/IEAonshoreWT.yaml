@@ -406,7 +406,7 @@ materials:
       source: Material coming from ...
       orth:   0
       rho:    1100
-      E:      4560
+      E:      4.56e6
       nu:     0.5
       alpha:  0.0
     - name:   triax
@@ -414,68 +414,92 @@ materials:
       source: Material coming from ...
       orth:   1
       rho:    1845
-      E:      [21790000, 14670000, 14670000]
-      G:      [9413000, 9413000, 9413000]
+      E:      [21.79e9, 14.67e9, 14.67e9]
+      G:      [9.413e9, 9.413e9, 9.413e9]
       nu:     [0.48, 0.48, 0.48]
       alpha:  [0, 0, 0]
-      Xt:     [600000000, 600000000, 600000000]
-      Xc:     [600000000, 600000000, 600000000]
-      S:      [50000000, 20000000, 20000000]
+      Xt:     [600.0e6, 600.0e6, 600.0e6]
+      Xc:     [600.0e6, 600.0e6, 600.0e6]
+      S:      [500.0e6, 200.0e6, 200.0e6]
     - name:   biax
       description: Standard biax from ...
       source: Material coming from ...
       orth:   1
       rho:    1845
-      E:      [13920000, 13920000, 13920000]
-      G:      [11500000, 11500000, 11500000]
+      E:      [13.92e9, 13.92e9, 13.92e9]
+      G:      [11.5e9, 11.5e9, 11.5e9]
       nu:     [0.53, 0.53, 0.53]
       alpha:  [0, 0, 0]
-      Xt:     [600000000, 600000000, 600000000]
-      Xc:     [600000000, 600000000, 600000000]
-      S:      [50000000, 20000000, 20000000]
+      Xt:     [600.0e6, 600.0e6, 600.0e6]
+      Xc:     [600.0e6, 600.0e6, 600.0e6]
+      S:      [500.0e6, 200.0e6, 200.0e6]
     - name:   ud
       description: Standard ud from ...
       source: Material coming from ...
       orth:   1
       rho:    1940
-      E:      [42000000, 12300000, 12300000]
-      G:      [3470000, 3470000, 3470000]
+      E:      [42.00e9, 12.30e9, 12.30e9]
+      G:      [3.47e9, 3.47e9, 3.47e9]
       nu:     [0.31, 0.31, 0.31]
       alpha:  [0, 0, 0]
-      Xt:     [600000000, 600000000, 600000000]
-      Xc:     [600000000, 600000000, 600000000]
-      S:      [50000000, 20000000, 20000000]
+      Xt:     [600.0e6, 600.0e6, 600.0e6]
+      Xc:     [600.0e6, 600.0e6, 600.0e6]
+      S:      [500.0e6, 200.0e6, 200.0e6]
     - name:   balsa
       description: Balsa filler from ...
       source: Material coming from ...
       orth:   0
       rho:    110
-      E:      50000
+      E:      50.0e6
       nu:     0.5
       alpha:  0.0
-      Xt:     1000
-      Xc:     1000
-      S:      100
+      Xt:     0.69e6
+      Xc:     0.4e6
+      S:      0.31e6
     - name:   foam
       description: Foam filler from ...
       source: Material coming from ...
       orth:   0
       rho:    110
-      E:      50000
+      E:      50.0e6
       nu:     0.5
       alpha:  0.0
-      Xt:     1000
-      Xc:     1000
-      S:      100
+      Xt:     0.69e6
+      Xc:     0.4e6
+      S:      0.31e6
     - name:   adhesive
       description: Adhesive from ...
       source: Material coming from ...
       orth:   0
       rho:    1100
-      E:      4560
+      E:      4.56e6
       nu:     0.5
       alpha:  0.0
-      Xt:     1000
-      Xc:     1000
-      S:      100
+      Xt:     0.69e6
+      Xc:     0.4e6
+      S:      0.31e6
+                
+
+                
+                
+assembly:
+    global:
+        rating: 3.37e6
+        turbine_class: III
+        turbulence_class: A
+        drivetrain: Geared
+        cone_angle: 3.0
+        tilt_angle: 5.0
+        number_of_blades: 3
+        hub_height: 110.0
+        hubD: 4.
+    control:
+        Vin: 3.0
+        Vout: 25.0
+        minOmega: 6.9
+        maxOmega: 12.1
+        tsr: 7.01754386
+        pitch: 0.
+        maxTS: 80.
+                
                 

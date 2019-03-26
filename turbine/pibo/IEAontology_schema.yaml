@@ -1146,9 +1146,52 @@ definitions:
                             minimum: 0
                 ply_thickness:
                     type: number
-                    description: Ply thickness for composite materials
+                    description: Ply thickness of the composite material
                     unit: m
-    
+                fvf:
+                    type: number
+                    description: Fiber volume fraction of the composite material
+                    unit: none
+                A: 
+                    description: Fatigue S/N curve fitting parameter S=A*N^(-1/m)
+                    oneOf:
+                        - type: number
+                          unit: none
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                m: 
+                    description: Fatigue S/N curve fitting parameter S=A*N^(-1/m)
+                    oneOf:
+                        - type: number
+                          unit: none
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                R: 
+                    description: Fatigue stress ratio
+                    oneOf:
+                        - type: number
+                          unit: none
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
 
         
         

@@ -516,18 +516,18 @@ materials:
       Xc: 0.4e+006
       S: 0.31e+006
       G: 16666666.666666666
-   -  name: adhesive
-      description: Adhesive from ...
-      source: Material coming from ...
-      orth: 0
-      rho: 1100
-      E: 4.56e+006
-      nu: 0.5
-      alpha: 0.0
-      Xt: 0.69e+006
-      Xc: 0.4e+006
-      S: 0.31e+006
-      G: 1520000.0
+   # -  name: adhesive
+      # description: Adhesive from ...
+      # source: Material coming from ...
+      # orth: 0
+      # rho: 1100
+      # E: 4.56e+006
+      # nu: 0.5
+      # alpha: 0.0
+      # Xt: 0.69e+006
+      # Xc: 0.4e+006
+      # S: 0.31e+006
+      # G: 1520000.0
       
 # materials:
     # #...............composites..............
@@ -648,23 +648,23 @@ materials:
       
       
       
-# assembly:
-    # global:
-        # rating: 3.37e+006
-        # turbine_class: III
-        # turbulence_class: A
-        # drivetrain: Geared
-        # cone_angle: 3.0
-        # tilt_angle: 5.0
-        # number_of_blades: 3
-        # hub_height: 110.0
-        # hubD: 4.
-    # control:
-        # Vin: 3.0
-        # Vout: 25.0
-        # minOmega: 6.9
-        # maxOmega: 12.1
-        # tsr: 7.01754386
-        # pitch: 0.
-        # maxTS: 80.
+assembly:
+    global:
+        rating: 3.37e+006
+        turbine_class: III
+        turbulence_class: A
+        drivetrain: Geared
+        cone_angle: 3.0
+        tilt_angle: 5.0
+        number_of_blades: 3
+        hub_height: 110.0
+        hubD: 4.
+    control:
+        Vin: 3.0
+        Vout: 25.0
+        minOmega: 6.9
+        maxOmega: 12.1
+        tsr: 8.01754386
+        pitch: 2.
+        maxTS: 80.
 

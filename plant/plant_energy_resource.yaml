@@ -1,0 +1,270 @@
+input_format_version: 0
+title: IEA Wind Task 37 Wind Plant Ontology version 0.1
+description: wind resource conditions for a wind plant energy production model
+
+# Draft schema definitions for energy model
+definitions:
+
+  wind_resource:
+    type: object
+    description: "Wind reource set-up based on current TOPFARM implementation"
+    
+    properties:
+      coordinates: 
+	      type: object
+	      description: "Coordinates of the wind resource widh speed/direction information"
+        
+        properties:
+          positions:
+              type: ndarray
+              description: [np x nd] array of locations of resource points in UTM, nd is number of dimensions
+              
+          wsp_edg:
+              type: ndarray
+              description: edges of wind speed bins for wind rose
+          
+          wdir_edg:
+              type: ndarray
+              description: edges of wind direction edges for wind rose
+
+			probability:
+			  type: array
+        description: [n_p x n_wd x n_ws] array of the wind rose probabilities at each resource point
+
+      variables:
+        type: object
+        
+        properties:
+          wsp_loc
+              type: ndarray
+              description: [n_p x n_wd x n_ws] array of wind speeds at each resource point
+          
+          wdir_loc
+              type: ndarray
+              description: [n_p x n_wd x n_ws] array of wind directions at each resource point
+          
+          ti_loc
+              type: ndarray
+              description: [n_p x n_wd x n_ws] array of turbulence intensities at each resource point
+			    
+
+
+  #### Older wind resource model - may be a pre-processing model now for wind resource
+  wind_resource:
+    type: object
+    oneOf:
+  		- $ref: "#/definitions/single_wind_rose"
+  		- #ref: "#/definitions/multiple_wind_rose"
+
+  # Wind rose definitions
+  single_wind_rose:
+    type: object
+    oneOf:
+      - $ref: "#/definitions/weibull_wind_rose"
+      - $ref: "#/definitions/probability_wind_rose"
+      - $ref: "#/definitions/weibull_wind_and_turbulence_rose"
+
+  multiple_wind_rose:
+    type: object
+    description: array of wind roses by location
+    type: array #ndarray([[position], [single_wind_rose]])
+    items:
+      type: array
+      items:
+        - $ref: "#/definitions/position"
+        - $ref: "#/definitions/single_wind_rose"  
+
+  weibull_wind_rose:
+    description: A wind rose descrived as an array of weibull distributions
+    type: array #ndarray([[wind:direction], [probability], [distribution:weibull:A], [distribution:weibull:k]])
+    items:
+      type: array
+      items:
+        - $ref: "#/definitions/wind/properties/direction"
+        - $ref: "#/definitions/probability"
+        - $ref: "#/definitions/distribution/weibull/properties/A"
+        - $ref: "#/definitions/distribution/weibull/properties/k"
+
+  probability_wind_rose:
+    type: object
+    description: A wind rose described by a 2D array of wind speed and wind directions
+
+    properties:
+      directions:
+        type: array
+        items:
+          $ref: "#/definitions/wind/properties/wind_direction"
+        description: the wind direction corresponding to the 1st dimension
+
+      speeds:
+        type: array
+        items:
+          $ref: "#/definitions/wind/properties/speed"
+        description: the wind speed corresponding to the 2nd dimension
+      
+      # include turbulence inensity in this version?
+      turbulence intensity:
+        type: array
+        items:
+          $ref "#/definitions/wind/properties/ti"
+        description: the turbulence intensity corresponding to the 3rd dimension
+
+      probability:
+        type: array #ndarray(probability)
+        items:
+          type: array
+          items:
+            $ref: "#/definitions/probability"
+        description: the probability of occurance of wind speed ndarray.shape([len(wind_directions), len(wind_speeds)])
+
+  weibull_wind_and_turbulence_rose:
+    description: A wind rose descrived as an array of weibull distributions
+    type: array #ndarray([[wind:direction], [probability], [distribution:weibull:A], [distribution:weibull:k]])
+    items:
+      type: array
+      items:
+        - $ref: "#/definitions/wind/properties/direction"
+        - $ref: "#/definitions/probability"
+        - $ref: "#/definitions/distribution/weibull/properties/A"
+        - $ref: "#/definitions/distribution/weibull/properties/k"
+        - $ref: "#/definitions/wind/ti"   
+
+  wind:
+    type: object
+    properties:
+      direction:
+        id: "wind_direction"
+        type: number
+        description: The wind direction in degree, with North as the 0.
+        units: deg
+        minimum: 0.0
+        maximum: 360.0
+
+      speed:
+        anyOf:
+          - oneOf:
+            - type: number
+              description: A wind speed
+            - $ref: "#/definitions/distributions/weibull"
+          - minimum: 0.0
+            maximum: 100.0
+            units: m/s
+
+      ti:
+        type: number
+        description: Turbulence intensity
+        minimum: 0.0
+        maximum: 1.0
+
+
+  # Distribution types from WindIO - generic and could be separate file
+  distribution:
+    anyOf:
+      - oneOf:
+          - $ref: "scalar"
+          - $ref: "uniform"
+          - $ref: "weibull"
+          - $ref: "gaussian"
+          - $ref: "KDE"
+          - $ref: "GP"
+          - $ref: "copula"
+      - min:
+          type: number
+          description: truncation of the distribution
+        max:
+          type: number
+          description: truncation of the distribution
+        uncertainty:
+          $ref: "#/definitions/distribution"
+
+    scalar:
+      type: number
+
+    uniform:
+      description: A uniformed distribution [min, max]
+      type: array
+      items:
+        - type: number
+        - type: number
+      additionalItems: false
+
+    lognormal:
+      type: object
+      properties:
+        mu:
+          type: number
+        sig:
+          type: number
+
+    weibull:
+      type: object
+      properties:
+        A:
+          type: number
+          description: the A parameter of a weibull distribution
+        k:
+          type: number
+          description: the k parameter of a weibull distribution
+
+    gaussian:
+      type: object
+      properties:
+        mu:
+          type: number
+          description: The mean value
+        sig:
+          type: number
+          description: The standard deviation
+          minimum: 0.0
+
+    KDE:
+      description: |
+        A Kernel Density Estimator representation of a distribution.
+        See http://scikit-learn.org/stable/modules/density.html
+      type: object
+      properties:
+        kernel:
+          type: string
+          description: the type of kernel used for the KDE representation.
+          enum:
+            - gaussian
+            - tophat
+            - epanechnikov
+            - linear
+            - cosine
+        bandwitdh:
+          type: number
+          minimum: 0.0
+          description: the bandwidth of the kernel
+        array:
+          type: array
+          items:
+            type: number
+            description: the position of the center
+          description: Array to describe a distribution size:n, with n the number of normals centers
+    GP:
+      description: A Gaussian Process
+      type: object
+      properties:
+        points:
+          type: array
+
+    copula:
+      description: A copula distribution
+      type: object
+      properties:
+        copula_type:
+          type: string
+          enum:
+            - gaussian
+            - archimedean
+            - frank
+            - clayton
+            - gumbel
+
+  probability:
+    type: number
+    description: probability of an event to happen
+    minimum: 0.0
+    maximum: 1.0
+

@@ -1,0 +1,28 @@
+input_format_version: 0
+title: IEA Wind Task 37 Wind Plant Ontology version 0.1
+description: A file used as input or output of a wind plant model (for overall energy production estimation)
+
+### update to use wind inflow defintions from inflow lookup
+
+# Draft schema definitions for energy model
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+          - $ref: "#/definitions/position"
+          - $ref: "plant_energy_turbine_lookup/definitions/wind_turbine"
+
+  position:
+    type: array
+    items:
+      - type: number
+      - type: number
+    additionalItems: false
+    description: The [x,y] position of a wind turbine in UTM coordinates
+    units: m          
+
+

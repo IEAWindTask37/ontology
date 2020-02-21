@@ -1,0 +1,174 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-19
+
+# HEADER
+$schema: "http://json-schema.org/draft-07/schema#"
+  # NOTE: consult the above-referenced site for the schema language definition
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                 src/master/schemata/wflo_problem-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Wind farm layout optimization problem description
+type: object
+required:
+  - uuid
+  - site
+  - wind_resource
+  - turbine  # TODO: allow for multiple turbine types
+  - turbines
+  - objective
+  - wake_model
+  - wake_combination
+additionalProperties: false
+
+# PROPERTIES
+properties:
+  #~
+  uuid:
+    description: It is meant to distinguish different problem descriptions.
+    $ref: "uuid-schema.yaml#"
+  #~
+  name:
+    description: >-
+      The name of the wind farm layout optimization problem
+    type: string
+  #~
+  particulars:
+    description: >-
+      A list of relevant pieces of information, such as where the problem was
+      first described.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      type: string
+  #~
+  site:
+    title: Wind farm site
+    description: >-
+      A reference to a wind farm site based on the schema at
+      "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                         src/master/schemata/site-schema.yaml#"
+    type: string
+    format: uri-reference
+  #~
+  turbine_distance:
+    title: Minimal turbine turbine distance
+    description: The minimal distance between turbines in rotor diameters.
+    type: number
+    minimum: 0
+    default: 0
+  #~
+  wind_resource:
+    title: Wind resource
+    description: >-
+      A reference to a wind resource based on the schema at
+      "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/wind_resource-schema.yaml#"
+    type: string
+    format: uri-reference
+  #~
+  wind_direction_subdivisions:
+    description: The number of subdivisions per wind sector to use.
+    type: integer
+    minimum: 1
+    default: 1
+  #~
+  wind_speeds:
+    description: The wind speeds used to discretize the Weibull distribution
+    type: array
+    minItems: 1
+    items:
+      $ref: "variables-schema.yaml#/definitions/wind_speed"
+  #~
+  turbine:
+    title: Turbine type
+    description: >-
+      A reference to a wind turbine based on the schema at
+      "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                      src/master/schemata/turbine-schema.yaml#"
+    type: string
+    format: uri-reference
+  #~
+  turbines:
+    title: The allowed number of turbines
+    description: >-
+      Either a fixed number of turbines, or a range.
+    oneOf:
+      - type: integer
+        minimum: 1
+      - type: array
+        items:
+          - type: integer
+            minimum: 1
+          - type: integer  # TODO: modify so that there is no upper bound?
+            exclusiveMinimum: {$data: "1/0"}
+  #~
+  layout:
+    title: Initial coordinates for the turbines
+    description: >-
+      A reference to a wind farm layout based on the schema at
+      "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                       src/master/schemata/layout-schema.yaml#"
+    type: string
+    format: uri-reference
+  #~
+  objective:
+    title: Optimization objective
+    description: The textual description of a coded objective.
+    type: string
+    enum:  # TODO: add more
+      - "maximize expected power" # NOTE: identical to maximizing AEP
+      - "minimize cost of energy (Mosetti)"  # Mosetti et al. (1994) Eq. (6),
+                                             # second term
+  #~
+  wake_model:
+    title: Wake model
+    description: The description of a coded wake model.
+    type: object
+    properties:
+      wake_type:
+        title: Type of the single wake model
+        type: string
+        enum:
+          - "linear top hat"
+          - "entrainment"
+          - "BPA (IEA37)"
+        default: "linear top hat"
+      expansion_coefficient:  # TODO: not relevant for ‘entrainment’
+        title: Wake expansion coefficient
+        description: >-
+          In case a linear top hat model is used, the expansion coefficient
+          can either be calculated based on roughness length or given here
+          directly.
+        type: number
+        exclusiveMinimum: 0
+      stream_tube_assumption:  # TODO: only relevant for ‘linear top hat’
+        title: Assumption about stream tube (size)
+        type: string
+        enum:
+          - "rotor"
+          - "Frandsen"
+        default: "rotor"
+      deficit_type:  # TODO: only relevant for ‘linear top hat’
+        title: Deficit type of the single wake model
+        type: string
+        enum:
+          - "Jensen"
+          - "Frandsen"
+        default: "Jensen"
+      averaging:  # TODO: currently not relevant for ‘BPA (IEA37)’
+        title: Rotor plane averaging
+        description: >-
+          If this is ‘false’, the hub wake value will be used; if ‘true’,
+          an average will be taken over the rotor plane.
+        type: bool
+        default: False
+      combination:
+        title: Rule for combining single wakes
+        description: >-
+          The textual description of a coded single wake combination rule.
+        type: string
+        enum:  # TODO: add more?
+          - "RSS"  # root-sum-square
+          - "NO"   # no combination; for when there is only one wake source
+        default: "RSS"

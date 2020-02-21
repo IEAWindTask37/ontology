@@ -1,0 +1,19 @@
+uuid: 675dc5c1-637e-42e6-9c66-9845b7f79ae3
+name: Small disc-shaped site optimization for IEA Wind Task 37 (2018)
+particulars:
+  - >-
+    Reported on in
+
+    Baker, N. F., Stanley, A. P. J., Thomas, J. J., Ning, A., and Dykes, K.
+    (2019) Best practices for wake model and optimization algorithm selection
+    in wind farm layout optimization. AIAA SciTech 2019.
+
+site: "site-IEA37_Optimization_Case_Study-small.yaml"
+wind_resource: "wind_resource-IEA37_Case_Studies.yaml"
+turbine: "turbine-IEA37_Case_Studies.yaml"
+turbine_distance: 2
+turbines: 16
+layout: "layout-IEA37_Optimization_Case_Study-small.yaml"
+objective: "maximize expected power"
+wake_model:
+  wake_type: "BPA (IEA37)"

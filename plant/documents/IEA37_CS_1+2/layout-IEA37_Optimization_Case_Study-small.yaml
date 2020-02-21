@@ -1,0 +1,22 @@
+uuid: d50128cb-0c91-4eae-9ae8-da737b0bcab3
+name: Small IEA Wind Task 37 plant optimization case study example layout
+particulars:
+  - Regular layout, built up of concentric circles within the disc-shaped site.
+site: "site-IEA37_Optimization_Case_Study_1.3km.yaml"
+layout:
+  - [ 0.      ,  0.      ]
+  - [ 0.5     ,  0.      ]
+  - [ 0.154508,  0.475528]
+  - [-0.404508,  0.293893]
+  - [-0.404508, -0.293893]
+  - [ 0.154508, -0.475528]
+  - [ 1.      ,  0.      ]
+  - [ 0.809017,  0.587785]
+  - [ 0.309017,  0.951057]
+  - [-0.309017,  0.951057]
+  - [-0.809017,  0.587785]
+  - [-1.      ,  0.      ]
+  - [-0.809017, -0.587785]
+  - [-0.309017, -0.951057]
+  - [ 0.309017, -0.951057]
+  - [ 0.809017, -0.587785]

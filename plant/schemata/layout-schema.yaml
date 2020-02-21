@@ -1,0 +1,54 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-18
+
+# HEADER
+$schema: "http://json-schema.org/draft-07/schema#"
+  # NOTE: consult the above-referenced site for the schema language definition
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                       src/master/schemata/layout-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Wind farm layout description
+type: object
+required:
+  - uuid
+  - site
+  - layout
+additionalProperties: false
+
+# PROPERTIES
+properties:
+  #~
+  uuid:
+    description: It is meant to distinguish different layout descriptions.
+    $ref: "uuid-schema.yaml#"
+  #~
+  name:
+    description: >-
+      The name of the wind farm layout
+    type: string
+  #~
+  particulars:
+    description: >-
+      A list of relevant pieces of information, such as the approach used to
+      obtain the layout.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      type: string
+  #~
+  site:
+    title: Wind farm site
+    description: >-
+      A reference to a wind farm site based on the schema at
+      "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                         src/master/schemata/site-schema.yaml#"
+    type: string
+    format: uri-reference
+  #~
+  layout:
+    title: Coordinates for all turbines
+    type: array
+    items:
+      title: Turbine coordinates
+      $ref: "coordinate-schema.yaml#/definitions/coordinates"

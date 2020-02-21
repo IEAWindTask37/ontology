@@ -1,0 +1,86 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-13
+# Based on http://json-schema.org/draft-07/hyper-schema
+# (cf. https://json-schema.org/latest/json-schema-core.html#rfc.section.6.4)
+
+# HEADER
+$schema: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/extended-json-schema.yaml#"
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/extended-json-schema.yaml#"
+  # TODO: Does the hash sign need to be included there?
+title: Extended JSON-schema meta-schema
+description: >-
+  This is an extension of the core JSON-schema meta-schema. The ‘unit’ field
+  has been added.
+
+# NOTE: Most of the things below are boilerplate; go to the end of the file!
+definitions:
+  schemaArray:
+    allOf:
+      - $ref: "http://json-schema.org/draft-07/schema#/definitions/schemaArray"
+      - items:
+          $ref: "#"
+
+allOf:
+  - $ref: "http://json-schema.org/draft-07/schema#"
+
+properties:
+  additionalItems:
+    $ref: "#"
+  additionalProperties:
+    $ref: "#"
+  dependencies:
+    additionalProperties:
+      anyOf:
+        - $ref: "#"
+        - type: array
+  items:
+    anyOf:
+      - $ref: "#"
+      - $ref: "#/definitions/schemaArray"
+  definitions:
+    additionalProperties:
+      $ref: "#"
+  patternProperties:
+    additionalProperties:
+      $ref: "#"
+  properties:
+    additionalProperties:
+      $ref: "#"
+  if:
+    $ref: "#"
+  then:
+    $ref: "#"
+  else:
+    $ref: "#"
+  allOf:
+    $ref: "#/definitions/schemaArray"
+  anyOf:
+    $ref: "#/definitions/schemaArray"
+  oneOf:
+    $ref: "#/definitions/schemaArray"
+  not:
+    $ref: "#"
+  contains:
+    $ref: "#"
+  propertyNames:
+    $ref: "#"
+
+# NOTE: The part below is the actual meta-schema extension
+  unit:
+    title: Quantity unit
+    description: >-
+      This field is used to store the unit of a quantity. The units should be
+      commonly used and widely recognized standardized units, such as SI and
+      SI-derived units. They should be specified in a way that they can be
+      parsed by universally available software tools, such as perhaps udunits2
+      <https://www.unidata.ucar.edu/software/udunits/>. For Python, there
+      exists the package CF-units <https://github.com/SciTools/cf-units> built
+      on udunits2.
+    type: string
+    # TODO: can we require that it may only be applied to number fields?
+    examples:
+      - kg
+      - m/s2
+      - 1/(GW h)

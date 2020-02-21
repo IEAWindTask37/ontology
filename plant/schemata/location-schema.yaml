@@ -1,0 +1,74 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-13
+
+# HEADER
+$schema: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/extended-json-schema.yaml#"
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                     src/master/schemata/location-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Geographical coordinates
+description: Coordinates for a location on Earth
+type: object
+required:
+  anyOf:
+    - geo
+    - utm
+    - adhoc
+additionalProperties: false
+
+# PROPERTIES
+properties:
+  #~
+  name:
+    description: The name of the location
+    type: string
+  #~
+  reference_system:
+    title: Geodetic reference frame
+    type: string
+  #~
+  geo:
+    title: Geographical coordinates
+    description: >-
+      The latitude and longitude of the location expressed in degrees
+    type: array
+    items:
+      - title: Latitude
+        type: number
+        minimum: -90
+        maximum: 90
+        unit: °
+      - title: Longitude
+        type: number
+        exclusiveMinimum: -180
+        maximum: 180
+        unit: °
+  #~
+  utm_zone:
+    title: UTM zone
+    type: integer
+    minimum: 1
+    maximum: 60
+  #~
+  utm:
+    title: UTM coordinates
+    type: array
+    items:
+    - title: Easterly
+      type: number
+      unit: m
+    - title: Northerly
+      type: number
+      unit: m
+  #~
+  adhoc:
+    title: Ad hoc coordinates
+    type: array
+    items:
+    - title: Easterly
+      type: number
+      unit: km
+    - title: Northerly
+      type: number
+      unit: km

@@ -1,0 +1,13 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-19
+
+# HEADER
+$schema: "http://json-schema.org/draft-07/schema#"
+  # NOTE: consult the above-referenced site for the schema language definition
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                         src/master/schemata/uuid-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Universally unique identifier (UUID)
+description: The UUID should follow RFC 4122.
+type: string
+pattern: ^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$

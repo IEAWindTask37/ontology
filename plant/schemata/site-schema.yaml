@@ -1,0 +1,238 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-11-27
+
+# HEADER
+$schema: "http://json-schema.org/draft-07/schema#"
+  # NOTE: consult the above-referenced site for the schema language definition
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                         src/master/schemata/site-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Wind farm site description
+type: object
+required:
+  - uuid
+  - radius
+  - parcels
+additionalProperties: false
+
+# PROPERTIES
+properties:
+  #~
+  uuid:
+    description: >-
+      It is meant to distinguish different site descriptions.
+      This is especially relevant for different versions and variants of the
+      same site.
+    $ref: "uuid-schema.yaml#"
+  #~
+  name:
+    description: >-
+      The name of the wind farm site
+    type: string
+  #~
+  particulars:
+    description: >-
+      A list of relevant pieces of information, such as further site
+      description and details about the choices made in the ‘parcels’ and
+      ‘boundaries’ formulations.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      type: string
+  #~
+  location:
+    title: Site location
+    description: >-
+      The geographical location of the center of the smallest covering disc
+    $ref: "location-schema.yaml#"
+  #~
+  radius:
+    title: Site radius [km]
+    description: >-
+      This is the radius in km of the smallest disc covering the site. Four
+      fractional digits must be given. (Otherwise the trailing significant
+      digits are assumed to be 0.) This radius is used to make all site
+      distances adimensional and give a single-value indication of its size.
+      Specifying distances adimensionally makes it easy to scale sites by just
+      changing this property.
+    type: number
+    exclusiveMinimum: 0
+  #~
+  parcels:
+    title: Parcels
+    description: >-
+      A set of recursively defined parcels. The parcels should not overlap, so
+      that algorithms can assume they are not.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      $ref: "#/definitions/area_nesting"
+  #~
+  boundaries:
+    title: Site boundaries
+    description: >-
+      A nested set of boundaries useful for visualizing the farm boundaries.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      $ref: "#/definitions/boundary_nesting"
+  #~
+  roughness:
+    title: Roughness length [m]
+    type: number
+    exclusiveMinimum: 0
+
+# DEFINITIONS
+definitions:
+  # NOTE: Any of these definitions can be externalized (to a file) for
+  # convenient reuse
+  #~
+  area_nesting:
+    type: object
+    required:
+      - oneOf:
+          - polygon
+          - circle
+    additionalProperties: false
+    properties:
+      #~~
+      oneOf:
+          #~~
+        - constraints:
+            description: >-
+              A list of linear constraints describing a convex polygon;
+              the constraints must be ordered so that every adjacent pair in
+              the list is also ‘adjacent’ for the polygon
+            type: array
+            uniqueItems: true
+            minItems: 1
+            items:
+              $ref: "#/definitions/constraint"
+          #~~
+        - circle:
+            description: >-
+              A circle delimiting a disc-shaped area. If an exclusion, it must
+              lie wholly in the enclosing area.
+            # TODO: lift whole enclosure requirement?
+            $ref: "#/definitions/circle"
+      #~~
+      exclusions:
+        description: >-
+          An array of areas, possibly also nested, that are to be excluded from
+          the area defined at and above this level in the recursion. The areas
+          should not overlap, so that algorithms can assume they are not.
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          $ref: "#/definitions/area_nesting"
+  #~
+  boundary_nesting:
+    type: object
+    required:
+      - oneOf:
+          - polygon
+          - circle
+    additionalProperties: false
+    properties:
+      #~~
+      oneOf:
+          #~~
+        - polygon:
+            description: >-
+              A list of vertices describing a (possibly degenerate) piecewise
+              linear—so polygonal—boundary.
+              It is described in counterclockwise fashion, so inside is on the
+              left and outside on the right.
+            type: array
+            uniqueItems: true
+            minItems: 1
+            items:
+              title: Vertex coordinates
+              $ref: "coordinate-schema.yaml#/definitions/coordinates"
+          #~~
+        - circle:
+            description: A circlular boundary
+          $ref: "#/definitions/circle"
+      #~~
+      exclusions:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          $ref: "#/definitions/boundary_nesting"
+  #~
+  constraint:
+    title: Linear constraint
+    description: >-
+      A representation of a linear constraint in terms of coefficients of an
+      affine expression in the coordinate variables x and y. These variables
+      form a coordinate pair as described in
+      "coordinate-schema.yaml#/definitions/coordinates".
+      The expression must be negative (positive) for points inside (outside)
+      the convex polygon.
+    type: object
+    required:
+      - "1"
+      - oneOf: ["x", "y"]
+    additionalProperties: false
+    properties:
+      #~~
+      "rotor_constraint":
+        description: Whether or not the rotor must be taken into account
+        $ref: "#/definitions/rotor_constraint"
+      #~~
+      "1":
+        description: The constant term in the expression
+        $ref: "#/definitions/coefficient"
+      #~~
+      "x":
+        description: The coefficient of x in the expression
+        $ref: "#/definitions/coefficient"
+      #~~
+      "y":
+        description: The coefficient of y in the expression
+        $ref: "#/definitions/coefficient"
+  #~
+  coefficient:
+    description: >-
+      A coefficient value must be given with six significant digits.
+      (Significant trailing zeros may be omitted, but are assumed.)
+    type: number
+    default: 0
+  #~
+  circle:
+    description: A circle delimiting a disc-shaped area
+    type: object
+    required:
+      - center
+      - radius
+    additionalProperties: false
+    properties:
+      #~~
+      "rotor_constraint":
+        description: Whether or not the rotor must be taken into account
+        $ref: "#/definitions/rotor_constraint"
+      #~~
+      center:
+        $ref: "coordinate-schema.yaml#/definitions/coordinates"
+      #~~
+      radius:
+        description: The radius of the circle in adimensional coordinates
+        type: number
+        exclusiveMinimum: 0
+        maximum: 1
+  #~
+  rotor_constraint:
+    # NOTE: for pairs of adjacent constraints at angles < 180°, circle wedges
+    #       are needed, but that is quite complex
+    description: >-
+      Whether the area description constrains the tower location or also the
+      rotor. If ‘false’, only the tower is constrained. If ‘true’ also the
+      rotor is constrained. In the last case, this means the tower must be
+      placed at least a rotor radius inside the area away from the boundary.
+    type: boolean
+      default: false

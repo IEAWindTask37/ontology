@@ -1,0 +1,10 @@
+uuid: 67f32d3e-78ad-495c-87c3-12769fbcf08f
+name: Large IEA Wind Task 37 plant optimization case study site
+particulars:
+  - disc-shaped site
+  - meant for a 64-turbine farm
+radius: 3.0
+parcels:
+  - circle: {center: [0, 0],  radius: 1.}
+boundaries:
+  - circle: {center: [0, 0],  radius: 1.}

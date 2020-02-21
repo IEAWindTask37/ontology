@@ -1,0 +1,55 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-13
+
+# HEADER
+$schema: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/extended-json-schema.yaml#"
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                    src/master/schemata/variables-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Physical variables
+description: >-
+  This file contains a list of schemata for physical variables that can be
+  reused by other schemata. For all the numerical ones, the number of
+  significant digits should reflect the actual information available.
+type: object
+
+# DEFINITIONS (alphabetic order)
+definitions:
+  #~
+  air_density:
+    title: Air density
+    type: number
+    unit: kg/m3
+    minimum: 0.
+    default: 1.2041
+  #~
+  atmospheric_stability:
+    title: Atmospheric stability
+    type: string
+    enum:
+      - stable
+      - neutral
+      - unstable
+  #~
+  turbulence_intensity:
+    title: Turbulence intensity
+    type: number
+    unit: 1
+    minimum: 0.
+    maximum: 1.
+  #~
+  wind_direction:
+    title: Wind direction
+    type: number
+    unit: °
+    minimum: 0.
+    exclusiveMaximum: 360.
+  #~
+  wind_speed:
+    title: Wind speed [m/s]
+    description: >-
+      A wind speed value in m/s. The number of significant digits should
+      reflect the actual information available.
+    type: number
+    minimum: 0.

@@ -1,0 +1,39 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-18
+
+# HEADER
+$schema: "http://json-schema.org/draft-07/schema#"
+  # NOTE: consult the above-referenced site for the schema language definition
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                   src/master/schemata/coordinate-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Physical variables
+description: This file contains a schema for coordinates within a wind farm.
+type: object
+
+# DEFINITIONS
+definitions:
+  #~
+  coordinates:
+    title: Site point coordinates
+    description: >-
+      A (x,y) pair of Cartesian coordinates describing a point in the site.
+      The x-coordinate corresponds to a fraction along the West-East axis,
+      so points East (West) of center have a positive (negative) x-coordinate.
+      The y-coordinate corresponds to a fraction along the South-North axis,
+      so points North (South) of center have a positive (negative)
+      y-coordinate.
+    type: array
+    items:
+      - title: x-coordinate
+        $ref: "#/definitions/coordinate_value"
+      - title: y-coordinate
+        $ref: "#/definitions/coordinate_value"
+  #~
+  coordinate_value:
+    description: >-
+      A coordinate value must be given with six significant digits.
+      (Significant trailing zeros may be omitted, but are assumed.)
+    type: number
+    minimum: -1
+    maximum: 1

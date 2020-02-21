@@ -1,0 +1,159 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-06
+
+# HEADER
+$schema: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/extended-json-schema.yaml#"
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                      src/master/schemata/turbine-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Wind turbine description
+description: >-
+  A description of a wind turbine as a set of defining parameters. Unless the
+  curve is given explicitly as a list of speed/power pairs, it is assumed that
+  the power curve is zero up to cut-in (0 by default), cubic between cut-in and
+  rated wind speeds, constant between rated and cut-out, and zero above
+  cut-out. If the curve is explicitly given, it amends the above described
+  power curve between and including the lowest and highest wind speed values
+  given.
+type: object
+required:
+  - uuid
+  - rotor_radius
+  - hub_height
+  - rated_power
+  - rated_wind_speed
+  - oneOf:
+      - thrust_coefficient
+      - thrust_curve
+additionalProperties: false
+
+# PROPERTIES
+properties:
+  #~
+  uuid:
+    description: >-
+      It is meant to distinguish different turbine descriptions.
+      This is especially relevant for different versions and variants of the
+      same turbine.
+    $ref: "uuid-schema.yaml#"
+  #~
+  name:
+    description: >-
+      The name of the wind turbine; typically manufacturer and model number
+    type: string
+  #~
+  particulars:
+    description: >-
+      A list of relevant pieces of information.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      type: string
+  #~
+  rotor_radius:
+    title: Rotor radius
+    description: >-
+      This is the radius of the turbine rotor. The number of significant digits
+      should reflect the actual information available.
+    type: number
+    unit: m
+    exclusiveMinimum: 0
+  #~
+  hub_height:
+    title: Hub_height
+    description: >-
+      This is the height of the turbine rotor hub center. The number of
+      significant digits should reflect the actual information available.
+    type: number
+    unit: m
+    exclusiveMinimum: {$data: "1/rotor_radius"}
+  #~
+  rated_power:
+    title: Rated power
+    $ref: "#/definitions/power"
+    exclusiveMinimum: 0
+  #~
+  rated_wind_speed:
+    title: Rated wind speed [m/s]
+    $ref: "variables-schema.yaml#/definitions/wind_speed"
+    exclusiveMinimum: 0
+  #~
+  cut_in:
+    title: Cut-in wind speed [m/s]
+    $ref: "variables-schema.yaml#/definitions/wind_speed"
+    default: 0
+    exclusiveMaximum: {$data: "1/rated_wind_speed"}
+  #~
+  cut_out:
+    title: Cut-out wind speed [m/s]
+    $ref: "variables-schema.yaml#/definitions/wind_speed"
+    default: null # represents +∞
+    exclusiveMinimum: {$data: "1/rated_wind_speed"}
+  re_cut_in:
+    title: Re-cut-in wind speed [m/s]
+    description: >-
+      This is the wind speed at which, after cut-out, the turbine starts again.
+    $ref: "variables-schema.yaml#/definitions/wind_speed"
+    default: {$data: "1/cut_out"}
+    exclusiveMinimum: {$data: "1/rated_wind_speed"}
+    maximum: {$data: "1/cut_out"}
+  #~
+  power_curve:  # TODO: deal with air-density-dependency of power curves
+    title: Power curve
+    description: >-
+      A discrete power curve as a list of wind speed/power. Components must
+      be ordered according to increasing wind speed. The proper interpolation
+      for wind speed values not included is assumed to be linear.
+    type: array
+    uniqueItems: True
+    minitems: 1
+    items:
+      type: array
+      items:
+        - $ref: "variables-schema.yaml#/definitions/wind_speed"
+        - $ref: "#/definitions/power"
+  #~
+  thrust_coefficient:
+    title: Thrust coefficient
+    description: >-
+      In case the thrust coefficient is assumed to be constant, that constant
+      value should be given here. Otherwise, specify a thrust curve.
+    $ref: "#/definitions/thrust_coefficient"
+  #~
+  thrust_curve:
+    title: Thrust curve
+    description: >-
+      A discrete thrust curve as a list of wind speed/thrust coefficient.
+      Components must be ordered according to increasing wind speed. The proper
+      interpolation for wind speed values not included is assumed to be linear.
+    type: array
+    uniqueItems: True
+    minitems: 1
+    items:
+      type: array
+      items:
+        - $ref: "#/definitions/wind_speed"
+        - $ref: "#/definitions/thrust_coefficient"
+
+# DEFINITIONS
+definitions:
+  #~
+  power:
+    title: Power output
+    description: >-
+      A turbine power output. The number of significant digits should reflect
+      the actual information available.
+    type: number
+    unit: MW
+    minimum: 0
+  #~
+  thrust_coefficient:
+    title: Thrust coefficient
+    description: >-
+      A thrust coefficient value. The number of significant digits should
+      reflect the actual information available.
+    type: number
+    unit: 1
+    minimum: 0

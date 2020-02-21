@@ -1,0 +1,163 @@
+# Author: Erik Quaeghebeur
+# Date: 2018-12-21
+
+# HEADER
+$schema: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/extended-json-schema.yaml#"
+$id: "https://bitbucket.org/equaeghe/pseudo_gradients-code/\
+                                src/master/schemata/wind_resource-schema.yaml#"
+  # TODO: the $id uri must point to a git tag, ideally
+title: Wind resource description
+description: >-
+  A description of a location’s wind resource as a wind rose and some other
+  meteorological parameters.
+type: object
+required:
+  - uuid
+  - reference_height
+  - wind_rose
+additionalProperties: false
+
+# PROPERTIES
+properties:
+  #~
+  uuid:
+    description: >-
+      It is meant to distinguish different turbine descriptions.
+      This is especially relevant for different versions and variants of the
+      same turbine.
+    $ref: "uuid-schema.yaml#"
+  #~
+  name:
+    description: The name of the wind resource
+    type: string
+  #~
+  particulars:
+    description: >-
+      A list of relevant pieces of information, such as further wind resource
+      description and details about the how the values were obtained.
+    type: array
+    uniqueItems: true
+    minItems: 1
+    items:
+      type: string
+  #~
+  location:
+    title: Wind resource location
+    $ref: "location-schema.yaml"
+  #~
+  period:
+    description: >-
+      Time intervals of the measurements the probability mass function is
+      derived from
+    type: array
+    items:
+      description: A measurement time interval
+      type: array
+      items:
+        - title: Time interval start date-time
+          type: string
+          format: date-time
+        - description: Time interval end date-time
+          type: string
+          format: date-time
+      uniqueItems: true
+    minItems: 1
+    uniqueItems: true
+  #~
+  averaging_interval_length:
+    title: Averaging interval length
+    description: >-
+      The length in s of the interval over which the resource variables have
+      been averaged
+    type: number
+    unit: s
+    exclusiveMinimum: 0
+  #~
+  reference_height:
+    # TODO: make it clear what a height of 0 m corresponds to
+    title: Reference height
+    description: >-
+      The common height all the physical measurements have been transformed to
+    type: number
+    unit: m
+  #~
+  air_density:
+    $ref: "variables-schema.yaml#/definitions/variables/air_density"
+    # TODO: allow for non-constant air density
+  #~
+  atmospheric_stability:
+    $ref: "variables-schema.yaml#/definitions/variables/atmospheric_stability"
+    # TODO: allow for non-constant atmospheric stability
+  #~
+  turbulence_intensity:
+    $ref: "variables-schema.yaml#/definitions/variables/turbulence_intensity"
+    # TODO: allow for non-constant turbulence intensity
+  #~
+  wind_rose:
+    title: Wind rose
+    type: object
+    required:
+      - directions
+      - direction_pmf
+      - oneOf:
+          - allOf:
+              - speeds
+              - speed_cpmf
+          - speed_cweibull
+    additionalProperties: false
+    properties:
+      #~~
+      directions:
+        title: Wind directions
+        type: array
+        items:
+          $ref: "variables-schema.yaml#/definitions/variables/wind_direction"
+      #~~
+      direction_pmf:
+        title: Wind direction probability mass function
+        description: >-
+          The wind direction probability mass function given as an array of
+          positive weights not necessarily summing up to one. So normalization
+          needs to be done to obtain probabilities
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          title: Weight
+          type: number
+          minimum: 0
+      #~~
+      speeds:
+        title: Wind speeds
+        type: array
+        items:
+          $ref: "variables-schema.yaml#/definitions/wind_speed"
+      #~~
+      speed_cpmf:
+        title: Wind speed probability mass function conditional on direction
+        description: >-
+          The wind speed probability mass function conditional on direction
+          given as an array of arrays of positive weights not necessarily
+          summing up to one. So normalization needs to be done to obtain
+          probabilities
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          type: array  # NOTE: should have same length as "2/speeds"
+          items:
+            title: Weight
+            type: number
+            minimum: 0
+      #~~
+      speed_cweibull:
+        title: Wind speed Weibull parameters conditional on direction
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          type: array
+          items:
+            - title: Scale parameter
+              type: number
+              unit: m
+              exclusiveMinimum: 0
+            - title: Shape parameter
+              type: number
+              unit: 1
+              exclusiveMinimum: 0

@@ -1,0 +1,10 @@
+uuid: 55a7c111-f83d-4668-8d81-b89ffd3ee163
+name: IEA Wind Task 37 plant combined case study site
+particulars:
+  - disc-shaped site
+  - meant for a 9-turbine farm
+radius: 0.9
+parcels:
+  - circle: {center: [0, 0],  radius: 1.}
+boundaries:
+  - circle: {center: [0, 0],  radius: 1.}

@@ -1,0 +1,237 @@
+components:
+  platform:
+    # TODO: Non circular cross section
+    # TODO: non ring Stiffeners
+    # TODO: Transition piece
+    # TODO: Buoyancy cans (Spiderfloat)
+    main_column:
+      name: main
+      outfitting_factor: 1.07
+      outer_shape_bem:
+        reference_axis:
+          x:
+            grid: &top_bottom [0.0, 1.0]
+            values: [0.0, 0.0]
+          y:
+            grid: *top_bottom
+            values: [0.0, 0.0]
+          z:
+            grid: &grid_main [0., 0.167, 0.333, 0.5 , 0.6667, 0.833, 1.] 
+            values: [0. , 14.6, 29.2, 43.8, 58.4, 73. , 87.6]
+        outer_diameter:
+          grid: *grid_main
+          values: [6.   , 5.645, 5.29 , 4.935, 4.58 , 4.225, 3.87]
+        heave_tank_diameter:
+          grid: [0., 0.1]
+          values: [8.0, 8.0]
+      internal_structure_2d_fem:
+        reference_axis: *ref_axis_main
+        ring_stiffeners:
+          - material: steel
+            flange_height: 0.2
+            flange_width: 0.05
+            web_height: 0.2
+            web_thickness: 0.05
+            grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        ballast:
+          - name: permanent
+            material: iron_filling
+            # Either specify grid or mass?
+            grid: [0.0, 0.25]
+          - name: variable
+            material: water
+            # Specify holding area limits?
+            grid: [0.25, 0.75]
+        bulkhead_thickness:
+          material: steel
+          grid: [0.0, 0.25, 1.0]
+          values: [0.5, 0.1, 0.5]
+        layers:
+          - name: tower_wall
+            material: steel
+            thickness:
+              grid: *grid_main
+              values: [0.027, 0.0254, 0.0238, 0.0222, 0.0206, 0.019, 0.019]
+
+    offset_columns:
+      - name: offset1
+        outfitting_factor: 1.02
+        mooring_connections: [0.8]
+        outer_shape_bem:
+          reference_axis: &ref_axis_offset
+            x:
+              grid: [0.0, 1.0]
+              values: [0.0, 0.0]
+            y:
+              grid: [0.0, 1.0]
+              values: [0.0, 0.0]
+            z:
+              grid: &grid_offset [0., 0.167, 0.333, 0.5 , 0.6667, 0.833, 1.] 
+              values: [0. , 14.6, 29.2, 43.8, 58.4, 73. , 87.6]
+          outer_diameter:
+            grid: *grid_offset
+            values: [6.   , 5.645, 5.29 , 4.935, 4.58 , 4.225, 3.87]
+          heave_tank_diameter:
+            grid: [0., 0.1]
+            values: [8.0, 8.0]
+        internal_structure_2d_fem:
+          reference_axis: *ref_axis_offset
+          ring_stiffeners:
+            - material: steel
+              flange_height: 0.2
+              flange_width: 0.05
+              web_height: 0.2
+              web_thickness: 0.05
+              grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+          ballast:
+            - name: permanent
+              material: iron_filling
+              # Either specify grid or mass?
+              grid: [0.0, 0.25]
+            - name: variable
+              material: water
+              # Specify holding area limits?
+              grid: [0.25, 0.75]
+          bulkhead_thickness:
+            grid: [0.0, 1.0]
+            values: [0.5, 0.5]
+          layers:
+            - name: tower_wall
+              material: steel
+              thickness:
+                grid: *grid_offset
+                values: [0.027, 0.0254, 0.0238, 0.0222, 0.0206, 0.019, 0.019]
+                
+      - name: offset2
+        outfitting_factor: 1.02
+        mooring_connections: [0.8]
+        outer_shape_bem:
+          reference_axis: &ref_axis_offset
+            x:
+              grid: [0.0, 1.0]
+              values: [0.0, 0.0]
+            y:
+              grid: [0.0, 1.0]
+              values: [0.0, 0.0]
+            z:
+              grid: &grid_offset [0., 0.167, 0.333, 0.5 , 0.6667, 0.833, 1.] 
+              values: [0. , 14.6, 29.2, 43.8, 58.4, 73. , 87.6]
+          outer_diameter:
+            grid: *grid_offset
+            values: [6.   , 5.645, 5.29 , 4.935, 4.58 , 4.225, 3.87]
+          heave_tank_diameter:
+            grid: [0., 0.1]
+            values: [8.0, 8.0]
+        internal_structure_2d_fem:
+          reference_axis: *ref_axis_offset
+          ring_stiffeners:
+            - material: steel
+              flange_height: 0.2
+              flange_width: 0.05
+              web_height: 0.2
+              web_thickness: 0.05
+              grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+          ballast:
+            - name: permanent
+              material: iron_filling
+              # Either specify grid or mass?
+              grid: [0.0, 0.25]
+            - name: variable
+              material: water
+              # Specify holding area limits?
+              grid: [0.25, 0.75]
+          bulkhead_thickness:
+            grid: [0.0, 1.0]
+            values: [0.5, 0.5]
+          layers:
+            - name: tower_wall
+              material: steel
+              thickness:
+                grid: *grid_offset
+                values: [0.027, 0.0254, 0.0238, 0.0222, 0.0206, 0.019, 0.019]
+                
+      - name: offset3
+        outfitting_factor: 1.02
+        mooring_connections: [0.8]
+        outer_shape_bem:
+          reference_axis: &ref_axis_offset
+            x:
+              grid: [0.0, 1.0]
+              values: [0.0, 0.0]
+            y:
+              grid: [0.0, 1.0]
+              values: [0.0, 0.0]
+            z:
+              grid: &grid_offset [0., 0.167, 0.333, 0.5 , 0.6667, 0.833, 1.] 
+              values: [0. , 14.6, 29.2, 43.8, 58.4, 73. , 87.6]
+          outer_diameter:
+            grid: *grid_offset
+            values: [6.   , 5.645, 5.29 , 4.935, 4.58 , 4.225, 3.87]
+          heave_tank_diameter:
+            grid: [0., 0.1]
+            values: [8.0, 8.0]
+        internal_structure_2d_fem:
+          reference_axis: *ref_axis_offset
+          ring_stiffeners:
+            - material: steel
+              flange_height: 0.2
+              flange_width: 0.05
+              web_height: 0.2
+              web_thickness: 0.05
+              grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+          ballast:
+            - name: permanent
+              material: iron_filling
+              # Either specify grid or mass?
+              grid: [0.0, 0.25]
+            - name: variable
+              material: water
+              # Specify holding area limits?
+              grid: [0.25, 0.75]
+          bulkhead_thickness:
+            grid: [0.0, 1.0]
+            values: [0.5, 0.5]
+          layers:
+            - name: tower_wall
+              material: steel
+              thickness:
+                grid: *grid_offset
+                values: [0.027, 0.0254, 0.0238, 0.0222, 0.0206, 0.019, 0.019]
+              
+    connectors_legs:
+      # Provide different type options: cable, circular, rectangular
+      - type: circular
+        attachment1:
+          # Allow for rigid, hinged, ring or other ?
+          type: rigid
+          name: main
+          grid: 0.9
+        attachment2:
+          type: rigid
+          name: offset1
+          grid: 1.0
+        outer_shape_bem:
+          outer_diameter:
+            grid: [0.0, 1.0]
+            values: [0.2, 0.2]
+        internal_structure_2d_fem:
+          layers:
+            - name: tower_wall
+              material: steel
+              thickness:
+                grid: *grid_offset
+                values: [0.027, 0.0254, 0.0238, 0.0222, 0.0206, 0.019, 0.019]
+
+    mooring:
+      lines_per_connection: 1
+      # Have to define line options: chain, nylon, polyester, fiber, IWRC?
+      line_segments:
+        - type: chain
+          length: 1000.0
+          diameter:
+            grid: [0.0, 1.0]
+            values: 0.2
+      # Anchor options: drag_embedment or suctionpile?
+      anchors:
+        radius: 500.0
+        type: drag_embedment

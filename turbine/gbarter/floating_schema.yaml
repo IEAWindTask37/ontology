@@ -1,0 +1,463 @@
+# TODO: Non circular cross section
+# TODO: Actuators
+# TODO: Buoyancy cans (Spiderfloat)
+
+$schema: "http://json-schema.org/draft-07/schema#"
+$id: WEIS_Platform_v00
+title: WEIS floating platform ontology
+description: Ontology definition for floating platforms (substructures) suitable for use with the WEIS co-design analysis tool
+type: object
+required: 
+    - name
+    - components
+    - materials
+    - control
+properties:
+    name: 
+        description: Name of the turbine
+        type: string
+    components: 
+        type: object
+    required:
+        - columns
+        - connectors_legs
+        - mooring
+        - transition
+    properties: 
+        columns: 
+            type: array
+            items:
+                type: object
+                required:
+                    - name
+                    - outfitting_factor
+                    - outer_shape
+                    - internal_structure
+                    - heave_plate
+                properties:
+                    name:
+                        description: Name of the column
+                        type: string
+                outfitting_factor:
+                    type: number
+                    description: Scaling factor for the tower mass to account for auxiliary structures, such as elevator, ladders, cables, platforms, etc
+                    unit: none
+                    minimum: 1.0
+                outer_shape:                    
+                    type: object
+                    required:
+                        - reference_axis
+                        - outer_diameter
+                    properties:                              
+                        reference_axis:
+                            $ref: "#/definitions/distributed_data/axis_coordinates"
+                        outer_diameter: &od
+                            type: object
+                            required:
+                                - grid
+                                - values
+                            properties: 
+                                grid: 
+                                    $ref: "#/definitions/distributed_data/grid_nd"
+                                values: 
+                                    $ref: "#/definitions/distributed_data/length"
+                internal_structure:
+                    type: object
+                    required:
+                        - reference_axis
+                        - layers
+                        - ring_stiffeners
+                        - longitudinal_stiffeners
+                        - bulkhead
+                        - ballast
+                    properties: 
+                        reference_axis:
+                            $ref: "#/definitions/distributed_data/axis_coordinates"
+                        layers: &layer
+                            type: array
+                            description: ...
+                            items:
+                                type: object
+                            required:
+                                - name
+                                - material
+                                - thickness
+                            properties:
+                                name:
+                                    type: string
+                                    description: structural component identifier
+                                material:
+                                    type: string
+                                    description: material identifier
+                                thickness:
+                                    type: object
+                                    description: thickness of the laminate
+                                    required:
+                                        - grid
+                                        - values
+                                    properties: 
+                                        grid: 
+                                            $ref: "#/definitions/distributed_data/grid_nd"
+                                        values: 
+                                            $ref: "#/definitions/distributed_data/length"
+                        ring_stiffeners: &stiffener
+                            type: array
+                            items:
+                                type: object
+                                required:
+                                    - material
+                                    - flange_height
+                                    - flange_width
+                                    - web_height
+                                    - web_thickness
+                                    - grid
+                                properties:
+                                    material:
+                                        type: string
+                                        description: material identifier
+                                    flange_height:
+                                        $ref: "#/definitions/distributed_data/length"
+                                    flange_width:
+                                        $ref: "#/definitions/distributed_data/length"
+                                    web_height:
+                                        $ref: "#/definitions/distributed_data/length"
+                                    web_thickness:
+                                        $ref: "#/definitions/distributed_data/length"
+                                    grid: 
+                                        $ref: "#/definitions/distributed_data/grid_nd"
+                        longitudinal_stiffeners: *stiffener
+                        bulkhead:
+                            type: object
+                            required:
+                                - material
+                                - thickness
+                            properties:
+                                material:
+                                    type: string
+                                    description: material identifier
+                                thickness:
+                                    type: object
+                                    description: thickness of the laminate
+                                    required:
+                                        - grid
+                                        - values
+                                    properties: 
+                                        grid: 
+                                            $ref: "#/definitions/distributed_data/grid_nd"
+                                        values: 
+                                            $ref: "#/definitions/distributed_data/length"
+                        ballast:
+                            type: array
+                            description: Different types of permanent and/or variable ballast
+                            items:
+                                type: object
+                                required:
+                                    - name
+                                    - material
+                                    - mass
+                                properties:
+                                    name:
+                                        type: string
+                                        description: structural component identifier
+                                    material:
+                                        type: string
+                                        description: material identifier
+                                    mass:
+                                        type: number
+                                        unit: kg
+                                        minimum: 1.0                                    
+                heave_plate:
+                    type: object
+                    required:
+                        - shape
+                        - dimension
+                        - wall_thickness
+                        - material
+                    properties: 
+                        grid: 
+                            $ref: "#/definitions/distributed_data/grid_nd"
+                        values: 
+                            $ref: "#/definitions/distributed_data/length"
+        connectors:
+            type: array
+            items:
+                type: object
+                required:
+                    - connector_type
+                    - attachment1
+                    - attachment2
+                    - outer_shape
+                    - internal_structure
+                properties:
+                    connector_type:
+                        # Are there enumerated types for: cable / circular / rectangular?
+                        type: enum
+                    attachment1: &attachment
+                        type: object
+                        required:
+                            - joint
+                            - column_name
+                            - grid_position
+                        properties:
+                            joint:
+                                # Possibilities for rigid, ball hinge, pin, other?
+                                type: enum
+                            column_name:
+                                type: string
+                                description: Which column does this attach to?
+                            grid_position:
+                                type: number
+                                description: z-axis position of attachment 0-1?
+                    attachment2: *attachment
+                    outer_shape:                    
+                        type: object
+                        required:
+                            - outer_diameter
+                        properties:                              
+                            outer_diameter: *od
+                    internal_structure:
+                        type: object
+                        required:
+                            - layers
+                            - ring_stiffeners
+                            - longitudinal_stiffeners
+                        properties: 
+                            layers: *layer
+                            ring_stiffeners: *stiffener
+                            longitudinal_stiffeners: *stiffener
+                            
+        transition:
+            type: object
+        mooring:
+            # Matt Hall TODO
+            type: array
+            items:
+                type: object
+
+    materials:
+        type: array
+        description: Database of the materials
+        items:
+            type: object
+            required:
+                - name
+                - orth
+                - rho
+                - E
+                - nu
+            properties:
+                name:
+                    type: string
+                    description: Name of the material
+                description:
+                    type: string
+                    description: Optional field describing the material
+                source:
+                    type: string
+                    description: Optional field describing where the data come from
+                orth:
+                    type: number
+                    description: Flag to switch between isotropic (0) and orthotropic (1) materials
+                rho:
+                    description: Density of the material. For composites, this is the density of the laminate once cured
+                    type: number
+                    unit: kg/m3
+                    minimum: 0
+                E:  
+                    description: Stiffness modulus. For orthotropic materials, it consists of an array with E11, E22 and E33. 
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                G:  
+                    description: Shear stiffness modulus. For orthotropic materials, it consists of an array with G12, G13 and G23
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                nu: 
+                    description: Poisson ratio. For orthotropic materials, it consists of an array with nu12, nu13 and nu23
+                    oneOf:
+                        - type: number
+                          unit: none
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                alpha:
+                    description: Thermal coefficient of expansion
+                    oneOf:
+                        - type: number
+                          unit: 1/K
+                        - type: array
+                          items: 
+                            type: number
+                            unit: 1/K
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                Xt: 
+                    description: Ultimate tensile strength. For orthotropic materials, it consists of an array with the strength in directions 11, 22 and 33. The values must be positive
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                Xc: 
+                    description: Ultimate compressive strength. For orthotropic materials, it consists of an array with the strength in directions 11, 22 and 33. The values must be positive
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                Xy: 
+                    description: Ultimate yield strength for metals. For orthotropic materials, it consists of an array with the strength in directions 12, 13 and 23
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                S: 
+                    description: Ultimate shear strength. For orthotropic materials, it consists of an array with the strength in directions 12, 13 and 23
+                    oneOf:
+                        - type: number
+                          unit: Pa
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: Pa
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                ply_t:
+                    type: number
+                    description: Ply thickness of the composite material
+                    unit: m
+                unit_cost:
+                    type: number
+                    description: Unit cost of the material. For composites, this is the unit cost of the dry fabric.
+                    unit: USD/kg
+                fvf:
+                    type: number
+                    description: Fiber volume fraction of the composite material
+                    unit: none
+                fwf:
+                    type: number
+                    description: Fiber weight fraction of the composite material
+                    unit: none
+                fiber_density:
+                    type: number
+                    description: Density of the fibers of a composite material.
+                    unit: kg/m3
+                area_density_dry:
+                    type: number
+                    description: Aerial density of a fabric of a composite material.
+                    unit: kg/m2
+                component_id:
+                    type: number
+                    description: Flag used by the NREL blade cost model https://www.nrel.gov/docs/fy19osti/73585.pdf to define the manufacturing process behind the laminate. 0 - coating, 1 - sandwich filler , 2 - shell skin, 3 - shear webs, 4 - spar caps, 5 - TE reinf.
+                    unit: none
+                waste:
+                    type: number
+                    description: Fraction of material that ends up wasted during manufacturing. This quantity is used in the NREL blade cost model https://www.nrel.gov/docs/fy19osti/73585.pdf
+                    unit: none
+                roll_mass:
+                    type: number
+                    description: Mass of a fabric roll. This quantity is used in the NREL blade cost model https://www.nrel.gov/docs/fy19osti/73585.pdf
+                    unit: kg
+                GIc:
+                    type: number
+                    description: Mode 1 critical energy-release rate. It is used by NuMAD from Sandia National Laboratories
+                    unit: J/m^2 
+                GIIc:
+                    type: number
+                    description: Mode 2 critical energy-release rate. It is used by NuMAD from Sandia National Laboratories
+                    unit: J/m^2
+                alp0:
+                    type: number
+                    description: Fracture angle under pure transverse compression. It is used by NuMAD from Sandia National Laboratories
+                    unit: deg
+                A: 
+                    description: Fatigue S/N curve fitting parameter S=A*N^(-1/m)
+                    oneOf:
+                        - type: number
+                          unit: none
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                m: 
+                    description: Fatigue S/N curve fitting parameter S=A*N^(-1/m)
+                    oneOf:
+                        - type: number
+                          unit: none
+                          minimum: 0
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false
+                            minimum: 0
+                R: 
+                    description: Fatigue stress ratio
+                    oneOf:
+                        - type: number
+                          unit: none
+                        - type: array
+                          items: 
+                            type: number
+                            unit: none
+                            minItems: 3
+                            maxItems: 3
+                            uniqueItems: false

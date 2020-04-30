@@ -180,6 +180,7 @@ properties:
                             $ref: "#/definitions/distributed_data/length"
         connectors:
             type: array
+            description: These are the structural members that connect two columns together or connect to a fairlead (mooring connection) point, such as the legs of a TLP
             items:
                 type: object
                 required:
@@ -190,8 +191,11 @@ properties:
                     - internal_structure
                 properties:
                     connector_type:
-                        # Are there enumerated types for: cable / circular / rectangular?
-                        type: enum
+                        type: string
+                        enum:
+                            - cable
+                            - circular
+                            - rectangular
                     attachment1: &attachment
                         type: object
                         required:
@@ -200,8 +204,10 @@ properties:
                             - grid_position
                         properties:
                             joint:
-                                # Possibilities for rigid, ball hinge, pin, other?
-                                type: enum
+                                type: string
+                                enum:
+                                    - pin
+                                    - hinge
                             column_name:
                                 type: string
                                 description: Which column does this attach to?

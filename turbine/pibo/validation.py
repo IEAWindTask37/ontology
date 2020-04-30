@@ -5,10 +5,10 @@ import os
 clear = lambda: os.system('cls')
 clear()
 
-with open('IEAonshoreWT.yaml', 'r') as myfile:
+with open('WT.yaml', 'r') as myfile:
   inputs = myfile.read()
 
-with open('IEAontology_schema.yaml', 'r') as myfile:
+with open('schema.yaml', 'r') as myfile:
   schema = myfile.read()
 
 validate(yaml.load(inputs), yaml.load(schema))

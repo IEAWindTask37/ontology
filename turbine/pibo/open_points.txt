@@ -1,2 +1,0 @@
-1) Field components/blade/bem_aero/airfoil positions: should it be grid-values or grid-labels?
-2) field airfoils/name/coordinates: should we have x-y or grid values?

@@ -230,17 +230,20 @@ properties:
                                 type: number
                                 description: Diameter of the hub measured at the blade root positions.
                                 unit: meter
-                                minimum: 0
+                                minimum: 0.
+                                maximum: 10.
                             cone_angle:
                                 type: number
                                 description: Rotor precone angle, defined positive for both upwind and downwind rotors.
                                 unit: rad
                                 minimum: 0
+                                maximum: 0.2
                             drag_coefficient:
                                 type: number
                                 description: Equivalent drag coefficient to compute the aerodynamic forces generated on the hub.
                                 unit: none
                                 minimum: 0
+                                maximum: 2.
                     elastic_properties_mb:                    
                         type: object
                         required:
@@ -276,17 +279,20 @@ properties:
                                 type: number
                                 description: Tilt angle of the nacelle, always defined positive.
                                 unit: rad
-                                minimum: 0
+                                minimum: 0.
+                                maximum: 0.2
                             distance_tt_hub:
                                 type: number
                                 description: Vertical distance between the tower top and the hub center.
                                 unit: meter
-                                minimum: 0
+                                minimum: 0.
+                                maximum: 20.
                             overhang:
                                 type: number
                                 description: Horizontal distance between the tower axis and the rotor apex.
                                 unit: meter
-                                minimum: 0
+                                minimum: 0.
+                                maximum: 20.
                     elastic_properties_mb:                    
                         type: object
                         required:
@@ -300,11 +306,13 @@ properties:
                                 description: Mass of the nacelle system, which includes the main bearing, the shafts, the gearbox (if present), the generator system, the nacelle cover, the bedplate, and all the components of the nacelle except for the yaw bearing and yaw actuators.
                                 unit: kg
                                 minimum: 0
+                                maximum: 1000000
                             yaw_mass:
                                 type: number
                                 description: Mass of the yaw system (yaw bearing and yaw actuators).
                                 unit: kg
                                 minimum: 0
+                                maximum: 100000
                             inertia:
                                 type: array
                                 description: Inertia of the nacelle system, in the nacelle reference system, which has the x horizontal pointing downwind, y horizontal pointing on the side, and z pointing vertically upwards (aligned with the tower axis).
@@ -325,6 +333,7 @@ properties:
                                     maxItems: 3
                                     uniqueItems: false
                                     minimum: 0
+                                    maximum: 20
                     drivetrain:
                         type: object
                         description: Inputs to WISDEM specific drivetrain sizing tool DriveSE https://www.nrel.gov/docs/fy15osti/63008.pdf
@@ -337,6 +346,7 @@ properties:
                                 description: Gear ratio of the drivetrain. Set it to 1 for direct drive machines.
                                 unit: none
                                 minimum: 1
+                                maximum: 1000
                             efficiency:
                                 type: number
                                 description: Efficiency of the drivetrain system, which combines generator and gearbox efficiencies.
@@ -354,7 +364,8 @@ properties:
                         type: number
                         description: Scaling factor for the tower mass to account for auxiliary structures, such as elevator, ladders, cables, platforms, etc
                         unit: none
-                        minimum: 0
+                        minimum: 1
+                        maximum: 2
                     outer_shape_bem:                    
                         type: object
                         required:
@@ -438,6 +449,7 @@ properties:
                         description: Height of the onshore foundation above ground, always defined positive.
                         unit: meter
                         minimum: 0
+                        maximum: 100
     airfoils:
         type: array
         description: Database of airfoils
@@ -555,13 +567,14 @@ properties:
                     type: string
                     description: Optional field describing where the data come from
                 orth:
-                    type: number
+                    type: integer
                     description: Flag to switch between isotropic (0) and orthotropic (1) materials
                 rho:
                     description: Density of the material. For composites, this is the density of the laminate once cured
                     type: number
                     unit: kg/m3
                     minimum: 0
+                    maximum: 20000
                 E:  
                     description: Stiffness modulus. For orthotropic materials, it consists of an array with E11, E22 and E33. 
                     oneOf:
@@ -604,6 +617,7 @@ properties:
                             maxItems: 3
                             uniqueItems: false
                             minimum: 0
+                            maximum: 0.6
                 alpha:
                     description: Thermal coefficient of expansion
                     oneOf:
@@ -676,38 +690,56 @@ properties:
                     type: number
                     description: Ply thickness of the composite material
                     unit: m
+                    minimum : 0
+                    maximum: 0.1
                 unit_cost:
                     type: number
                     description: Unit cost of the material. For composites, this is the unit cost of the dry fabric.
                     unit: USD/kg
+                    minimum : 0
+                    maximum: 1000
                 fvf:
                     type: number
                     description: Fiber volume fraction of the composite material
                     unit: none
+                    minimum : 0
+                    maximum: 1
                 fwf:
                     type: number
                     description: Fiber weight fraction of the composite material
                     unit: none
+                    minimum : 0
+                    maximum: 1
                 fiber_density:
                     type: number
                     description: Density of the fibers of a composite material.
                     unit: kg/m3
+                    minimum : 0
+                    maximum: 10000
                 area_density_dry:
                     type: number
                     description: Aerial density of a fabric of a composite material.
                     unit: kg/m2
+                    minimum : 0
+                    maximum: 10000
                 component_id:
-                    type: number
+                    type: integer
                     description: Flag used by the NREL blade cost model https://www.nrel.gov/docs/fy19osti/73585.pdf to define the manufacturing process behind the laminate. 0 - coating, 1 - sandwich filler , 2 - shell skin, 3 - shear webs, 4 - spar caps, 5 - TE reinf.
                     unit: none
+                    minimum : 0
+                    maximum: 5
                 waste:
                     type: number
                     description: Fraction of material that ends up wasted during manufacturing. This quantity is used in the NREL blade cost model https://www.nrel.gov/docs/fy19osti/73585.pdf
                     unit: none
+                    minimum : 0
+                    maximum: 1
                 roll_mass:
                     type: number
                     description: Mass of a fabric roll. This quantity is used in the NREL blade cost model https://www.nrel.gov/docs/fy19osti/73585.pdf
                     unit: kg
+                    minimum : 0
+                    maximum: 10000
                 GIc:
                     type: number
                     description: Mode 1 critical energy-release rate. It is used by NuMAD from Sandia National Laboratories
@@ -748,6 +780,7 @@ properties:
                             maxItems: 3
                             uniqueItems: false
                             minimum: 0
+                            maximum: 1000
                 R: 
                     description: Fatigue stress ratio
                     oneOf:
@@ -760,6 +793,8 @@ properties:
                             minItems: 3
                             maxItems: 3
                             uniqueItems: false
+                            minimum: -100
+                            maximum: 100
     assembly:
         type: object
         required:
@@ -786,6 +821,7 @@ properties:
                 description: Number of blades of the rotor
                 unit: none
                 minimum: 0
+                maximum: 10
     control:
         type: object
         required:
@@ -808,95 +844,115 @@ properties:
                 description: Cut-in wind speed of the wind turbine.
                 unit: m/s
                 minimum: 0
+                maximum: 10
             Vout:
                 type: number
                 description: Cut-out wind speed of the wind turbine.
                 unit: m/s
                 minimum: 0
+                maximum: 50
             minOmega:
                 type: number
                 description: Minimum rotor speed of the wind turbine.
                 unit: rad/s
                 minimum: 0
+                maximum: 2
             maxOmega:
                 type: number
                 description: Maximum rotor speed of the wind turbine.
                 unit: rad/s
                 minimum: 0
+                maximum: 10
             tsr:
                 type: number
                 description: Rated tip speed ratio of the wind turbine. As default, it is maintained constant in region II.
                 unit: none
                 minimum: 0
+                maximum: 15
             pitch:
                 type: number
                 description: Rated pitch angle of the wind turbine. As default, it is maintained constant in region II.
                 unit: rad
+                minimum: -10
+                maximum: 10
             maxTS:
                 type: number
                 description: Maximum allowable blade tip speed.
                 unit: m/s
-                minimum: 0
+                minimum: 60
+                maximum: 120
             max_pitch_rate:
                 type: number
                 description: Maximum pitch rate of the rotor blades.
                 unit: rad/s
                 minimum: 0
+                maximum: 0.2
             max_torque_rate:
                 type: number
                 description: Maximum torque rate of the wind turbine generator.
                 unit: Nm/s
-                minimum: 0
+                minimum: 1000
+                maximum: 10000000
             PC_zeta:
                 type: number
                 description: Pitch controller desired damping ratio. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: none
                 minimum: 0
+                maximum: 5
             PC_omega:
                 type: number
                 description: Pitch controller desired natural frequency. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: rad/s
                 minimum: 0
+                maximum: 5
             VS_zeta:
                 type: number
                 description: Torque controller desired damping ratio. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: none
                 minimum: 0
+                maximum: 5
             VS_omega:
                 type: number
                 description: Torque controller desired natural frequency. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: rad/s
                 minimum: 0
+                maximum: 5
             max_pitch:
                 type: number
                 description: Maximum pitch angle, where the default is 90 degrees. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: rad
                 minimum: 0
+                maximum: 2.
             min_pitch:
                 type: number
                 description: Minimum pitch angle, where the default is 0 degrees. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: rad
-                minimum: 0
+                minimum: -0.5
+                maximum: 1.
             vs_minspd:
                 type: number
                 description: Minimum rotor speed. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: rad/s
                 minimum: 0
+                maximum: 5
             ss_vsgain:
                 type: number
                 description: Torque controller setpoint smoother gain bias percentage. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: none
                 minimum: 0
+                maximum: 1
             ss_pcgain:
                 type: number
                 description: Pitch controller setpoint smoother gain bias percentage. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: none
                 minimum: 0
+                maximum: 1
             ps_percent:
                 type: number
                 description: Percent peak shaving. It is used by the ROSCO controller (https://github.com/NREL/ROSCO)
                 unit: none
                 minimum: 0
+                maximum: 1
     environment:
         type: object
         required:
@@ -915,46 +971,55 @@ properties:
                 description: Density of air.
                 unit: kg/m3
                 minimum: 0
+                maximum: 1.5
             air_dyn_viscosity:
                 type: number
                 description: Dynamic viscosity of air.
                 unit: kg/(ms)
                 minimum: 0
+                maximum: 2.e-5
             weib_shape_parameter:
                 type: number
                 description: Shape factor of the Weibull wind distribution.
                 unit: none
-                minimum: 0
+                minimum: 1
+                maximum: 3
             air_speed_sound:
                 type: number
                 description: Speed of sound in air.
                 unit: m/s
-                minimum: 0
+                minimum: 330
+                maximum: 350
             shear_exp:
                 type: number
                 description: Shear exponent of the atmospheric boundary layer.
                 unit: none
                 minimum: 0
+                maximum: 1
             water_density:
                 type: number
                 description: Density of water.
                 unit: kg/m3
-                minimum: 0
+                minimum: 950
+                maximum: 1100
             water_dyn_viscosity:
                 type: number
                 description: Dynamic viscosity of water.
                 unit: kg/(ms)
-                minimum: 0
+                minimum: 1.e-3
+                maximum: 2.e-3
             soil_shear_modulus:
                 type: number
                 description: Shear modulus of the soil.
                 unit: Pa
-                minimum: 0
+                minimum: 100.e+6
+                maximum: 200.e+6
             soil_poisson:
                 type: number
                 description: Poisson ratio of the soil.
                 unit: none
                 minimum: 0
+                maximum: 0.6
     costs:
         type: object
         required:
@@ -969,26 +1034,31 @@ properties:
                 description: Factor to model losses in annual energy production in a wind farm compared to the annual energy production at the turbine level (wakes mostly). 
                 unit: none
                 minimum: 0
+                maximum: 1
             fixed_charge_rate:
                 type: number
                 description: Fixed charge rate to compute the levelized cost of energy. See this for inspiration https://www.nrel.gov/docs/fy20osti/74598.pdf 
                 unit: none
                 minimum: 0
+                maximum: 1
             bos_per_kW:
                 type: number
                 description: Balance of stations costs expressed in USD per kW. See this for inspiration https://www.nrel.gov/docs/fy20osti/74598.pdf 
                 unit: USD/kW
                 minimum: 0
+                maximum: 10000
             opex_per_kW:
                 type: number
                 description: Operational expenditures expressed in USD per kW. See this for inspiration https://www.nrel.gov/docs/fy20osti/74598.pdf 
                 unit: USD/kW
                 minimum: 0
+                maximum: 1000
             turbine_number:
                 type: number
                 description: Number of turbines in the park, used to compute levelized cost of energy. Often wind parks are assumed of 600 MW. See this for inspiration https://www.nrel.gov/docs/fy20osti/74598.pdf 
                 unit: none
                 minimum: 0
+                maximum: 10000
 definitions:
     distributed_data:
         grid_nd: 
@@ -1177,14 +1247,14 @@ definitions:
         rotation:
             type: object
             description: rotation of the chord axis around the pitch axis
-            required:
-                - grid
-                - values
             properties: 
                 grid: 
                     $ref: "#/definitions/distributed_data/grid_nd"
                 values: 
                     $ref: "#/definitions/distributed_data/angle"
+                fixed: 
+                    type: string
+                    description: Name of the layer to lock the edge
         axis_coordinates:
             type: object
             description: The reference system is located at blade root, with z aligned with the pitch axis, x pointing towards the suction sides of the airfoils (standard prebend will be negative) and y pointing to the trailing edge (standard sweep will be positive)

@@ -135,7 +135,7 @@ properties:
                                             $ref: "#/definitions/distributed_data/nd_arc_position"
                                         rotation:
                                             $ref: "#/definitions/distributed_data/rotation"
-                                        offset_x_pa:
+                                        offset_y_pa:
                                             $ref: "#/definitions/distributed_data/offset"
                             layers:
                                 type: array

@@ -356,16 +356,9 @@ properties:
             tower:
                 type: object
                 required:
-                    - outfitting_factor
                     - outer_shape_bem
                     - internal_structure_2d_fem
                 properties: 
-                    outfitting_factor:
-                        type: number
-                        description: Scaling factor for the tower mass to account for auxiliary structures, such as elevator, ladders, cables, platforms, etc
-                        unit: none
-                        minimum: 1
-                        maximum: 2
                     outer_shape_bem:                    
                         type: object
                         required:
@@ -407,9 +400,16 @@ properties:
                     internal_structure_2d_fem:
                         type: object
                         required:
+                            - outfitting_factor
                             - reference_axis
                             - layers
                         properties: 
+                            outfitting_factor:
+                                type: number
+                                description: Scaling factor for the tower mass to account for auxiliary structures, such as elevator, ladders, cables, platforms, etc
+                                unit: none
+                                minimum: 1
+                                maximum: 2
                             reference_axis:
                                 $ref: "#/definitions/distributed_data/axis_coordinates"
                             layers:

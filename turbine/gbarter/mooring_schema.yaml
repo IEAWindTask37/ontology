@@ -1,0 +1,187 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+$id: WEIS_Mooring_v00
+title: WEIS mooring ontology
+description: Ontology definition for mooring systems suitable for use with the WEIS co-design analysis tool
+type: object
+required: 
+    - name
+    - nodes
+    - lines
+    - materials
+properties:
+    name: 
+        description: Name of the mooring system
+        type: string
+    nodes: 
+        type: array
+        description: List of nodes in the mooring system
+        items:
+            type: object
+            required:
+                - node_id
+                - node_type
+                - anchor_type # required if node_type=anchor
+                - fairlead_type # required if node_type=vessel
+                - location
+                - node_mass
+                - node_volume
+                - external_force
+                - drag_area
+                - added_mass
+            properties:
+                node_id:
+                    type: number # or string?
+                    description: ID of this node for use in line segment
+                node_type:
+                    type: string
+                    enum:
+                        - fixed
+                        - connection
+                        - vessel
+                anchor_type:
+                    type: string
+                    enum:
+                        - drag_embedment
+                        - suction_pile
+                        - gravity
+                fairlead_type:
+                    type: string
+                    enum:
+                        - pin
+                        - turret
+                location:
+                    type: object
+                    description: – Coordinates of the connection (relative to inertial reference frame if Fixed or Connect, relative to platform reference frame if Vessel). In the case of Connect nodes, it is simply an initial guess for position before MoorDyn calculates the equilibrium initial position. 
+                    required:
+                        - x
+                        - y
+                        - z
+                    properties:
+                        x:
+                            type: number
+                            units: meter
+                        y:
+                            type: number
+                            units: meter
+                        z:
+                            type: number
+                            units: meter
+                node_mass:
+                    type: number
+                    units: kilogram
+                    description: Clump weight mass
+                node_volume:
+                    type: number
+                    units: kilogram
+                    description: Floater volume
+                external_force:
+                    type: object
+                    description: Steady external forces applied to the node
+                    required:
+                        - Fx
+                        - Fy
+                        - Fz
+                    properties:
+                        Fx:
+                            type: number
+                            units: Newton
+                        Fy:
+                            type: number
+                            units: Newton
+                        Fz:
+                            type: number
+                            units: Newton
+                drag_area:
+                    type: number
+                    units: meter^2
+                    description: Product of drag coefficient and projected area (assumed constant in all directions) to calculate a drag force for the node
+                added_mass:
+                    type: number
+                    description: Added mass coefficient used along with node volume to calculate added mass on node
+    lines:
+        required:
+            - line_id
+            - material
+            - unstretched_length
+            - fairlead_node_id
+            - anchor_node_id
+        properties:
+            line_id:
+                type: number # or string?
+                description: ID of this linne
+            material:
+                type: string
+                description: Reference to line type material database
+            unstretched_length:
+                type: number
+                units: meter
+                description: length of line segment prior to installation
+            fairlead_node_id:
+                type: number #or string
+                description: node id of line closer to fairlead attachment on vessel
+            anchor_node_id:
+                type: number #or string
+                description: node id of line closer to anchor
+    materials:
+        required:
+            - name
+            - diameter
+            - mass_density
+            - stiffness
+            - breaking_load
+            - cost
+            - damping
+            - transverse_added_mass
+            - tangential_added_mass
+            - transverse_drag
+            - tangential_drag
+        properties:
+            name:
+                type: string
+                description: Name of material or line type to be referenced by line segments
+            diameter:
+                type: number
+                units: meter
+                description: the volume-equivalent diameter of the line – the diameter of a cylinder having the same displacement per unit length
+            mass_density:
+                type: number
+                unit: kilogram/meter
+                description: mass per unit length (in air)
+            stiffness:
+                type: number
+                unit: Newton
+                description: axial line stiffness, product of elasticity modulus and cross-sectional area
+            cost:
+                type: number
+                unit: USD/meter
+                description: cost per unit length
+            breaking_load:
+                type: number
+                unit: Pascal
+                description: line break tension
+            damping:
+                type: object
+                required:
+                    # Need just one of these
+                    - internal_damping
+                    - damping_ratio
+                properties:
+                    internal_damping:
+                        type: number
+                        unit: Newton * second
+                        description: internal damping (BA)
+                    damping_ratio:
+                        type: number
+                        description: damping of the line and BA of each line will be calculated
+            transverse_added_mass:
+                type: number
+                description: transverse added mass coefficient (with respect to line displacement)
+            tangential_added_mass:
+                type: number
+                description: tangential added mass coefficient (with respect to line displacement)
+            transverse_drag:
+                type: number
+                description: transverse drag coefficient (with respect to frontal area, d*l)
+            tangential_drag:
+                type: number
+                description: tangential drag coefficient (with respect to surface area, π*d*l)

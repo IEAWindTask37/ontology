@@ -1,5 +1,5 @@
 $schema: "http://json-schema.org/draft-07/schema#"
-$id: WEIS_Mooring_v00
+$id: WEIS_Mooring_v00.1
 title: WEIS mooring ontology
 description: Ontology definition for mooring systems suitable for use with the WEIS co-design analysis tool
 type: object
@@ -99,89 +99,97 @@ properties:
                     type: number
                     description: Added mass coefficient used along with node volume to calculate added mass on node
     lines:
-        required:
-            - line_id
-            - material
-            - unstretched_length
-            - fairlead_node_id
-            - anchor_node_id
-        properties:
-            line_id:
-                type: number # or string?
-                description: ID of this linne
-            material:
-                type: string
-                description: Reference to line type material database
-            unstretched_length:
-                type: number
-                units: meter
-                description: length of line segment prior to installation
-            fairlead_node_id:
-                type: number #or string
-                description: node id of line closer to fairlead attachment on vessel
-            anchor_node_id:
-                type: number #or string
-                description: node id of line closer to anchor
+        type: array
+        description: List of all mooring line properties in the mooring system
+        items:
+            type: object
+            required:
+                - line_id
+                - material
+                - unstretched_length
+                - fairlead_node_id
+                - anchor_node_id
+            properties:
+                line_id:
+                    type: number # or string?
+                    description: ID of this linne
+                material:
+                    type: string
+                    description: Reference to line type material database
+                unstretched_length:
+                    type: number
+                    units: meter
+                    description: length of line segment prior to installation
+                fairlead_node_id:
+                    type: number #or string
+                    description: node id of line closer to fairlead attachment on vessel
+                anchor_node_id:
+                    type: number #or string
+                    description: node id of line closer to anchor
     materials:
-        required:
-            - name
-            - diameter
-            - mass_density
-            - stiffness
-            - breaking_load
-            - cost
-            - damping
-            - transverse_added_mass
-            - tangential_added_mass
-            - transverse_drag
-            - tangential_drag
-        properties:
-            name:
-                type: string
-                description: Name of material or line type to be referenced by line segments
-            diameter:
-                type: number
-                units: meter
-                description: the volume-equivalent diameter of the line – the diameter of a cylinder having the same displacement per unit length
-            mass_density:
-                type: number
-                unit: kilogram/meter
-                description: mass per unit length (in air)
-            stiffness:
-                type: number
-                unit: Newton
-                description: axial line stiffness, product of elasticity modulus and cross-sectional area
-            cost:
-                type: number
-                unit: USD/meter
-                description: cost per unit length
-            breaking_load:
-                type: number
-                unit: Pascal
-                description: line break tension
-            damping:
-                type: object
-                required:
-                    # Need just one of these
-                    - internal_damping
-                    - damping_ratio
-                properties:
-                    internal_damping:
-                        type: number
-                        unit: Newton * second
-                        description: internal damping (BA)
-                    damping_ratio:
-                        type: number
-                        description: damping of the line and BA of each line will be calculated
-            transverse_added_mass:
-                type: number
-                description: transverse added mass coefficient (with respect to line displacement)
-            tangential_added_mass:
-                type: number
-                description: tangential added mass coefficient (with respect to line displacement)
-            transverse_drag:
-                type: number
-                description: transverse drag coefficient (with respect to frontal area, d*l)
-            tangential_drag:
-                type: number
-                description: tangential drag coefficient (with respect to surface area, π*d*l)
+        type: array
+        description: List of all material properties in the mooring system
+        items:
+            type: object
+            required:
+                - name
+                - diameter
+                - mass_density
+                - stiffness
+                - breaking_load
+                - cost
+                - damping
+                - transverse_added_mass
+                - tangential_added_mass
+                - transverse_drag
+                - tangential_drag
+            properties:
+                name:
+                    type: string
+                    description: Name of material or line type to be referenced by line segments
+                diameter:
+                    type: number
+                    units: meter
+                    description: the volume-equivalent diameter of the line – the diameter of a cylinder having the same displacement per unit length
+                mass_density:
+                    type: number
+                    unit: kilogram/meter
+                    description: mass per unit length (in air)
+                stiffness:
+                    type: number
+                    unit: Newton
+                    description: axial line stiffness, product of elasticity modulus and cross-sectional area
+                cost:
+                    type: number
+                    unit: USD/meter
+                    description: cost per unit length
+                breaking_load:
+                    type: number
+                    unit: Pascal
+                    description: line break tension
+                damping:
+                    type: object
+                    required:
+                        # Need just one of these
+                        - internal_damping
+                        - damping_ratio
+                    properties:
+                        internal_damping:
+                            type: number
+                            unit: Newton * second
+                            description: internal damping (BA)
+                        damping_ratio:
+                            type: number
+                            description: damping of the line and BA of each line will be calculated
+                transverse_added_mass:
+                    type: number
+                    description: transverse added mass coefficient (with respect to line displacement)
+                tangential_added_mass:
+                    type: number
+                    description: tangential added mass coefficient (with respect to line displacement)
+                transverse_drag:
+                    type: number
+                    description: transverse drag coefficient (with respect to frontal area, d*l)
+                tangential_drag:
+                    type: number
+                    description: tangential drag coefficient (with respect to surface area, π*d*l)

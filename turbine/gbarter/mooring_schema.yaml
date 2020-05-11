@@ -7,7 +7,7 @@ required:
     - name
     - nodes
     - lines
-    - materials
+    # - materials
 properties:
     name: 
         description: Name of the mooring system
@@ -28,22 +28,24 @@ properties:
                 - external_force
                 - drag_area
                 - added_mass
+                - anchor_type
+                - fairlead_type
             if:
                 # If node_type == fixed, then we need to specify the anchor_type
                 properties:
                     node_type:
                         const: fixed
             then:
-                dependencies:
-                    node_type: anchor_type
+                required:
+                - anchor_type
             if:
                 # If node_type == vessel, then we need to specify the fairlead_type
                 properties:
                     node_type:
                         const: vessel
             then:
-                dependencies:
-                    node_type: fairlead_type
+                required:
+                - fairlead_type
             properties:
                 node_id:
                     type: number # or string?
@@ -54,17 +56,6 @@ properties:
                         - fixed
                         - connection
                         - vessel
-                anchor_type:
-                    type: string
-                    enum:
-                        - drag_embedment
-                        - suction_pile
-                        - gravity
-                fairlead_type:
-                    type: string
-                    enum:
-                        - pin
-                        - turret
                 location:
                     type: object
                     description: – Coordinates of the connection (relative to inertial reference frame if Fixed or Connect, relative to platform reference frame if Vessel). In the case of Connect nodes, it is simply an initial guess for position before MoorDyn calculates the equilibrium initial position. 
@@ -82,6 +73,17 @@ properties:
                         z:
                             type: number
                             units: meter
+                anchor_type:
+                    type: string
+                    enum:
+                        - drag_embedment
+                        - suction_pile
+                        - gravity
+                fairlead_type:
+                    type: string
+                    enum:
+                        - pin
+                        - turret
                 node_mass:
                     type: number
                     units: kilogram
@@ -114,6 +116,7 @@ properties:
                 added_mass:
                     type: number
                     description: Added mass coefficient used along with node volume to calculate added mass on node
+
     lines:
         type: array
         description: List of all mooring line properties in the mooring system
@@ -185,9 +188,6 @@ properties:
                     description: line break tension
                 damping:
                     type: object
-                    oneOf:
-                        - internal_damping
-                        - damping_ratio
                     properties:
                         internal_damping:
                             type: number
@@ -196,6 +196,11 @@ properties:
                         damping_ratio:
                             type: number
                             description: damping of the line and BA of each line will be calculated
+                    oneOf:
+                      - required:
+                        - internal_damping
+                      - required:
+                        - damping_ratio
                 transverse_added_mass:
                     type: number
                     description: transverse added mass coefficient (with respect to line displacement)

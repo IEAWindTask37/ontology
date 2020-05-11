@@ -1,0 +1,74 @@
+# Loosely based on the MoorDyn input file for the 15MW RWT: https://github.com/IEAWindTask37/IEA-15-240-RWT/blob/master/OpenFAST/IEA-15-240-RWT-UMaineSemi/IEA-15-240-RWT-UMaineSemi_MoorDyn.dat
+name: example_mooring_setup
+nodes:
+  - node_id: 1
+    node_type: vessel
+    location:
+      x: -58.000
+      y: 0.000
+      z: -14.000
+    fairlead_type: turret
+  - node_id: 2
+    node_type: fixed
+    location:
+      x: -837.600
+      y: 0.000
+      z: -200.000
+    anchor_type: gravity
+  - node_id: 3
+    node_type: vessel
+    location:
+      x: 29.000
+      y: 50.229
+      z: -14.000
+    fairlead_type: turret
+  - node_id: 4
+    node_type: fixed
+    location:
+      x: 418.8
+      y: 725.383
+      z: -200.
+    anchor_type: gravity
+  - node_id: 5
+    node_type: vessel
+    location:
+      x: 29.
+      y: -50.229
+      z: -14.0
+    fairlead_type: turret
+  - node_id: 6
+    node_type: fixed
+    location:
+      x: 418.8
+      y: -725.383
+      z: 200.
+    anchor_type: gravity
+lines:
+  - line_id: 1
+    material: main
+    unstretched_length: 850.
+    anchor_node_id: 2
+    fairlead_node_id: 1
+  - line_id: 2
+    material: main
+    unstretched_length: 850.
+    anchor_node_id: 4
+    fairlead_node_id: 3
+  - line_id: 3
+    material: main
+    unstretched_length: 850.
+    anchor_node_id: 6
+    fairlead_node_id: 5
+materials:
+  - name: main
+    diameter: 0.333
+    mass_density: 685.
+    stiffness: 3.27E+09
+    breaking_load: 1.04E+09
+    cost: 9999
+    damping:
+      damping_ratio: -1.
+    transverse_added_mass: 0.
+    tangential_added_mass: 0.
+    transverse_drag: 1.11
+    tangential_drag: 0.20

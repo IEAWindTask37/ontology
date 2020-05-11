@@ -20,14 +20,30 @@ properties:
             required:
                 - node_id
                 - node_type
-                - anchor_type # required if node_type=anchor
-                - fairlead_type # required if node_type=vessel
                 - location
+            optional:
+                # Optional properties that are defined below:
                 - node_mass
                 - node_volume
                 - external_force
                 - drag_area
                 - added_mass
+            if:
+                # If node_type == fixed, then we need to specify the anchor_type
+                properties:
+                    node_type:
+                        const: fixed
+            then:
+                dependencies:
+                    node_type: anchor_type
+            if:
+                # If node_type == vessel, then we need to specify the fairlead_type
+                properties:
+                    node_type:
+                        const: vessel
+            then:
+                dependencies:
+                    node_type: fairlead_type
             properties:
                 node_id:
                     type: number # or string?
@@ -112,7 +128,7 @@ properties:
             properties:
                 line_id:
                     type: number # or string?
-                    description: ID of this linne
+                    description: ID of this line
                 material:
                     type: string
                     description: Reference to line type material database
@@ -138,11 +154,11 @@ properties:
                 - stiffness
                 - breaking_load
                 - cost
-                - damping
-                - transverse_added_mass
-                - tangential_added_mass
-                - transverse_drag
-                - tangential_drag
+                - damping # Optional? Ask MattH
+                - transverse_added_mass # Optional? Ask MattH
+                - tangential_added_mass # Optional? Ask MattH
+                - transverse_drag # Optional? Ask MattH
+                - tangential_drag # Optional? Ask MattH
             properties:
                 name:
                     type: string
@@ -169,8 +185,7 @@ properties:
                     description: line break tension
                 damping:
                     type: object
-                    required:
-                        # Need just one of these
+                    oneOf:
                         - internal_damping
                         - damping_ratio
                     properties:

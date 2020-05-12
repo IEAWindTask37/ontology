@@ -7,7 +7,7 @@ required:
     - name
     - nodes
     - lines
-    # - materials
+    - materials
 properties:
     name: 
         description: Name of the mooring system
@@ -25,10 +25,9 @@ properties:
                 # Optional properties that are defined below:
                 - node_mass
                 - node_volume
-                - external_force
                 - drag_area
                 - added_mass
-                - anchor_type
+                - anchor_type     
                 - fairlead_type
             if:
                 # If node_type == fixed, then we need to specify the anchor_type
@@ -79,36 +78,23 @@ properties:
                         - drag_embedment
                         - suction_pile
                         - gravity
+                        - torpedo
+                        - helical
+                        - VLA
                 fairlead_type:
                     type: string
                     enum:
-                        - pin
+                        - rigid
+                        - actuated
                         - turret
-                node_mass:
+                node_mass: <<< are buoyancy cans considered here?  If so, may need to support a 6 DOF body, with mass, CM, and inertia, and more complicated hydrodynamic coeffiicents
                     type: number
                     units: kilogram
                     description: Clump weight mass
                 node_volume:
                     type: number
-                    units: kilogram
+                    units: meter^3
                     description: Floater volume
-                external_force:
-                    type: object
-                    description: Steady external forces applied to the node
-                    required:
-                        - Fx
-                        - Fy
-                        - Fz
-                    properties:
-                        Fx:
-                            type: number
-                            units: Newton
-                        Fy:
-                            type: number
-                            units: Newton
-                        Fz:
-                            type: number
-                            units: Newton
                 drag_area:
                     type: number
                     units: meter^2
@@ -126,8 +112,8 @@ properties:
                 - line_id
                 - material
                 - unstretched_length
-                - fairlead_node_id
-                - anchor_node_id
+                - node1_id
+                - node2_id 
             properties:
                 line_id:
                     type: number # or string?
@@ -138,16 +124,17 @@ properties:
                 unstretched_length:
                     type: number
                     units: meter
-                    description: length of line segment prior to installation
-                fairlead_node_id:
+                    description: length of line segment prior to tensioning
+                node1_id:
                     type: number #or string
-                    description: node id of line closer to fairlead attachment on vessel
-                anchor_node_id:
+                    description: node id of first line connection
+                node2_id:
                     type: number #or string
-                    description: node id of line closer to anchor
-    materials:
+                    description: node id of second line connection
+    
+    materials:  <<< I'd suggest renaming to something like line types/properties since this about more than materials
         type: array
-        description: List of all material properties in the mooring system
+        description: List of mooring line properties used in the system
         items:
             type: object
             required:
@@ -157,11 +144,12 @@ properties:
                 - stiffness
                 - breaking_load
                 - cost
-                - damping # Optional? Ask MattH
-                - transverse_added_mass # Optional? Ask MattH
+                - transverse_added_mass # Optional? Ask MattH    <<< I'm not sure if these should be optional or required... will think/discuss more.
                 - tangential_added_mass # Optional? Ask MattH
                 - transverse_drag # Optional? Ask MattH
                 - tangential_drag # Optional? Ask MattH
+            optional:
+                - damping
             properties:
                 name:
                     type: string
@@ -184,23 +172,12 @@ properties:
                     description: cost per unit length
                 breaking_load:
                     type: number
-                    unit: Pascal
+                    unit: Pascal  <<< should be in N
                     description: line break tension
                 damping:
-                    type: object
-                    properties:
-                        internal_damping:
-                            type: number
-                            unit: Newton * second
-                            description: internal damping (BA)
-                        damping_ratio:
-                            type: number
-                            description: damping of the line and BA of each line will be calculated
-                    oneOf:
-                      - required:
-                        - internal_damping
-                      - required:
-                        - damping_ratio
+                    type: number
+                    unit: Newton * second
+                    description: internal damping (BA)
                 transverse_added_mass:
                     type: number
                     description: transverse added mass coefficient (with respect to line displacement)

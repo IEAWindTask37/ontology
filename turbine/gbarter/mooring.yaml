@@ -7,42 +7,42 @@ nodes:
       x: -58.000
       y: 0.000
       z: -14.000
-    fairlead_type: turret
+    fairlead_type: pin
   - node_id: 2
     node_type: fixed
     location:
       x: -837.600
       y: 0.000
       z: -200.000
-    anchor_type: gravity
+    anchor_type: drag_embedment
   - node_id: 3
     node_type: vessel
     location:
       x: 29.000
       y: 50.229
       z: -14.000
-    fairlead_type: turret
+    fairlead_type: pin
   - node_id: 4
     node_type: fixed
     location:
       x: 418.8
       y: 725.383
       z: -200.
-    anchor_type: gravity
+    anchor_type: drag_embedment
   - node_id: 5
     node_type: vessel
     location:
       x: 29.
       y: -50.229
       z: -14.0
-    fairlead_type: turret
+    fairlead_type: pin
   - node_id: 6
     node_type: fixed
     location:
       x: 418.8
       y: -725.383
       z: 200.
-    anchor_type: gravity
+    anchor_type: drag_embedment
 lines:
   - line_id: 1
     material: main

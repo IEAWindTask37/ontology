@@ -1,53 +1,372 @@
-input_format_version: 0
-title: IEA Wind Task 37 Wind Plant Ontology version 0.1
-description: wind resource conditions for a wind plant energy production model
+# Draft schema definition for site energy resource
 
-# Draft schema definitions for energy model
+input_format_version: 0 # What is this for?
+title: Site wind resource description
+type: object
+description: >-
+  A description of the wind resource available within a site. The wind resource
+  can be specified at one location within the site, or at multiple locations.
+  At each point specified within the site, the wind resource can be detailed in
+  several different ways.
+required:
+  - locations
+additionalProperties: false
+
+# GROUP QUESTIONS:
+#
+# 1) Does this cover what everyone needs to be expressed?
+#   - Higher level structure of an array of locations
+#
+# 2) IEA37 github: open for making branches? Should I fork?
+
+
+# PROPERTIES
+properties:
+  #~
+  locations:
+    type: array
+    description: >-
+      Locations of wind resource points within the site, along with associated
+      wind resource specifications.
+    minItems: 1
+    items:
+      - title: Coordinate within a site
+        $ref: "#/definitions/coordinate"
+      - title: Wind definition for a specified coordinate
+        $ref: "#/definitions/wind_definition"
+
+
+# DEFINITIONS
 definitions:
-
-  wind_resource:
+  wind_definition:
+    title: Wind resource specification
     type: object
-    description: "Wind reource set-up based on current TOPFARM implementation"
-    
+    description: >-
+      #TODO
+    additionalProperties: false
+    required:
+      oneOf:
+        - wind_rose
+        - timeseries
+      - reference_height
+    #~~~
     properties:
-      coordinates: 
-	      type: object
-	      description: "Coordinates of the wind resource widh speed/direction information"
-        
-        properties:
-          positions:
-              type: ndarray
-              description: [np x nd] array of locations of resource points in UTM, nd is number of dimensions
-              
-          wsp_edg:
-              type: ndarray
-              description: edges of wind speed bins for wind rose
-          
-          wdir_edg:
-              type: ndarray
-              description: edges of wind direction edges for wind rose
+      wind_rose:
+        title: Wind rose
+        $ref: "#/definitions/wind_rose"
+      #~~~
+      timeseries:
+        title: Timeseries wind data
+        $ref: "#/definitions/timeseries"
+      #~~~
+      reference_height: # relative to ground or sea-level?
+        title: Height of wind resource defintion 
+        type: array
+        items:
+          - title: Height
+            type: number
+            unit: m
+      #~~~
+      terrain_height:
+        title: Terrain heights
+        description: >-
+          Height of the terrain at each defined coordinate.
+        type: array
+        minItems: 1
+        items:
+          title: Terrain height
+          type: number
+          unit: m
+      #~~~
+      air_temperature:
+        title: Air temperature definition
+        type: array
+        description: >-
+          The air temperature at each defined coordinate. Can be a series
+          of air temperatures if correlated with a timeseries, in which
+          case the length should be the same as the time_array.
+        minItems: 1
+        items:
+          title: Air temperature
+          type: number
+          unit: °C
+      #~~~
+      air_density:
+        title: Air density
+        type: number
+        unit: kg/m3
+        minimum: 0.
+        default: 1.2041
+      #~~~
+      turbulence_intensity:
+        title: Turbulence intensity definition
+        type: array
+        description: >-
+          The turbulence intensity at each defined coordinate. Can be a
+          series of turbulence intensities if correlated with a timeseries,
+          in which case the length should be the same as the time_array.
+        minItems: 1
+        items:
+          title: Air temperature
+          type: number
+          unit: °C
+  #~
+  wind_rose:
+    title: Wind rose
+    type: object
+    required:
+      - directions
+      - direction_pmf
+      - oneOf:
+          - allOf:
+              - speeds
+              - speed_cpmf
+          - speed_cweibull
+    #~~~~
+    properties:
+      directions:
+        title: Wind directions
+        description: >-
+          #TODO
+        type: array
+        items:
+          $ref: "#/definitions/wind_direction"
+      #~~~~
+      direction_pmf:
+        title: Wind direction probability mass function
+        description: >-
+          The wind direction probability mass function given as an
+          array of positive weights not necessarily summing up to one.
+          So normalization needs to be done to obtain probabilities
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          title: Weight
+          type: number
+          minimum: 0
+      #~~~~
+      speeds:
+        title: Wind speeds
+        description: >-
+          #TODO
+        type: array
+        items:
+          $ref: "#/definitions/wind_speed"
+      #~~~~
+      speed_cpmf:
+        title: Wind speed probability mass function conditional
+        direction
+        description: >-
+          The wind speed probability mass function conditional on
+          direction given as an array of arrays of positive weights not
+          necessarily summing up to one. So normalization needs to be
+          done to obtain probabilities.
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          type: array  # NOTE: should have same length as "2/speeds"
+          items:
+            title: Weight
+            type: number
+            minimum: 0
+      #~~~~
+      speed_cweibull:
+        title: Wind speed Weibull parameters conditional on direction
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          type: array
+          items:
+            - title: Scale parameter
+              type: number
+              unit: m
+              exclusiveMinimum: 0
+            - title: Shape parameter
+              type: number
+              unit: 1
+              exclusiveMinimum: 0
+  #~
+  wind_direction:
+    title: Wind direction
+    type: number
+    unit: °
+    minimum: 0.
+    exclusiveMaximum: 360.
+  #~
+  wind_speed:
+    title: Wind speed
+    type: number
+    unit: m/s
+    minimum: 0.
+  #~
+  probability:
+    title: Probability
+    type: number
+    unit: 1
+    minimum: 0.
+    maximum: 1.
+  #~
+  timeseries: # need to restructure to contain array of arrays
+    title: Timeseries
+    type: array
+    items:
+      - $ref: "#/definitions/time_array"
+      - $ref: "#/definitions/wind_direction_timeseries"
+      - $ref: "#/definitions/wind_speed_timeseries"
+  #~
+  time_array:
+    title: Time
+    description: >-
+      An array of timesteps.
+    type: array
+    items:
+      title: Point in time
+      type: string
+      format: date-time
+  #~
+  wind_direction_timeseries:
+    title: Wind direction timeseries
+    description: >-
+      An array of wind directions, correlated with a timeseries. Should have
+      the same length as time_array.
+    type: array
+      title: Wind direction
+      $ref: "#/definitions/wind_direction"
+  #~
+  wind_speed_timeseries:
+    title: Wind speed timeseries
+    description: >-
+      An array of wind speeds, correlated with a timeseries. Should have the
+      same length as time_array.
+    type: array
+      title: Wind speed
+      $ref: "#/definitions/wind_speed"
+  #~
+  coordinate:
+    title: Geographical coordinate
+    description: Coordinate for a location on Earth
+    type: object
+    required:
+      anyOf:
+        - geo
+        allOf:
+          -utm_zone
+          - utm
+        - adhoc
+    additionalProperties: false
+
+    # PROPERTIES
+    properties:
+      #~~
+      name:
+        description: The name of the location
+        type: string
+      #~~
+      reference_system:
+        title: Geodetic reference frame
+        type: string
+      #~~
+      geo:
+        title: Geographical coordinates
+        description: >-
+          The latitude and longitude of the location expressed in degrees
+        type: array
+        items:
+          - title: Latitude
+            type: number
+            minimum: -90
+            maximum: 90
+            unit: °
+          - title: Longitude
+            type: number
+            exclusiveMinimum: -180
+            maximum: 180
+            unit: °
+      #~~
+      utm_zone:
+        title: UTM zone
+        type: integer
+        minimum: 1
+        maximum: 60
+      #~~
+      utm:
+        title: UTM coordinates
+        type: array
+        items:
+        - title: Easterly
+          type: number
+          unit: m
+        - title: Northerly
+          type: number
+          unit: m
+      #~~
+      adhoc:
+        title: Ad hoc coordinates
+        type: array
+        items:
+        - title: Easterly
+          type: number
+          unit: km
+        - title: Northerly
+          type: number
+          unit: km
+      #~~
+
+
+
+
+########################################################################
+                 
+      wsp_edg: # TODO: does this belong in wind_specification? Perhaps a
+                # property of a wind object?
+        type: array
+        description: edges of wind speed bins for wind rose
+      
+      wdir_edg: # TODO: does this belong in wind_specification? Perhaps a
+                # property of a wind object?
+        type: array
+        description: edges of wind direction edges for wind rose
+    
+  wind_specification:
+    type: object
+    description: >-
+      A wind specification object, having several options. A question is
+      do we need to provide a converter between all the different
+      possible types?
+
+        required:
+          - oneOf:
+            - single_wind_rose
+            - multiple_wind_rose
+            - weibull_wind_rose
+            - probability_wind_rose
+            - weibull_wind_and_turbulence_rose
+            - timeseries?
+            - gridded
 
 			probability:
 			  type: array
-        description: [n_p x n_wd x n_ws] array of the wind rose probabilities at each resource point
+        description: >-
+          [n_p x n_wd x n_ws] array of the wind rose probabilities at each
+          resource point
 
       variables:
         type: object
         
         properties:
-          wsp_loc
-              type: ndarray
-              description: [n_p x n_wd x n_ws] array of wind speeds at each resource point
+          wsp_loc:
+              type: array
+              description: >-
+                [n_p x n_wd x n_ws] array of wind speeds at each resource point
           
-          wdir_loc
-              type: ndarray
-              description: [n_p x n_wd x n_ws] array of wind directions at each resource point
+          wdir_loc:
+              type: array
+              description: >-
+                [n_p x n_wd x n_ws] array of wind directions at each resource
+                point
           
-          ti_loc
-              type: ndarray
-              description: [n_p x n_wd x n_ws] array of turbulence intensities at each resource point
-			    
-
+          ti_loc:
+              type: array
+              description: >-
+                [n_p x n_wd x n_ws] array of turbulence intensities at each
+                resource point
 
   #### Older wind resource model - may be a pre-processing model now for wind resource
   wind_resource:
@@ -116,21 +435,34 @@ definitions:
           items:
             $ref: "#/definitions/probability"
         description: the probability of occurance of wind speed ndarray.shape([len(wind_directions), len(wind_speeds)])
-
+  #~
   weibull_wind_and_turbulence_rose:
-    description: A wind rose descrived as an array of weibull distributions
-    type: array #ndarray([[wind:direction], [probability], [distribution:weibull:A], [distribution:weibull:k]])
+    title: Wind rose of weibull distributions
+    description: >-
+      A wind rose described as an array of weibull distributions, including
+      wind direction, probability, and weibull parameters A and k
+    type: array # ndarray([[wind:direction], [probability],
+                # [distribution:weibull:A], [distribution:weibull:k],
+                # [wind:ti]])
     items:
       type: array
       items:
+        # TODO: do we need title, type, etc. here? Or is it inherited/defined
+        # by the reference?
         - $ref: "#/definitions/wind/properties/direction"
         - $ref: "#/definitions/probability"
         - $ref: "#/definitions/distribution/weibull/properties/A"
         - $ref: "#/definitions/distribution/weibull/properties/k"
         - $ref: "#/definitions/wind/ti"   
-
+  #~
   wind:
+    title: Wind
     type: object
+    required:
+      - direction
+      - speed
+      - ti
+    additionalProperties: false
     properties:
       direction:
         id: "wind_direction"
@@ -139,23 +471,25 @@ definitions:
         units: deg
         minimum: 0.0
         maximum: 360.0
-
+      #~~
       speed:
         anyOf:
-          - oneOf:
+          - oneOf: # TODO: So this allows a speed object to be either a weibull
+                   # distribution or a number, and they both have to be
+                   # between 0 and 100? Has are the min/max applied to a
+                   # distribution?
             - type: number
               description: A wind speed
             - $ref: "#/definitions/distributions/weibull"
           - minimum: 0.0
             maximum: 100.0
             units: m/s
-
+      #~~
       ti:
+        title: Turbulence intesnity
         type: number
-        description: Turbulence intensity
         minimum: 0.0
         maximum: 1.0
-
 
   # Distribution types from WindIO - generic and could be separate file
   distribution:
@@ -176,27 +510,32 @@ definitions:
           description: truncation of the distribution
         uncertainty:
           $ref: "#/definitions/distribution"
-
+    #~~
     scalar:
       type: number
-
+    #~~
     uniform:
-      description: A uniformed distribution [min, max]
+      title: Uniform distribution
+      description: A uniform distribution [min, max]
       type: array
       items:
-        - type: number
-        - type: number
+        - title: Minimum
+          type: number
+        - title: Maximum
+          type: number
       additionalItems: false
-
+    #~~
     lognormal:
+      title: Lognormal
       type: object
       properties:
         mu:
           type: number
         sig:
           type: number
-
+    #~~
     weibull:
+      title: Weibull distribution
       type: object
       properties:
         A:
@@ -205,8 +544,9 @@ definitions:
         k:
           type: number
           description: the k parameter of a weibull distribution
-
+    #~~
     gaussian:
+      title: Gaussian curve
       type: object
       properties:
         mu:
@@ -216,8 +556,9 @@ definitions:
           type: number
           description: The standard deviation
           minimum: 0.0
-
+    #~~
     KDE:
+      title: Kernel Density Estimator
       description: |
         A Kernel Density Estimator representation of a distribution.
         See http://scikit-learn.org/stable/modules/density.html
@@ -241,16 +582,19 @@ definitions:
           items:
             type: number
             description: the position of the center
-          description: Array to describe a distribution size:n, with n the number of normals centers
+          description: >-
+            Array to describe a distribution size:n, with n the number of
+            normals centers
+    #~~
     GP:
-      description: A Gaussian Process
+      title: Gaussian Process
       type: object
       properties:
         points:
           type: array
-
+    #~~
     copula:
-      description: A copula distribution
+      title: Copula distribution
       type: object
       properties:
         copula_type:
@@ -261,10 +605,10 @@ definitions:
             - frank
             - clayton
             - gumbel
-
+  #~
   probability:
+    title: Probability
     type: number
     description: probability of an event to happen
     minimum: 0.0
     maximum: 1.0
-

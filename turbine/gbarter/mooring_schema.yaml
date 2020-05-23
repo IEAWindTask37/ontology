@@ -7,7 +7,8 @@ required:
     - name
     - nodes
     - lines
-    - materials
+    - line_types
+    - anchor_types
 properties:
     name: 
         description: Name of the mooring system
@@ -22,7 +23,6 @@ properties:
                 - node_type
                 - location
             optional:
-                # Optional properties that are defined below:
                 - node_mass
                 - node_volume
                 - drag_area
@@ -36,7 +36,7 @@ properties:
                         const: fixed
             then:
                 required:
-                - anchor_type
+                - anchor_id
             if:
                 # If node_type == vessel, then we need to specify the fairlead_type
                 properties:
@@ -72,22 +72,16 @@ properties:
                         z:
                             type: number
                             units: meter
-                anchor_type:
-                    type: string
-                    enum:
-                        - drag_embedment
-                        - suction_pile
-                        - gravity
-                        - torpedo
-                        - helical
-                        - VLA
+                anchor_id:
+                    type: number
+                    description: ID of anchor from anchor_type list
                 fairlead_type:
                     type: string
                     enum:
                         - rigid
                         - actuated
-                        - turret
-                node_mass: <<< are buoyancy cans considered here?  If so, may need to support a 6 DOF body, with mass, CM, and inertia, and more complicated hydrodynamic coeffiicents
+                        - ball
+                node_mass:
                     type: number
                     units: kilogram
                     description: Clump weight mass
@@ -110,7 +104,7 @@ properties:
             type: object
             required:
                 - line_id
-                - material
+                - line_type
                 - unstretched_length
                 - node1_id
                 - node2_id 
@@ -118,7 +112,7 @@ properties:
                 line_id:
                     type: number # or string?
                     description: ID of this line
-                material:
+                line_type:
                     type: string
                     description: Reference to line type material database
                 unstretched_length:
@@ -132,7 +126,7 @@ properties:
                     type: number #or string
                     description: node id of second line connection
     
-    materials:  <<< I'd suggest renaming to something like line types/properties since this about more than materials
+    line_type:
         type: array
         description: List of mooring line properties used in the system
         items:
@@ -172,7 +166,7 @@ properties:
                     description: cost per unit length
                 breaking_load:
                     type: number
-                    unit: Pascal  <<< should be in N
+                    unit: Newton
                     description: line break tension
                 damping:
                     type: number
@@ -190,3 +184,36 @@ properties:
                 tangential_drag:
                     type: number
                     description: tangential drag coefficient (with respect to surface area, π*d*l)
+    
+    anchor_types:
+        type: array
+        description: List of anchor properties used in the system
+        items:
+            type: object
+            required:
+                - name
+                - mass
+                - cost
+                - max_lateral_load
+                - max_vertical_load
+            properties:
+                name:
+                    type: string
+                    description: Name of anchor to be referenced by anchor_id in Nodes section
+                mass:
+                    type: number
+                    unit: kilogram
+                    description: mass of the anchor
+                cost:
+                    type: number
+                    unit: USD
+                    description: cost of the anchor
+                max_lateral_load:
+                    type: number
+                    unit: Newton
+                    description: Maximum lateral load (parallel to the sea floor) that the anchor can support
+                max_vertical_load:
+                    type: number
+                    unit: Newton
+                    description: Maximum vertical load (perpendicular to the sea floor) that the anchor can support
+                    

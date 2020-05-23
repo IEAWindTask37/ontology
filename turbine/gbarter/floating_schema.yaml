@@ -1,4 +1,3 @@
-# TODO: Non circular cross section
 # TODO: Actuators
 # TODO: Buoyancy cans (Spiderfloat)
 
@@ -18,227 +17,384 @@ properties:
         type: string
     components: 
         type: object
-    required:
-        - columns
-        - connectors_legs
-        - mooring
-        - transition
-    properties: 
-        columns: 
-            type: array
-            items:
-                type: object
-                required:
-                    - name
-                    - outfitting_factor
-                    - outer_shape
-                    - internal_structure
-                    - heave_plate
-                properties:
-                    name:
-                        description: Name of the column
-                        type: string
-                outfitting_factor:
-                    type: number
-                    description: Scaling factor for the tower mass to account for auxiliary structures, such as elevator, ladders, cables, platforms, etc
-                    unit: none
-                    minimum: 1.0
-                outer_shape:                    
+        required:
+            - columns
+            - buoyancy_cans
+            - connectors
+            - mooring
+            - transition
+        properties: 
+            columns: 
+                type: array
+                items:
                     type: object
                     required:
-                        - reference_axis
-                        - outer_diameter
-                    properties:                              
-                        reference_axis:
-                            $ref: "#/definitions/distributed_data/axis_coordinates"
-                        outer_diameter: &od
+                        - name
+                        - outer_shape
+                        - internal_structure
+                        - heave_plate
+                    properties:
+                        name:
+                            description: Name of the column
+                            type: string
+                        outer_shape:                    
                             type: object
                             required:
-                                - grid
-                                - values
+                                - reference_axis
+                                - shape
+                            if:
+                                # If shape == circular, then we need to specify the outer diameter
+                                properties:
+                                    shape:
+                                        const: circular
+                            then:
+                                required:
+                                    - outer_diameter
+                            if:
+                                # If shape == polygonal, then we need to specify the side lengths
+                                properties:
+                                    shape:
+                                        const: polygonal
+                            then:
+                                required:
+                                    - side_lengths
+                            properties:
+                                shape: &shape
+                                    type: string
+                                    enum:
+                                        - circular
+                                        - polygonal
+                                reference_axis:
+                                    $ref: "#/definitions/distributed_data/axis_coordinates"
+                                outer_diameter: &od
+                                    type: object
+                                    required:
+                                        - grid
+                                        - values
+                                    properties: 
+                                        grid: 
+                                            $ref: "#/definitions/distributed_data/grid_nd"
+                                        values: 
+                                            $ref: "#/definitions/distributed_data/length"
+                                side_lengths: &sl
+                                    type: object
+                                    required:
+                                        - grid
+                                        - sides
+                                    properties: 
+                                        grid: 
+                                            $ref: "#/definitions/distributed_data/grid_nd"
+                                        sides:
+                                            type: array
+                                            items:
+                                                values:
+                                                    $ref: "#/definitions/distributed_data/length"
+                                                    
+                        internal_structure:
+                            type: object
+                            required:
+                                - outfitting_factor
+                                - reference_axis
+                                - layers
+                            optional:
+                                - ring_stiffeners
+                                - longitudinal_stiffeners
+                                - bulkhead
+                                - ballast
+                            properties:
+                                outfitting_factor:
+                                    type: number
+                                    description: Scaling factor for the column mass to account for auxiliary structures, such as elevator, ladders, cables, platforms, fasteners, etc
+                                    unit: none
+                                    minimum: 1.0
+
+                                reference_axis:
+                                    $ref: "#/definitions/distributed_data/axis_coordinates"
+                                layers: &layer
+                                    type: array
+                                    description: ...
+                                    items:
+                                        type: object
+                                        required:
+                                            - name
+                                            - material
+                                            - thickness
+                                        properties:
+                                            name:
+                                                type: string
+                                                description: structural component identifier
+                                            material: &material
+                                                type: string
+                                                description: material identifier
+                                            thickness:
+                                                type: object
+                                                description: thickness of the laminate
+                                                required:
+                                                    - grid
+                                                    - values
+                                                properties: 
+                                                    grid: 
+                                                        $ref: "#/definitions/distributed_data/grid_nd"
+                                                    values: 
+                                                        $ref: "#/definitions/distributed_data/length"
+                                ring_stiffeners: &stiffener
+                                    type: array
+                                    items:
+                                        type: object
+                                        required:
+                                            - material
+                                            - flange_height
+                                            - flange_width
+                                            - web_height
+                                            - web_thickness
+                                            - grid
+                                        properties:
+                                            material: *material
+                                            flange_height:
+                                                $ref: "#/definitions/distributed_data/length"
+                                            flange_width:
+                                                $ref: "#/definitions/distributed_data/length"
+                                            web_height:
+                                                $ref: "#/definitions/distributed_data/length"
+                                            web_thickness:
+                                                $ref: "#/definitions/distributed_data/length"
+                                            grid: 
+                                                $ref: "#/definitions/distributed_data/grid_nd"
+                                longitudinal_stiffeners: *stiffener # "Grid" here will have to mean something different
+                                bulkhead:
+                                    type: object
+                                    required:
+                                        - material
+                                        - thickness
+                                    properties:
+                                        material: *material
+                                        thickness:
+                                            type: object
+                                            description: thickness of the laminate
+                                            required:
+                                                - grid
+                                                - values
+                                            properties: 
+                                                grid: 
+                                                    $ref: "#/definitions/distributed_data/grid_nd"
+                                                values: 
+                                                    $ref: "#/definitions/distributed_data/length"
+                                ballast:
+                                    type: array
+                                    description: Different types of permanent and/or variable ballast
+                                    items:
+                                        type: object
+                                        required:
+                                            - name
+                                            - material
+                                            - variable_flag
+                                            - grid_start
+                                        if:
+                                            # If variable ballast, then need to specify holding area bounds
+                                            properties:
+                                                variable_flag:
+                                                    const: True
+                                        then:
+                                            required:
+                                                - grid_end
+                                        if:
+                                            # If permanent ballast, then need to specify total mass
+                                            properties:
+                                                variable_flag:
+                                                    const: False
+                                        then:
+                                            required:
+                                                - mass
+
+                                        properties:
+                                            name:
+                                                type: string
+                                                description: structural component identifier
+                                            variable_flag:
+                                                type: boolean
+                                                description: If true, then this ballast is variable and can change mass.  If false, then considered permanent
+                                            material: *material
+                                            mass:
+                                                type: number
+                                                description: Total mass of ballast (permanent ballast only)
+                                                unit: kg
+                                                minimum: 1.0                                    
+                                            grid_start:
+                                                type: number
+                                                description: Non-dimensional grid value where the ballast holding tank starts
+                                            grid_end:
+                                                type: number
+                                                description: Non-dimensional grid value where the ballast holding tank ends (variable ballast only)
+
+                        heave_plate:
+                            # This section might need help
+                            type: object
+                            required:
+                                - shape
+                                - wall_thickness
+                                - material
+                            if:
+                                # If shape == circular, then we need to specify the outer diameter
+                                properties:
+                                    shape:
+                                        const: circular
+                            then:
+                                required:
+                                    - outer_diameter
+                            if:
+                                # If shape == polygonal, then we need to specify the side lengths
+                                properties:
+                                    shape:
+                                        const: polygonal
+                            then:
+                                required:
+                                    - side_lengths
                             properties: 
-                                grid: 
-                                    $ref: "#/definitions/distributed_data/grid_nd"
-                                values: 
-                                    $ref: "#/definitions/distributed_data/length"
-                internal_structure:
+                                shape: *shape
+                                outer_diameter: *od
+                                side_lengths: *sl
+                                material: *material
+                                wall_thickness:
+                                    type: number
+                                    description: Wall thickness of the heave plate/box. If just a solid plate with no internal space, enter half the total thickness
+
+            buoyancy_cans:
+                # Was working through defining this and realized it was the same as "columns".
+                # Buoyancy cans could just be very small, thin walled columns with no bulkheads, no ballast, etc.
+                
+            connectors:
+                type: array
+                description: These are the structural members that connect two columns together or connect to a fairlead (mooring connection) point, such as the legs of a TLP
+                items:
                     type: object
                     required:
-                        - reference_axis
-                        - layers
-                        - ring_stiffeners
-                        - longitudinal_stiffeners
-                        - bulkhead
-                        - ballast
-                    properties: 
-                        reference_axis:
-                            $ref: "#/definitions/distributed_data/axis_coordinates"
-                        layers: &layer
-                            type: array
-                            description: ...
-                            items:
-                                type: object
-                            required:
-                                - name
-                                - material
-                                - thickness
-                            properties:
-                                name:
-                                    type: string
-                                    description: structural component identifier
-                                material:
-                                    type: string
-                                    description: material identifier
-                                thickness:
-                                    type: object
-                                    description: thickness of the laminate
-                                    required:
-                                        - grid
-                                        - values
-                                    properties: 
-                                        grid: 
-                                            $ref: "#/definitions/distributed_data/grid_nd"
-                                        values: 
-                                            $ref: "#/definitions/distributed_data/length"
-                        ring_stiffeners: &stiffener
-                            type: array
-                            items:
-                                type: object
-                                required:
-                                    - material
-                                    - flange_height
-                                    - flange_width
-                                    - web_height
-                                    - web_thickness
-                                    - grid
-                                properties:
-                                    material:
-                                        type: string
-                                        description: material identifier
-                                    flange_height:
-                                        $ref: "#/definitions/distributed_data/length"
-                                    flange_width:
-                                        $ref: "#/definitions/distributed_data/length"
-                                    web_height:
-                                        $ref: "#/definitions/distributed_data/length"
-                                    web_thickness:
-                                        $ref: "#/definitions/distributed_data/length"
-                                    grid: 
-                                        $ref: "#/definitions/distributed_data/grid_nd"
-                        longitudinal_stiffeners: *stiffener
-                        bulkhead:
+                        - connector_type
+                        - attachment1
+                        - attachment2
+                        - outer_shape
+                    if:
+                        # If connector_type == rigid (not a cable), then it has internal structure
+                        properties:
+                            connector_type:
+                                const: rigid
+                    then:
+                        required:
+                            - internal_structure
+                    properties:
+                        connector_type:
+                            type: string
+                            enum:
+                                - cable
+                                - rigid
+                        attachment1: &attachment
                             type: object
                             required:
-                                - material
-                                - thickness
+                                - joint
+                                - column_name
+                                - grid_position
+                            optional:
+                                - angle_position
                             properties:
-                                material:
+                                joint:
                                     type: string
-                                    description: material identifier
-                                thickness:
-                                    type: object
-                                    description: thickness of the laminate
-                                    required:
-                                        - grid
-                                        - values
-                                    properties: 
-                                        grid: 
-                                            $ref: "#/definitions/distributed_data/grid_nd"
-                                        values: 
-                                            $ref: "#/definitions/distributed_data/length"
-                        ballast:
-                            type: array
-                            description: Different types of permanent and/or variable ballast
-                            items:
-                                type: object
-                                required:
-                                    - name
-                                    - material
-                                    - mass
+                                    enum:
+                                        - pin
+                                        - hinge
+                                        - rigid
+                                column_name:
+                                    type: string
+                                    description: Which column does this attach to?
+                                grid_position:
+                                    type: number
+                                    description: non-dimensional position of attachment 0-1
+                                angle_position:
+                                    type: number
+                                    description: Angular position at grid value of attachment. If not specified assume closest distance between columns
+                                    unit: degree
+                        attachment2: *attachment
+                        outer_shape:                    
+                            type: object
+                            required:
+                                - shape
+                            if:
+                                # If shape == circular, then we need to specify the outer diameter
                                 properties:
-                                    name:
-                                        type: string
-                                        description: structural component identifier
-                                    material:
-                                        type: string
-                                        description: material identifier
-                                    mass:
-                                        type: number
-                                        unit: kg
-                                        minimum: 1.0                                    
-                heave_plate:
-                    type: object
-                    required:
-                        - shape
-                        - dimension
-                        - wall_thickness
-                        - material
-                    properties: 
-                        grid: 
-                            $ref: "#/definitions/distributed_data/grid_nd"
-                        values: 
-                            $ref: "#/definitions/distributed_data/length"
-        connectors:
-            type: array
-            description: These are the structural members that connect two columns together or connect to a fairlead (mooring connection) point, such as the legs of a TLP
-            items:
+                                    shape:
+                                        const: circular
+                            then:
+                                required:
+                                    - outer_diameter
+                            if:
+                                # If shape == polygonal, then we need to specify the side lengths
+                                properties:
+                                    shape:
+                                        const: polygonal
+                            then:
+                                required:
+                                    - side_lengths
+                            properties:
+                                shape: *shape
+                                outer_diameter: *od
+                                side_lengths: *sl
+                        internal_structure:
+                            type: object
+                            required:
+                                - layers
+                            optional:
+                                - ring_stiffeners
+                                - longitudinal_stiffeners
+                            properties: 
+                                layers: *layer
+                                ring_stiffeners: *stiffener
+                                longitudinal_stiffeners: *stiffener
+
+            transition_piece:
+                # Assuming that transition piece is grouted onto one of the other columns (is not load bearing)
+                # May need a little more work here
                 type: object
                 required:
-                    - connector_type
-                    - attachment1
-                    - attachment2
-                    - outer_shape
+                    - column_name
+                    - outer_diameter
                     - internal_structure
                 properties:
-                    connector_type:
-                        type: string
-                        enum:
-                            - cable
-                            - circular
-                            - rectangular
-                    attachment1: &attachment
-                        type: object
-                        required:
-                            - joint
-                            - column_name
-                            - grid_position
-                        properties:
-                            joint:
-                                type: string
-                                enum:
-                                    - pin
-                                    - hinge
-                            column_name:
-                                type: string
-                                description: Which column does this attach to?
-                            grid_position:
-                                type: number
-                                description: z-axis position of attachment 0-1?
-                    attachment2: *attachment
                     outer_shape:                    
                         type: object
                         required:
-                            - outer_diameter
-                        properties:                              
+                            - shape
+                        if:
+                            # If shape == circular, then we need to specify the outer diameter
+                            properties:
+                                shape:
+                                    const: circular
+                        then:
+                            required:
+                                - outer_diameter
+                        if:
+                            # If shape == polygonal, then we need to specify the side lengths
+                            properties:
+                                shape:
+                                    const: polygonal
+                        then:
+                            required:
+                                - side_lengths
+                        properties:
+                            shape: *shape
                             outer_diameter: *od
+                            side_lengths: *sl
                     internal_structure:
                         type: object
                         required:
                             - layers
+                        optional:
                             - ring_stiffeners
                             - longitudinal_stiffeners
                         properties: 
                             layers: *layer
                             ring_stiffeners: *stiffener
                             longitudinal_stiffeners: *stiffener
-                            
-        transition:
-            type: object
-        mooring:
-            # Matt Hall TODO
-            type: array
-            items:
-                type: object
+
+            mooring:
+                # Will insert mooring schema that we agreed to here or will keep as separate file
 
     materials:
         type: array

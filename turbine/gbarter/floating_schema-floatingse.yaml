@@ -1,4 +1,6 @@
 # TODO: Actuators
+# TODO: Buoyancy cans (Spiderfloat)
+
 $schema: "http://json-schema.org/draft-07/schema#"
 $id: WEIS_Platform_v00
 title: WEIS floating platform ontology
@@ -7,7 +9,6 @@ type: object
 required: 
     - name
     - components
-    - mooring
     - materials
     - control
 properties:
@@ -17,86 +18,29 @@ properties:
     components: 
         type: object
         required:
-            - joints
             - members
             - buoyancy_cans
             - heave_plate
+            - connectors
+            - mooring
             - transition_piece
         properties: 
-            joints: 
-                type: array
-                items:
-                    type: object
-                    required:
-                        - name
-                        - location
-                    optional:
-                        - reactions_global
-                        - reactions_local
-                    properties:
-                        name:
-                            description: Unique name of the joint (node) 
-                            type: string
-                        location:
-                            description: xyz-coordinates of this node in the global coordinate system.
-                            $ref: "#/definitions/distributed_data/xyz_coordinates"
-                        reactions_global:
-                            type: object
-                            description: If this joint/node is a boundary condition in the global coordinate system, then specify which DOFs are fixed.  If not specified, default is all entries are False
-                            required:
-                                - Rx
-                                - Ry
-                                - Rz
-                                - Rxx
-                                - Ryy
-                                - Rzz
-                            properties:
-                                Rx: &rxn
-                                    type: boolean
-                                Ry: *rxn
-                                Rz: *rxn
-                                Rxx: *rxn
-                                Ryy: *rxn
-                                Rzz: *rxn
-                        reactions_local:
-                            # TODO: How to do carabiner type joints that only support tension and not compression?
-                            type: object
-                            description: If this joint is compliant is certain DOFs, then specify which are compliant (in the member/element coordinate system).  If not specified, default is all entries are True (completely rigid).  For instance, a ball joint would be Rx=Ry=Rz=True, Rxx=Ryy=Rzz=False
-                            required:
-                                - Rx
-                                - Ry
-                                - Rz
-                                - Rxx
-                                - Ryy
-                                - Rzz
-                            properties:
-                                Rx: *rxn
-                                Ry: *rxn
-                                Rz: *rxn
-                                Rxx: *rxn
-                                Ryy: *rxn
-                                Rzz: *rxn
             members: 
                 type: array
                 items:
                     type: object
                     required:
                         - name
-                        - joint1
-                        - joint2
                         - outer_shape
                         - internal_structure
                     properties:
                         name:
                             description: Name of the member
                             type: string
-                        joint1: &jointid
-                            type: string
-                            description: Name of joint/node connection
-                        joint2: *jointid
                         outer_shape:                    
                             type: object
                             required:
+                                - reference_axis
                                 - shape
                             if:
                                 # If shape == circular, then we need to specify the outer diameter
@@ -114,7 +58,6 @@ properties:
                             then:
                                 required:
                                     - side_lengths
-                                    - rotation
                             properties:
                                 shape: &shape
                                     type: string
@@ -146,9 +89,6 @@ properties:
                                             items:
                                                 values:
                                                     $ref: "#/definitions/distributed_data/length"
-                                rotation:
-                                    type: number
-                                    description: The rotation of the first side length along the member axis if both member joints were placed on the global x-y axis
                                                     
                         internal_structure:
                             type: object
@@ -230,7 +170,7 @@ properties:
                                         material: *material
                                         thickness:
                                             type: object
-                                            description: thickness of the bulkhead at non-dimensional locations of the member [0..1]
+                                            description: thickness of the laminate
                                             required:
                                                 - grid
                                                 - values
@@ -245,26 +185,46 @@ properties:
                                     items:
                                         type: object
                                         required:
+                                            - name
+                                            - material
                                             - variable_flag
+                                            - grid_start
                                         if:
-                                            # If permanent ballast, then need to specify total volume
+                                            # If variable ballast, then need to specify holding area bounds
+                                            properties:
+                                                variable_flag:
+                                                    const: True
+                                        then:
+                                            required:
+                                                - grid_end
+                                        if:
+                                            # If permanent ballast, then need to specify total mass
                                             properties:
                                                 variable_flag:
                                                     const: False
                                         then:
                                             required:
-                                                - material
                                                 - volume
+
                                         properties:
+                                            name:
+                                                type: string
+                                                description: structural component identifier
                                             variable_flag:
                                                 type: boolean
-                                                description: If true, then this ballast is variable and adjusted by control system.  If false, then considered permanent
+                                                description: If true, then this ballast is variable and can change mass.  If false, then considered permanent
                                             material: *material
                                             volume:
                                                 type: number
                                                 description: Total volume of ballast (permanent ballast only)
                                                 unit: m^3
                                                 minimum: 1.0                                    
+                                            grid_start:
+                                                type: number
+                                                description: Non-dimensional grid value where the ballast holding tank starts
+                                            grid_end:
+                                                type: number
+                                                description: Non-dimensional grid value where the ballast holding tank ends (variable ballast only)
 
             heave_plate:
                 type: object
@@ -305,239 +265,143 @@ properties:
                         type: number
                         description: Wall thickness of the heave plate/box. If just a solid plate with no internal space, enter half the total thickness
 
+            buoyancy_cans:
+                # Was working through defining this and realized it was the same as "members".
+                # Buoyancy cans could just be very small, thin walled members with no bulkheads, no ballast, etc.
+                
+            connectors:
+                type: array
+                description: These are the structural members that connect two members together or connect to a fairlead (mooring connection) point, such as the legs of a TLP
+                items:
+                    type: object
+                    required:
+                        - connector_type
+                        - attachment1
+                        - attachment2
+                        - outer_shape
+                    if:
+                        # If connector_type == rigid (not a cable), then it has internal structure
+                        properties:
+                            connector_type:
+                                const: rigid
+                    then:
+                        required:
+                            - internal_structure
+                    properties:
+                        connector_type:
+                            type: string
+                            enum:
+                                - cable
+                                - rigid
+                        attachment1: &attachment
+                            type: object
+                            required:
+                                - joint
+                                - member_name
+                                - grid_position
+                            optional:
+                                - angle_position
+                            properties:
+                                joint:
+                                    type: string
+                                    enum:
+                                        - pin
+                                        - hinge
+                                        - rigid
+                                member_name:
+                                    type: string
+                                    description: Which member does this attach to?
+                                grid_position:
+                                    type: number
+                                    description: non-dimensional position of attachment 0-1
+                                angle_position:
+                                    type: number
+                                    description: Angular position at grid value of attachment. If not specified assume closest distance between members
+                                    unit: degree
+                        attachment2: *attachment
+                        outer_shape:                    
+                            type: object
+                            required:
+                                - shape
+                            if:
+                                # If shape == circular, then we need to specify the outer diameter
+                                properties:
+                                    shape:
+                                        const: circular
+                            then:
+                                required:
+                                    - outer_diameter
+                            if:
+                                # If shape == polygonal, then we need to specify the side lengths
+                                properties:
+                                    shape:
+                                        const: polygonal
+                            then:
+                                required:
+                                    - side_lengths
+                            properties:
+                                shape: *shape
+                                outer_diameter: *od
+                                side_lengths: *sl
+                        internal_structure:
+                            type: object
+                            required:
+                                - layers
+                            optional:
+                                - ring_stiffeners
+                                - longitudinal_stiffeners
+                            properties: 
+                                layers: *layer
+                                ring_stiffeners: *stiffener
+                                longitudinal_stiffeners: *stiffener
+
             transition_piece:
+                # Assuming that transition piece is grouted onto one of the other members
                 # May need a little more work here
                 type: object
                 required:
-                    - jointid
+                    - member_name
                     - outer_diameter
                     - internal_structure
                 properties:
-                    jointid: *jointid
-                    mass:
-                        type: number
-                        description: Total mass of transition piece
-                    platform_length:
-                        type: number
-                        description: Length of overlap with member on the platform side
-                    tower_length:
-                        type: number
-                        description: Length of overlap with member on the tower side
-
-    mooring:
-        # Will insert mooring schema that we agreed to here or will keep as separate file
-        description: Ontology definition for mooring systems suitable for use with the WEIS co-design analysis tool
-        type: object
-        required: 
-            - name
-            - nodes
-            - lines
-            - line_types
-            - anchor_types
-        properties:
-            name: 
-                description: Name of the mooring system
-                type: string
-            nodes: 
-                type: array
-                description: List of nodes in the mooring system
-                items:
-                    type: object
-                    required:
-                        - node_id
-                        - node_type
-                        - location
-                    optional:
-                        - node_mass
-                        - node_volume
-                        - drag_area
-                        - added_mass
-                        - anchor_type     
-                        - fairlead_type
-                    if:
-                        # If node_type == fixed, then we need to specify the anchor_type
-                        properties:
-                            node_type:
-                                const: fixed
-                    then:
+                    outer_shape:                    
+                        type: object
                         required:
-                        - anchor_id
-                    if:
-                        # If node_type == vessel, then we need to specify the fairlead_type
-                        properties:
-                            node_type:
-                                const: vessel
-                    then:
-                        required:
-                        - fairlead_type
-                    properties:
-                        node_id:
-                            type: number # or string?
-                            description: ID of this node for use in line segment
-                        node_type:
-                            type: string
-                            enum:
-                                - fixed
-                                - connection
-                                - vessel
-                        location:
-                            type: object
-                            description: – Coordinates of the connection (relative to inertial reference frame if Fixed or Connect, relative to platform reference frame if Vessel). In the case of Connect nodes, it is simply an initial guess for position before MoorDyn calculates the equilibrium initial position. 
-                            required:
-                                - x
-                                - y
-                                - z
+                            - shape
+                        if:
+                            # If shape == circular, then we need to specify the outer diameter
                             properties:
-                                x:
-                                    type: number
-                                    units: meter
-                                y:
-                                    type: number
-                                    units: meter
-                                z:
-                                    type: number
-                                    units: meter
-                        anchor_id:
-                            type: number
-                            description: ID of anchor from anchor_type list
-                        fairlead_type:
-                            type: string
-                            enum:
-                                - rigid
-                                - actuated
-                                - ball
-                        node_mass:
-                            type: number
-                            units: kilogram
-                            description: Clump weight mass
-                        node_volume:
-                            type: number
-                            units: meter^3
-                            description: Floater volume
-                        drag_area:
-                            type: number
-                            units: meter^2
-                            description: Product of drag coefficient and projected area (assumed constant in all directions) to calculate a drag force for the node
-                        added_mass:
-                            type: number
-                            description: Added mass coefficient used along with node volume to calculate added mass on node
-            lines:
-                type: array
-                description: List of all mooring line properties in the mooring system
-                items:
-                    type: object
-                    required:
-                        - line_id
-                        - line_type
-                        - unstretched_length
-                        - node1_id
-                        - node2_id 
-                    properties:
-                        line_id:
-                            type: number # or string?
-                            description: ID of this line
-                        line_type:
-                            type: string
-                            description: Reference to line type material database
-                        unstretched_length:
-                            type: number
-                            units: meter
-                            description: length of line segment prior to tensioning
-                        node1_id:
-                            type: number #or string
-                            description: node id of first line connection
-                        node2_id:
-                            type: number #or string
-                            description: node id of second line connection
-            line_type:
-                type: array
-                description: List of mooring line properties used in the system
-                items:
-                    type: object
-                    required:
-                        - name
-                        - diameter
-                        - mass_density
-                        - stiffness
-                        - breaking_load
-                        - cost
-                        - transverse_added_mass # Optional? Ask MattH    <<< I'm not sure if these should be optional or required... will think/discuss more.
-                        - tangential_added_mass # Optional? Ask MattH
-                        - transverse_drag # Optional? Ask MattH
-                        - tangential_drag # Optional? Ask MattH
-                    optional:
-                        - damping
-                    properties:
-                        name:
-                            type: string
-                            description: Name of material or line type to be referenced by line segments
-                        diameter:
-                            type: number
-                            units: meter
-                            description: the volume-equivalent diameter of the line – the diameter of a cylinder having the same displacement per unit length
-                        mass_density:
-                            type: number
-                            unit: kilogram/meter
-                            description: mass per unit length (in air)
-                        stiffness:
-                            type: number
-                            unit: Newton
-                            description: axial line stiffness, product of elasticity modulus and cross-sectional area
-                        cost:
-                            type: number
-                            unit: USD/meter
-                            description: cost per unit length
-                        breaking_load:
-                            type: number
-                            unit: Newton
-                            description: line break tension
-                        damping:
-                            type: number
-                            unit: Newton * second
-                            description: internal damping (BA)
-                        transverse_added_mass:
-                            type: number
-                            description: transverse added mass coefficient (with respect to line displacement)
-                        tangential_added_mass:
-                            type: number
-                            description: tangential added mass coefficient (with respect to line displacement)
-                        transverse_drag:
-                            type: number
-                            description: transverse drag coefficient (with respect to frontal area, d*l)
-                        tangential_drag:
-                            type: number
-                            description: tangential drag coefficient (with respect to surface area, π*d*l)
-            anchor_types:
-                type: array
-                description: List of anchor properties used in the system
-                items:
-                    type: object
-                    required:
-                        - name
-                        - mass
-                        - cost
-                        - max_lateral_load
-                        - max_vertical_load
-                    properties:
-                        name:
-                            type: string
-                            description: Name of anchor to be referenced by anchor_id in Nodes section
-                        mass:
-                            type: number
-                            unit: kilogram
-                            description: mass of the anchor
-                        cost:
-                            type: number
-                            unit: USD
-                            description: cost of the anchor
-                        max_lateral_load:
-                            type: number
-                            unit: Newton
-                            description: Maximum lateral load (parallel to the sea floor) that the anchor can support
-                        max_vertical_load:
-                            type: number
-                            unit: Newton
-                            description: Maximum vertical load (perpendicular to the sea floor) that the anchor can support
+                                shape:
+                                    const: circular
+                        then:
+                            required:
+                                - outer_diameter
+                        if:
+                            # If shape == polygonal, then we need to specify the side lengths
+                            properties:
+                                shape:
+                                    const: polygonal
+                        then:
+                            required:
+                                - side_lengths
+                        properties:
+                            shape: *shape
+                            outer_diameter: *od
+                            side_lengths: *sl
+                    internal_structure:
+                        type: object
+                        required:
+                            - layers
+                        optional:
+                            - ring_stiffeners
+                            - longitudinal_stiffeners
+                        properties: 
+                            layers: *layer
+                            ring_stiffeners: *stiffener
+                            longitudinal_stiffeners: *stiffener
+
+            mooring:
+                # Will insert mooring schema that we agreed to here or will keep as separate file
 
     materials:
         type: array
@@ -549,32 +413,8 @@ properties:
                 - orth
                 - rho
                 - E
+                - nu
                 - Xy
-                - unit_cost
-                oneOf:
-                    - nu
-                    - G
-            optional:
-                - description
-                - source
-                - Xt
-                - Xc
-                - S
-                - alpha
-                - ply_t
-                - fvf
-                - fwf
-                - fiber_density
-                - area_density_dry
-                - component_id
-                - waste
-                - roll_mass
-                - GIc
-                - GIIc
-                - alp0
-                - A
-                - m
-                - R
             properties:
                 name:
                     type: string

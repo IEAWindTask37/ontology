@@ -19,9 +19,8 @@ properties:
         required:
             - joints
             - members
-            - buoyancy_cans
-            - heave_plate
-            - transition_piece
+        optional:
+            - rigid_bodies
         properties: 
             joints: 
                 type: array
@@ -42,7 +41,7 @@ properties:
                             $ref: "#/definitions/distributed_data/xyz_coordinates"
                         reactions_global:
                             type: object
-                            description: If this joint/node is a boundary condition in the global coordinate system, then specify which DOFs are fixed.  If not specified, default is all entries are False
+                            description: If this joint/node is a boundary condition in the global coordinate system, then specify which DOFs are free (True) or fixed (False).  If not specified, default is all entries are False
                             required:
                                 - Rx
                                 - Ry
@@ -50,6 +49,8 @@ properties:
                                 - Rxx
                                 - Ryy
                                 - Rzz
+                            optional:
+                                - Euler
                             properties:
                                 Rx: &rxn
                                     type: boolean
@@ -58,10 +59,13 @@ properties:
                                 Rxx: *rxn
                                 Ryy: *rxn
                                 Rzz: *rxn
+                                Euler:
+                                    description: Euler angles [alpha, beta, gamma] that describe the rotation of the Reaction coordinate system relative to the global coordinate system α is a rotation around the z axis, β is a rotation around the x' axis, γ is a rotation around the z" axis.
+                                    type: array
                         reactions_local:
                             # TODO: How to do carabiner type joints that only support tension and not compression?
                             type: object
-                            description: If this joint is compliant is certain DOFs, then specify which are compliant (in the member/element coordinate system).  If not specified, default is all entries are True (completely rigid).  For instance, a ball joint would be Rx=Ry=Rz=True, Rxx=Ryy=Rzz=False
+                            description: If this joint is compliant is certain DOFs, then specify which are compliant (True) in the member/element coordinate system).  If not specified, default is all entries are False (completely rigid).  For instance, a ball joint would be Rx=Ry=Rz=False, Rxx=Ryy=Rzz=True
                             required:
                                 - Rx
                                 - Ry
@@ -69,6 +73,8 @@ properties:
                                 - Rxx
                                 - Ryy
                                 - Rzz
+                            optional:
+                                - Euler
                             properties:
                                 Rx: *rxn
                                 Ry: *rxn
@@ -76,6 +82,10 @@ properties:
                                 Rxx: *rxn
                                 Ryy: *rxn
                                 Rzz: *rxn
+                                Euler:
+                                    description: Euler angles [alpha, beta, gamma] that describe the rotation of the Reaction coordinate system relative to the member/element coordinate system α is a rotation around the z axis, β is a rotation around the x' axis, γ is a rotation around the z" axis.
+                                    type: array
+
             members: 
                 type: array
                 items:
@@ -86,6 +96,12 @@ properties:
                         - joint2
                         - outer_shape
                         - internal_structure
+                    optional:
+                        # TODO: Move these to the modeling file?
+                        - hydrodynamic_approach
+                        - Ca
+                        - Cp
+                        - Cd
                     properties:
                         name:
                             description: Name of the member
@@ -113,48 +129,37 @@ properties:
                                         const: polygonal
                             then:
                                 required:
-                                    - side_lengths
+                                    - side_lengths1
+                                    - side_lengths2
+                                optional:
                                     - rotation
+                                    - angles
                             properties:
-                                shape: &shape
+                                shape:
                                     type: string
                                     enum:
                                         - circular
                                         - polygonal
-                                reference_axis:
-                                    $ref: "#/definitions/distributed_data/axis_coordinates"
-                                outer_diameter: &od
-                                    type: object
-                                    required:
-                                        - grid
-                                        - values
-                                    properties: 
-                                        grid: 
-                                            $ref: "#/definitions/distributed_data/grid_nd"
-                                        values: 
-                                            $ref: "#/definitions/distributed_data/length"
-                                side_lengths: &sl
-                                    type: object
-                                    required:
-                                        - grid
-                                        - sides
-                                    properties: 
-                                        grid: 
-                                            $ref: "#/definitions/distributed_data/grid_nd"
-                                        sides:
-                                            type: array
-                                            items:
-                                                values:
-                                                    $ref: "#/definitions/distributed_data/length"
+                                outer_diameter:
+                                    description: Two values describing diameter at joint1 and joint2
+                                    type: array
+                                side_lengths1:
+                                    description: Polygon side lengths at joint1
+                                    type: array
+                                side_lengths2:
+                                    description: Polygon side lengths at joint2
+                                    type: array
+                                angles:
+                                    description: Polygon angles with the ordering such that angle[i] is between side_length[i] and side_length[i+1]
+                                    type: array
                                 rotation:
                                     type: number
-                                    description: The rotation of the first side length along the member axis if both member joints were placed on the global x-y axis
+                                    description: Angle between principle axes of the cross-section and the member coordinate system.  Essentially the rotation of the member if both joints were placed on the global x-y axis with the first side length along the z-axis
                                                     
                         internal_structure:
                             type: object
                             required:
                                 - outfitting_factor
-                                - reference_axis
                                 - layers
                             optional:
                                 - ring_stiffeners
@@ -168,8 +173,6 @@ properties:
                                     unit: none
                                     minimum: 1.0
 
-                                reference_axis:
-                                    $ref: "#/definitions/distributed_data/axis_coordinates"
                                 layers: &layer
                                     type: array
                                     description: ...
@@ -264,65 +267,28 @@ properties:
                                                 type: number
                                                 description: Total volume of ballast (permanent ballast only)
                                                 unit: m^3
-                                                minimum: 1.0                                    
-
-            heave_plate:
-                type: object
-                required:
-                    - shape
-                    - wall_thickness
-                    - material
-                    - member_name
-                    - grid_value
-                if:
-                    # If shape == circular, then we need to specify the outer diameter
-                    properties:
-                        shape:
-                            const: circular
-                then:
-                    required:
-                        - outer_diameter
-                if:
-                    # If shape == polygonal, then we need to specify the side lengths
-                    properties:
-                        shape:
-                            const: polygonal
-                then:
-                    required:
-                        - side_lengths
-                properties: 
-                    shape: *shape
-                    outer_diameter: *od
-                    side_lengths: *sl
-                    material: *material
-                    member_name:
-                        type: string
-                        description: Which member does this attach to?
-                    grid_value:
-                        type: number
-                        description: Non-dimensional grid value along the reference axis where the base of the heave plate attaches
-                    wall_thickness:
-                        type: number
-                        description: Wall thickness of the heave plate/box. If just a solid plate with no internal space, enter half the total thickness
-
-            transition_piece:
-                # May need a little more work here
-                type: object
-                required:
-                    - jointid
-                    - outer_diameter
-                    - internal_structure
-                properties:
-                    jointid: *jointid
-                    mass:
-                        type: number
-                        description: Total mass of transition piece
-                    platform_length:
-                        type: number
-                        description: Length of overlap with member on the platform side
-                    tower_length:
-                        type: number
-                        description: Length of overlap with member on the tower side
+                                                minimum: 1.0
+                                                
+                        hydrodynamic_approach:
+                            # TODO: Move these to the modeling file?
+                            description: How should this member be modeled?
+                            type: string
+                            enum:
+                                - strip
+                                - potential
+                                - both
+                        Ca:
+                            # TODO: Move these to the modeling file?
+                            description: Added mass coefficient
+                            type: number
+                        Cp:
+                            # TODO: Move these to the modeling file?
+                            description: Pressure coefficient
+                            type: number
+                        Cd:
+                            # TODO: Move these to the modeling file?
+                            description: Drag coefficient
+                            type: number
 
     mooring:
         # Will insert mooring schema that we agreed to here or will keep as separate file

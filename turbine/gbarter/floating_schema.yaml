@@ -269,7 +269,7 @@ properties:
                                                 unit: m^3
                                                 minimum: 1.0
                                                 
-                        hydrodynamic_approach:
+                        hydrodynamic_approach: &hydro
                             # TODO: Move these to the modeling file?
                             description: How should this member be modeled?
                             type: string
@@ -277,18 +277,60 @@ properties:
                                 - strip
                                 - potential
                                 - both
-                        Ca:
+                        Ca: &ca
                             # TODO: Move these to the modeling file?
                             description: Added mass coefficient
                             type: number
-                        Cp:
+                        Cp: &cp
                             # TODO: Move these to the modeling file?
                             description: Pressure coefficient
                             type: number
-                        Cd:
+                        Cd: &cd
                             # TODO: Move these to the modeling file?
                             description: Drag coefficient
                             type: number
+
+            rigid_bodies:
+                type: array
+                descriptions: Additional point masses at joints with user-customized properties
+                items:
+                    type: object
+                    required:
+                        - joint1
+                        - mass
+                        - cost
+                        - cm_offset
+                        - moments_of_inertia
+                    optional:
+                        - hydrodynamic_approach
+                        - Ca
+                        - Cp
+                        - Cd
+                    properties:
+                        joint1: *jointid
+                        mass:
+                            description: Mass of this rigid body
+                            units: kilogram
+                            type: number
+                        cost:
+                            description: Cost of this rigid body
+                            units: USD
+                            type: number
+                        cm_offset:
+                            description: Offset from joint location to center of mass (CM) of body in dx, dy, dz
+                            type: array
+                            items:
+                                type: number
+                        moments_of_inertia:
+                            description: Moments of inertia around body CM in Ixx, Iyy, Izz
+                            type: array
+                            items:
+                                type: number
+                        hydrodynamic_approach: *hydro
+                        Ca: *ca
+                        Cp: *cp
+                        Cd: *cd
+                            
 
     mooring:
         # Will insert mooring schema that we agreed to here or will keep as separate file

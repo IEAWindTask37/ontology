@@ -59,9 +59,13 @@ properties:
                                 Rxx: *rxn
                                 Ryy: *rxn
                                 Rzz: *rxn
-                                Euler:
+                                Euler: &euler
                                     description: Euler angles [alpha, beta, gamma] that describe the rotation of the Reaction coordinate system relative to the global coordinate system α is a rotation around the z axis, β is a rotation around the x' axis, γ is a rotation around the z" axis.
                                     type: array
+                                    items:
+                                        type: number
+                                        minItems: 3
+                                        maxItems: 3
                         reactions_local:
                             # TODO: How to do carabiner type joints that only support tension and not compression?
                             type: object
@@ -82,9 +86,7 @@ properties:
                                 Rxx: *rxn
                                 Ryy: *rxn
                                 Rzz: *rxn
-                                Euler:
-                                    description: Euler angles [alpha, beta, gamma] that describe the rotation of the Reaction coordinate system relative to the member/element coordinate system α is a rotation around the z axis, β is a rotation around the x' axis, γ is a rotation around the z" axis.
-                                    type: array
+                                Euler: *euler
 
             members: 
                 type: array
@@ -143,19 +145,34 @@ properties:
                                 outer_diameter:
                                     description: Two values describing diameter at joint1 and joint2
                                     type: array
-                                side_lengths1:
+                                    items:
+                                        type: number
+                                        minItems: 2
+                                        maxItems: 2
+                                        unit: m
+                                        minimum: 0
+                                side_lengths1: &sl
                                     description: Polygon side lengths at joint1
                                     type: array
-                                side_lengths2:
+                                    items:
+                                        type: number
+                                        minItems: 3
+                                        unit: m
+                                        minimum: 0
+                                side_lengths2: *sl
                                     description: Polygon side lengths at joint2
-                                    type: array
                                 angles:
                                     description: Polygon angles with the ordering such that angle[i] is between side_length[i] and side_length[i+1]
                                     type: array
+                                    items:
+                                        type: number
+                                        minItems: 3
+                                        unit: deg
+                                        minimum: 0
                                 rotation:
                                     type: number
                                     description: Angle between principle axes of the cross-section and the member coordinate system.  Essentially the rotation of the member if both joints were placed on the global x-y axis with the first side length along the z-axis
-                                                    
+                                    unit: deg
                         internal_structure:
                             type: object
                             required:
@@ -173,9 +190,9 @@ properties:
                                     unit: none
                                     minimum: 1.0
 
-                                layers: &layer
+                                layers:
                                     type: array
-                                    description: ...
+                                    description: Material layer properties
                                     items:
                                         type: object
                                         required:
@@ -190,16 +207,14 @@ properties:
                                                 type: string
                                                 description: material identifier
                                             thickness:
-                                                type: object
-                                                description: thickness of the laminate
-                                                required:
-                                                    - grid
-                                                    - values
-                                                properties: 
-                                                    grid: 
-                                                        $ref: "#/definitions/distributed_data/grid_nd"
-                                                    values: 
-                                                        $ref: "#/definitions/distributed_data/length"
+                                                type: number
+                                                description: thickness of the laminate at joint1 and joint2
+                                                items:
+                                                    type: number
+                                                    minItems: 2
+                                                    maxItems: 2
+                                                    unit: m
+                                                    minimum: 0
                                 ring_stiffeners: &stiffener
                                     type: array
                                     items:
@@ -214,14 +229,23 @@ properties:
                                         properties:
                                             material: *material
                                             flange_height:
-                                                $ref: "#/definitions/distributed_data/length"
+                                                type: number
+                                                unit: m
+                                                minimum: 0
                                             flange_width:
-                                                $ref: "#/definitions/distributed_data/length"
+                                                type: number
+                                                unit: m
+                                                minimum: 0
                                             web_height:
-                                                $ref: "#/definitions/distributed_data/length"
+                                                type: number
+                                                unit: m
+                                                minimum: 0
                                             web_thickness:
-                                                $ref: "#/definitions/distributed_data/length"
-                                            grid: 
+                                                type: number
+                                                unit: m
+                                                minimum: 0
+                                            grid:
+                                                description: Non-dimensional grid from 0..1 (joint1-joint2) the specifies the stiffener locations
                                                 $ref: "#/definitions/distributed_data/grid_nd"
                                 longitudinal_stiffeners: *stiffener # "Grid" here will have to mean something different
                                 bulkhead:
@@ -267,7 +291,7 @@ properties:
                                                 type: number
                                                 description: Total volume of ballast (permanent ballast only)
                                                 unit: m^3
-                                                minimum: 1.0
+                                                minimum: 0
                                                 
                         hydrodynamic_approach: &hydro
                             # TODO: Move these to the modeling file?
@@ -310,22 +334,31 @@ properties:
                         joint1: *jointid
                         mass:
                             description: Mass of this rigid body
-                            units: kilogram
+                            unit: kg
                             type: number
+                            minimum: 0
                         cost:
                             description: Cost of this rigid body
-                            units: USD
+                            unit: USD
                             type: number
+                            minimum: 0
                         cm_offset:
                             description: Offset from joint location to center of mass (CM) of body in dx, dy, dz
                             type: array
                             items:
                                 type: number
+                                unit: m
+                                maxItems: 3
+                                minItems: 3
                         moments_of_inertia:
                             description: Moments of inertia around body CM in Ixx, Iyy, Izz
                             type: array
                             items:
                                 type: number
+                                unit: kg*m^2
+                                maxItems: 3
+                                minItems: 3
+                                minimum: 0
                         hydrodynamic_approach: *hydro
                         Ca: *ca
                         Cp: *cp

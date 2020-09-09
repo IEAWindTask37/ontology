@@ -105,7 +105,6 @@ definitions:
   non_uniform_resource: 
     type: object
     required:
-      - wind_characteristics
       - wind_values
     oneOf:
       - required:
@@ -113,9 +112,6 @@ definitions:
       - required:
         - non_gridded_coordinates
     properties:
-      wind_characteristics:
-        title: Wind characteristics
-        $ref: "#/definitions/wind_characteristics"
       wind_values:
         title: Wind values
         $ref: "#/definitions/wind_values"
@@ -198,7 +194,11 @@ definitions:
               unit: 1
               exclusiveMinimum: 0
   #~
-  wind_characteristics:
+  wind_values:
+    type: object
+    required:
+      - ws
+      - wd
     oneOf:
       - required:
         - P
@@ -207,16 +207,58 @@ definitions:
         - A
         - k
     properties:
+      ws:
+        title: Wind speeds
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      wd:
+        title: Wind directions
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       P:
         title: Probability
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       f:
         title: Frequency
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       A:
         title: Weibull scale
         $ref: "#/definitions/A"
@@ -225,46 +267,102 @@ definitions:
         $ref: "#/definitions/k"
       ti:
         title: TI
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       speedup:
         title: Speedup
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       turning:
         title: Turning
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       inflow_angle:
         title: Inflow angle
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
       rho:
         title: Air density
-        type: array
-        items:
-          type: number
-  #~
-  wind_values:
-    type: object
-    required:
-      - ws
-      - wd
-    properties:
-      ws:
-        title: Wind speeds
-        type: array
-        items:
-          type: number
-      wd:
-        title: Wind directions
-        type: array
-        items:
-          type: number
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      shear:
+        title: Shear
+        type: object
+        required:
+          - alpha
+          - h_ref
+        properties:
+          alpha:
+            title: Alpha
+            type: object
+            required:
+              - values
+              - dimension
+            properties:
+              values:
+                type: array
+                items:
+                  type: number
+              dimension:
+                type: number
+          h_ref:
+            title: Shear ref height
+            type: object
+            required:
+              - values
+              - dimension
+            properties:
+              values:
+                type: array
+                items:
+                  type: number
+              dimension:
+                type: number
   #~
   wind_direction:
     title: Wind direction
@@ -280,14 +378,30 @@ definitions:
     minimum: 0.
   #~
   A:
-    type: array
-    items:
-      type: number
+    type: object
+    required:
+      - values
+      - dimension
+    properties:
+      values:
+        type: array
+        items:
+          type: number
+      dimension:
+        type: number
   #~
   k:
-    type: array
-    items:
-      type: number
+    type: object
+    required:
+      - values
+      - dimension
+    properties:
+      values:
+        type: array
+        items:
+          type: number
+      dimension:
+        type: number
   #~
   uniform_wind_speed:
     title: Uniform wind speed

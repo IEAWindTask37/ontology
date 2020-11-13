@@ -1,0 +1,116 @@
+input_format_version: 0
+title: IEA Wind Task 37 Wind Plant Ontology version 0.1
+description: A file used as input or output of a wind plant model (for overall energy
+  production estimation)
+required:
+  - name
+  - boundaries
+  - plant_energy_resource
+
+
+# PROPERTIES
+properties:
+  #~
+  name:
+    title: Name
+    description: Name of the plant site
+    type: string
+  #~
+  boundaries:
+    title: Boundaries
+    description: Definition of the site boundaries
+    type: object
+    oneOf:
+      - required:
+        - polygons
+      - required:
+        - circle
+    properties:
+      #~~
+      polygons:
+        title: Polygons
+        description: A group of polygons that define the site boundary
+        type: array
+        minItems: 1
+        items:
+          title: Polygon
+          $ref: "#/definitions/polygon"
+      #~~
+      circle:
+        title: Circle
+        $ref: "#/definitions/circle"
+  #~
+  plant_energy_resource:
+    description: >-
+      TODO
+    $ref: "plant_energy_resource2.yaml#"
+  #~
+  exclusions:
+    title: Exclusions
+    description: Definition of any site exclusions
+    type: object
+    oneOf:
+      - required:
+        - polygons
+      - required:
+        - circle
+    properties:
+      #~~
+      polygons:
+        title: Polygons
+        description: A group of polygons that define the site exclusions
+        type: array
+        minItems: 1
+        items:
+          title: Polygon
+          $ref: "#/definitions/polygon"
+      #~~
+      circle:
+        title: Circle
+        $ref: "#/definitions/circle"
+
+  #~
+  bathymetry:
+   title: Bathymetry
+   description: >-
+    TODO
+
+
+# DEFINITIONS
+definitions:
+  #~
+  polygon:
+    title: Polygon
+    type: object
+    required:
+      - vertices
+    properties:
+      #~~
+      vertices:
+        title: Vertices
+        description: An array of x/y coordinates
+        type: array
+        items:
+          title: Vertex coordinates
+          $ref: "coordinate definition used elsewhere"
+  #~
+  circle:
+    title: Circle
+    description: A circle
+    type: object
+    required:
+      - center
+      - radius
+    additionalProperties: false
+    properties:
+      #~~
+      center:
+        title: Center
+        description: The center coordinate of a circle
+        $ref: "coordinate definition used elsewhere"
+      #~~
+      radius:
+        title: Radius
+        description: The radius of a circle
+        type: number
+        units: m   

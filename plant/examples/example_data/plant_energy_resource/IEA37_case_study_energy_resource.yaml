@@ -1,0 +1,13 @@
+name: IEA Wind Task 37 Plant Energy Resource
+wind_resource:
+    uniform_resource:
+        directions: [0., 22.5, 45., 67.5,90., 112.5, 135.,
+                    157.5,180., 202.5, 225., 247.5,270.,
+                     292.5, 315., 337.5]
+        probability: [.025, .024, .029, .036,.063, .065,
+                     .100, .122,.063, .038, .039, .083,
+                     .213, .046, .032, .022]
+        ti: [0.075]
+        reference_height: 100
+        uniform_wind_speed: 
+            wind_speed: [9.8]

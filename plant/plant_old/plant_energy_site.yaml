@@ -6,6 +6,7 @@ required:
   - name
   - boundaries
   - plant_energy_resource
+  - layouts
 
 
 # PROPERTIES
@@ -44,6 +45,18 @@ properties:
     description: >-
       TODO
     $ref: "plant_energy_resource2.yaml#"
+  #~
+  layouts:
+    description: Position of wind turbines
+    required:
+      - initial_layout
+    Properties:
+      initial_layout:
+        title: Initial layout
+        type: string
+        #$ref: "#/definition/layout"
+        
+        
   #~
   exclusions:
     title: Exclusions
@@ -92,7 +105,7 @@ definitions:
         type: array
         items:
           title: Vertex coordinates
-          $ref: "coordinate definition used elsewhere"
+          $ref: "#/definitions/coordinate"
   #~
   circle:
     title: Circle
@@ -107,10 +120,60 @@ definitions:
       center:
         title: Center
         description: The center coordinate of a circle
-        $ref: "coordinate definition used elsewhere"
+        $ref: "#/definitions/coordinate"
       #~~
       radius:
         title: Radius
         description: The radius of a circle
         type: number
         units: m   
+
+  layout:
+    title: Wind turbine layout
+    type: object
+    required:
+      - coordinates
+    properties:
+      coordinates:
+        title: Wind turbine coordinate
+        $ref: "#/definitions/coordinates"
+          
+  coordinate:
+    title: Coordinate
+    description: Point coordinate
+    type: object
+    required:
+      - x
+      - y
+    additionalProperties: false
+    properties:
+      x:
+        title: X coordinate
+        description: West-East coordinate
+        type: number
+        units: m
+      y:
+        title: Y coordinate
+        description: South-North coordinate
+        type: number
+        units: m
+  coordinates:
+    title: Coordinates
+    description: Multi-point coordinates
+    type: object
+    required:
+      - x
+      - y
+    additionalProperties: false
+    properties:
+      x:
+        title: X coordinates
+        description: West-East coordinates
+        type: array
+        units: m
+      y:
+        title: Y coordinates
+        description: South-North coordinates
+        type: array
+        units: m
+        

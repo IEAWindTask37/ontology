@@ -1,0 +1,4 @@
+name: IEA Wind Task 37 Plant Energy Resource
+wind_resource:
+  general_resource:
+    !include ../plant_energy_resource/netcdf/UniformSite.nc

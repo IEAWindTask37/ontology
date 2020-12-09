@@ -9,7 +9,7 @@ from _yaml import ScannerError, ParserError
 
 
 examples_data_path = os.path.dirname(__file__) + "/example_data/"
-plant_schemas_path = os.path.dirname(__file__) + "/../plant_old/"
+plant_schemas_path = os.path.dirname(__file__) + "/../schemata/"
 
 
 import yaml
@@ -22,25 +22,25 @@ class Loader(yaml.SafeLoader):
 
         self._root = os.path.split(stream.name)[0]
 
-        super(Loader, self).__init__(stream)
+        super().__init__(stream)
 
     def include(self, node):
 
         filename = os.path.join(self._root, self.construct_scalar(node))
 
         with open(filename, 'r') as f:
-            return yaml.load(f, Loader)
+            return yaml.load(f, self.__class__)
 
 
 Loader.add_constructor('!include', Loader.include)
 
 
-def load_yaml(filename):
+def load_yaml(filename, loader=Loader):
     with open(filename) as fid:
-        return yaml.load(fid, Loader)
+        return yaml.load(fid, loader)
 
 
-def validate_yaml(data_file, schema_file):
+def validate_yaml(data_file, schema_file, loader=Loader):
 
     def add_local_schemas_to(resolver, schema_folder, base_uri, schema_ext_lst=['.json', '.yaml', '.yml']):
         '''Function from https://gist.github.com/mrtj/d59812a981da17fbaa67b7de98ac3d4b#file-local_ref-py
@@ -70,7 +70,7 @@ def validate_yaml(data_file, schema_file):
                     except (ScannerError, ParserError):
                         print("Reading %s failed" % file)
 
-    data = load_yaml(data_file)
+    data = load_yaml(data_file, loader)
     schema = load_yaml(schema_file)
 
     schema_folder = Path(schema_file).parent

@@ -44,7 +44,7 @@ properties:
   plant_energy_resource:
     description: >-
       TODO
-    $ref: "plant_energy_resource2.yaml#"
+    $ref: "plant_energy_resource.yaml#"
   #~
   layouts:
     description: Position of wind turbines

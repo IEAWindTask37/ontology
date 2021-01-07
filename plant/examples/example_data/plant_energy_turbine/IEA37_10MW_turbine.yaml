@@ -1,0 +1,8 @@
+name: IEA Wind Task 37 10MW Offshore Reference Turbine
+power:
+  rated_power: 10000000
+  rated_wind_speed: 11.0
+  cutin_wind_speed: 4.0
+  cutout_wind_speed: 25.0
+hub_height: 119.0
+rotor_diameter: 198.0

@@ -86,6 +86,29 @@ properties:
    title: Bathymetry
    description: >-
     TODO
+  
+  #~
+  analyses:
+    title: Analyses
+    description: Specific anlayses that can be included with the site definition
+    type: object
+    properties:
+      #~~
+      net_AEP:
+        title: Net AEP for the plant/site
+        type: number
+      gross_AEP:
+        title: Gross AEP for the plant/site
+        type: number
+      wake_model:
+        title: Wake model
+        description: Wake model used in AEP calculations
+        type: object
+        additionalProperties: true
+        properties:
+          name:
+            title: Wake model name
+            type: string
 
 
 # DEFINITIONS

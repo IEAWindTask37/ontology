@@ -6,7 +6,7 @@ import jsonschema
 import json
 from urllib.parse import urljoin
 from _yaml import ScannerError, ParserError
-
+import xarray as xr
 
 examples_data_path = os.path.dirname(__file__) + "/example_data/"
 plant_schemas_path = os.path.dirname(__file__) + "/../schemata/"
@@ -33,6 +33,33 @@ class Loader(yaml.SafeLoader):
 
 
 Loader.add_constructor('!include', Loader.include)
+
+
+class XrResourceLoader(Loader):
+
+    def include(self, node):
+
+        filename = os.path.join(self._root, self.construct_scalar(node))
+        ext = os.path.splitext(filename)[1].lower()
+        if ext in ['.yaml', '.yml']:
+            with open(filename, 'r') as f:
+                return yaml.load(f, XRResourceLoader)
+        elif ext in ['.nc']:
+            def fmt(v):
+                if isinstance(v, dict):
+                    return {k: fmt(v) for k, v in v.items() if fmt(v) != {}}
+                elif isinstance(v, tuple):
+                    return list(v)
+                else:
+                    return v
+
+            def ds2yml(ds):
+                d = ds.to_dict()
+                return fmt({**d['coords'], **d['data_vars']})
+            return ds2yml(xr.open_dataset(filename))
+
+
+XrResourceLoader.add_constructor('!include', XrResourceLoader.include)
 
 
 def load_yaml(filename, loader=Loader):

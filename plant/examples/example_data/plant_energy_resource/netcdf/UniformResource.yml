@@ -1,5 +1,5 @@
 coords:
-  wd:
+  directions:
     data:
     - 0.0
     - 22.5
@@ -18,9 +18,9 @@ coords:
     - 315.0
     - 337.5
     dims:
-    - wd
+    - directions
 data_vars:
-  P:
+  probability:
     data:
     - 0.025
     - 0.024
@@ -39,9 +39,12 @@ data_vars:
     - 0.032
     - 0.022
     dims:
-    - wd
-  WS:
+    - directions
+  turbulence_intensity:
+    data: 0.075
+    dims: []
+  wind_speed:
     data: 9.8
     dims: []
 dims:
-  wd: 16
+  directions: 16

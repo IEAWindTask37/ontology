@@ -25,10 +25,10 @@ if __name__ == '__main__':
     f = [.025, .024, .029, .036, .063, .065, .100, .122, .063, .038, .039, .083, .213, .046, .032, .022]
     WS = 9.8
     ds = xr.Dataset(
-        data_vars={'WS': WS, 'P': ('wd', f)},
-        coords={'wd': np.linspace(0, 360, len(f), endpoint=False)})
-    ds.to_netcdf("UniformSite.nc")
-    xr2yml(ds, "UniformSite.yml")
+        data_vars={'wind_speed': WS, 'probability': ('directions', f), 'turbulence_intensity': 0.075},
+        coords={'directions': np.linspace(0, 360, len(f), endpoint=False)})
+    ds.to_netcdf('UniformResource.nc')
+    xr2yml(ds, "UniformResource.yml")
 
     # WeibullSite
     f = [3.597152, 3.948682, 5.167395, 7.000154, 8.364547, 6.43485,
@@ -38,10 +38,17 @@ if __name__ == '__main__':
     k = [2.392578, 2.447266, 2.412109, 2.591797, 2.755859, 2.595703,
          2.583984, 2.548828, 2.470703, 2.607422, 2.626953, 2.326172]
     ds = xr.Dataset(
-        data_vars={'Sector_frequency': ('wd', f), 'Weibull_A': ('wd', A), 'Weibull_k': ('wd', k)},
+        data_vars={'sector_probability': ('wd', f), 'weibull_a': ('wd', A), 'weibull_k': ('wd', k),
+                   'turbulence_intensity': 0.075},
         coords={'wd': np.linspace(0, 360, len(f), endpoint=False)})
-    ds.to_netcdf("UniformWeibullSite.nc")
-    xr2yml(ds, "UniformWeibullSite.yml")
+    ds.to_netcdf("UniformWeibullResource.nc")
+    xr2yml(ds, "UniformWeibullResource.yml")
+
+    ds = xr.Dataset(
+        data_vars={'wind_speed': WS, 'probability': ('directions', f), 'turbulence_intensity': 0.075},
+        coords={'directions': np.linspace(0, 360, len(f), endpoint=False)})
+    ds.to_netcdf('UniformResource.nc')
+    xr2yml(ds, "UniformSite.yml")
 
     # NonGridded site. 16 WT with speedup = 1+.01*wt_index
     f = [.025, .024, .029, .036, .063, .065, .100, .122, .063, .038, .039, .083, .213, .046, .032, .022]

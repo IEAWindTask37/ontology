@@ -1,0 +1,4 @@
+name: Hornsrev1 Energy Resource
+wind_resource:
+  general_resource:
+    !include ../plant_energy_resource/netcdf/UniformWeibullResource.nc

@@ -131,15 +131,30 @@ definitions:
   general_resource:
     title: Resource where data optionally depend on wind_speed, wind_direction and/or position 
     type: object
-    required: 
-    - probability
+    oneIf:
+        - required: 
+          - probability
+        - required:
+          - weibull_a
+          - weibull_k
+          - sector_probability
+        
     properties:
         directions:
             title: Wind directions
             $ref: "#/definitions/multi_dimensional_data"
         probability:
             $ref: "#/definitions/multi_dimensional_data"
-        turbulence_intensity2:
+        weibull_a:
+            title: Weibull scale
+            $ref: "#/definitions/multi_dimensional_data"
+        weibull_k:
+            title: Weibull shape
+            $ref: "#/definitions/multi_dimensional_data"
+        sector_probability:
+            title: probability of wind directions
+            $ref: "#/definitions/multi_dimensional_data"
+        turbulence_intensity:
             $ref: "#/definitions/multi_dimensional_data"
         wind_speed:
             $ref: "#/definitions/multi_dimensional_data"

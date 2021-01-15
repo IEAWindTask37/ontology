@@ -25,13 +25,16 @@ properties:
     oneOf:
       - required:
         - Cp_curve
+        - Ct_curve
       - required:
         - power_curve
+        - Ct_curve
       - required:
         - rated_power
         - rated_wind_speed
         - cutin_wind_speed
         - cutout_wind_speed
+        - Ct_curve
     properties:
       #~~
       Cp_curve:

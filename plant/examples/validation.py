@@ -15,6 +15,9 @@ if __name__ == '__main__':
     validate_yaml(data_file=examples_data_path + 'plant_energy_turbine/IEA37_10MW_turbine.yaml',
                   schema_file=plant_schemas_path + 'plant_energy_turbine.yaml')
 
+    validate_yaml(data_file=examples_data_path + 'plant_energy_turbine/IEA37_15MW_turbine.yaml',
+                  schema_file=plant_schemas_path + 'plant_energy_turbine.yaml')
+
     #===================================================================================================================
     # # validate energy resources
     #===================================================================================================================

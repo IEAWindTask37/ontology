@@ -1,0 +1,1024 @@
+# Draft schema definition for site energy resource
+
+input_format_version: 0 # What is this for?
+title: Plant energy resource
+type: object
+description: >-
+  A description of the wind resource available within a site. The wind resource
+  can be specified at one location within the site, or at multiple locations.
+  At each point specified within the site, the wind resource can be detailed in
+  several different ways.
+required:
+  - name
+  - wind_resource
+additionalProperties: false
+
+
+# PROPERTIES
+properties:
+  #~
+  name:
+    title: Name
+    description: Name of the plant resource
+    type: string
+  #~
+  wind_resource:
+    title: Wind resource
+    type: object
+    description: >-
+      #TODO
+    additionalProperties: false
+    oneOf:
+      - required:
+        - uniform_resource
+      - required:
+        - non_uniform_resource
+      - required:
+        - timeseries
+      - required:
+        - general_resource
+    #~~~
+    properties:
+      uniform_resource:
+        title: Uniform
+        $ref: "#/definitions/uniform_resource"
+      #~~~
+      non_uniform_resource:
+        title: Non-uniform
+        $ref: "#/definitions/non_uniform_resource"
+      #~~~
+      timeseries:
+        title: Timeseries
+        $ref: "#/definitions/timeseries"
+      #~~~
+      general_resource:
+        title: General resouce with custom dimensions
+        $ref: "#/definitions/general_resource"
+
+
+# DEFINITIONS
+definitions:
+  #~
+  uniform_resource:
+    title: Uniform
+    type: object
+    required:
+      - directions
+      - probability
+      - ti
+      - reference_height
+      - uniform_wind_speed
+    additionalProperties: false
+    properties:
+      directions:
+        title: Wind directions
+        type: array
+        items:
+          type: number
+      uniform_wind_speed:
+        title: Wind speeds
+        $ref: "#/definitions/uniform_wind_speed"
+      probability:
+        title: Probability
+        type: array
+        items: 
+          type: number
+      ti:
+        title: TI
+        type: array
+        items:
+          type: number
+      reference_height:
+        title: Reference height
+        type: number
+      shear:
+        title: Shear
+        type: object
+        required:
+          - alpha
+          - h_ref
+        properties:
+          alpha:
+            title: Alpha
+            type: number
+          h_ref:
+            title: Shear ref height
+            type: number
+      coordinate:
+        title: Coordinate
+        $ref: "#/definitions/coordinate"
+  #~
+  non_uniform_resource: 
+    type: object
+    required:
+      - wind_values
+    oneOf:
+      - required:
+        - gridded_coordinates
+      - required:
+        - non_gridded_coordinates
+    properties:
+      wind_values:
+        title: Wind values
+        $ref: "#/definitions/wind_values"
+      gridded_coordinates:
+        title: Gridded coords
+        $ref: "#/definitions/gridded_coordinates"
+      non_gridded_coordinates:
+        title: Non-gridded coords
+        $ref: "#/definitions/non_gridded_coordinates"
+        
+  general_resource:
+    title: Resource where data optionally depend on wind_speed, wind_direction and/or position 
+    type: object
+    oneIf:
+        - required: 
+          - probability
+        - required:
+          - weibull_a
+          - weibull_k
+          - sector_probability
+        
+    properties:
+        directions:
+            title: Wind directions
+            $ref: "#/definitions/multi_dimensional_data"
+        probability:
+            $ref: "#/definitions/multi_dimensional_data"
+        weibull_a:
+            title: Weibull scale
+            $ref: "#/definitions/multi_dimensional_data"
+        weibull_k:
+            title: Weibull shape
+            $ref: "#/definitions/multi_dimensional_data"
+        sector_probability:
+            title: probability of wind directions
+            $ref: "#/definitions/multi_dimensional_data"
+        turbulence_intensity:
+            $ref: "#/definitions/multi_dimensional_data"
+        wind_speed:
+            $ref: "#/definitions/multi_dimensional_data"
+  #~
+  wind_rose:
+    title: Wind rose
+    type: object
+    required:
+      - directions
+      - direction_pmf
+    oneOf:
+      - required:
+        - speed_cweibull
+      - required:
+        - speeds
+        - speed_cpmf
+    #~~~~
+    properties:
+      directions:
+        title: Wind directions
+        description: >-
+          #TODO
+        type: array
+        items:
+          $ref: "#/definitions/wind_direction"
+      #~~~~
+      direction_pmf:
+        title: Wind direction probability mass function
+        description: >-
+          The wind direction probability mass function given as an
+          array of positive weights not necessarily summing up to one.
+          So normalization needs to be done to obtain probabilities
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          title: Weight
+          type: number
+          minimum: 0
+      #~~~~
+      speeds:
+        title: Wind speeds
+        description: >-
+          #TODO
+        type: array
+        items:
+          $ref: "#/definitions/wind_speed"
+      #~~~~
+      speed_cpmf:
+        title: Wind speed probability mass function conditional direction
+        description: >-
+          The wind speed probability mass function conditional on
+          direction given as an array of arrays of positive weights not
+          necessarily summing up to one. So normalization needs to be
+          done to obtain probabilities.
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          type: array  # NOTE: should have same length as "2/speeds"
+          items:
+            title: Weight
+            type: number
+            minimum: 0
+      #~~~~
+      speed_cweibull:
+        title: Wind speed Weibull parameters conditional on direction
+        type: array  # NOTE: should have same length as "1/directions"
+        items:
+          type: array
+          items:
+            - title: Scale parameter
+              type: number
+              unit: m
+              exclusiveMinimum: 0
+            - title: Shape parameter
+              type: number
+              unit: 1
+              exclusiveMinimum: 0
+  #~
+  wind_values:
+    type: object
+    required:
+      - ws
+      - wd
+    oneOf:
+      - required:
+        - P
+      - required:
+        - f
+        - A
+        - k
+    properties:
+      ws:
+        title: Wind speeds
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      wd:
+        title: Wind directions
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      P:
+        title: Probability
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      f:
+        title: Frequency
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      A:
+        title: Weibull scale
+        $ref: "#/definitions/A"
+      k:
+        title: Weibull shape
+        $ref: "#/definitions/k"
+      ti:
+        title: TI
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      speedup:
+        title: Speedup
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      turning:
+        title: Turning
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      inflow_angle:
+        title: Inflow angle
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      rho:
+        title: Air density
+        type: object
+        required:
+          - values
+          - dimension
+        properties:
+          values:
+            type: array
+            items:
+              type: number
+          dimension:
+            type: number
+      shear:
+        title: Shear
+        type: object
+        required:
+          - alpha
+          - h_ref
+        properties:
+          alpha:
+            title: Alpha
+            type: object
+            required:
+              - values
+              - dimension
+            properties:
+              values:
+                type: array
+                items:
+                  type: number
+              dimension:
+                type: number
+          h_ref:
+            title: Shear ref height
+            type: object
+            required:
+              - values
+              - dimension
+            properties:
+              values:
+                type: array
+                items:
+                  type: number
+              dimension:
+                type: number
+  #~
+  wind_direction:
+    title: Wind direction
+    type: number
+    unit: °
+    minimum: 0.
+    exclusiveMaximum: 360.
+  #~
+  wind_speed:
+    title: Wind speed
+    type: number
+    unit: m/s
+    minimum: 0.
+  #~
+  A:
+    type: object
+    required:
+      - values
+      - dimension
+    properties:
+      values:
+        type: array
+        items:
+          type: number
+      dimension:
+        type: number
+  #~
+  k:
+    type: object
+    required:
+      - values
+      - dimension
+    properties:
+      values:
+        type: array
+        items:
+          type: number
+      dimension:
+        type: number
+  #~
+  uniform_wind_speed:
+    title: Uniform wind speed
+    type: object
+    oneOf:
+      - required:
+        - wind_speed
+      - required:
+        - A
+        - k
+    properties:
+      wind_speed:
+        type: array
+      A:
+        type: array
+      k:
+        type: array
+  #~
+  probability:
+    title: Probability
+    type: number
+    unit: 1
+    minimum: 0.
+    maximum: 1.
+  #~
+  gridded_coordinates:
+    title: Gridded Coordinates
+    type: object
+    description: >-
+      x, y and z are all arrays of unique numbers. Locations are obtained with a mesh grid.
+    required:
+      - x
+      - y
+    properties:
+      x:
+        type: array
+        items:
+          type: number
+      y:
+        type: array
+        items:
+          type: number
+      z:
+        type: array
+        items:
+          type: number
+  non_gridded_coordinates:
+    type: object
+    description: >-
+      x, y and z are all arrays of equal length where an index corresponds to a location.
+    required:
+      - x
+      - y
+    properties:
+      x:
+        type: array
+        items:
+          type: number
+      y:
+        type: array
+        items:
+          type: number
+      z:
+        type: array
+        items:
+          type: number
+  #~
+  timeseries: # need to restructure to contain array of arrays
+    title: Timeseries
+    type: array
+    items:
+      - $ref: "#/definitions/time_array"
+      - $ref: "#/definitions/wind_direction_timeseries"
+      - $ref: "#/definitions/wind_speed_timeseries"
+  #~
+  time_array:
+    title: Time
+    description: >-
+      An array of timesteps.
+    type: array
+    items:
+      title: Point in time
+      type: string
+      format: date-time
+  #~
+  wind_direction_timeseries:
+    title: Wind direction timeseries
+    description: >-
+      An array of wind directions, correlated with a timeseries. Should have
+      the same length as time_array.
+    type: array
+    items:
+      title: Wind direction
+      $ref: "#/definitions/wind_direction"
+  #~
+  wind_speed_timeseries:
+    title: Wind speed timeseries
+    description: >-
+      An array of wind speeds, correlated with a timeseries. Should have the
+      same length as time_array.
+    type: array
+    items:
+      title: Wind speed
+      $ref: "#/definitions/wind_speed"
+  #~
+  coordinate:
+    title: Geographical coordinate
+    description: Coordinate for a location on Earth
+    type: object
+    anyOf:
+      - required:
+        - geo
+      - required:
+        - adhoc
+      - required:
+        - utm_zone
+        - utm
+    additionalProperties: false
+    properties:
+      geo:
+        title: Geographical coordinates
+        description: >-
+          The latitude and longitude of the location expressed in degrees
+        type: array
+        items:
+          - title: Latitude
+            type: number
+            minimum: -90
+            maximum: 90
+            unit: °
+          - title: Longitude
+            type: number
+            exclusiveMinimum: -180
+            maximum: 180
+            unit: °
+      #~~
+      utm:
+        title: UTM
+        type: object
+        required:
+          - utm_zone
+          - utm_coords
+        properties:
+          utm_zone:
+            title: UTM zone
+            type: integer
+            minimum: 1
+            maximum: 60
+          #~~~~
+          utm_coords:
+            title: UTM coordinates
+            type: array
+            items:
+            - title: Easterly
+              type: number
+              unit: m
+            - title: Northerly
+              type: number
+              unit: m
+      #~~
+      adhoc:
+        title: Ad hoc coordinates
+        type: array
+        items:
+        - title: Easterly
+          type: number
+          unit: km
+        - title: Northerly
+          type: number
+          unit: km
+  #~
+  regular_coordinates:
+    type: object
+    description: >-
+      x, y and z are all arrays of unique numbers. Locations are obtained with a mesh grid.
+    required:
+      - x
+      - y
+    properties:
+      x:
+        type: array
+        items:
+          type: number
+      y:
+        type: array
+        items:
+          type: number
+    additionalProperties:
+      z:
+        type: array
+        items:
+          type: number
+    # PROPERTIES
+    properties:
+      #~~
+      name:
+        description: The name of the location
+        type: string
+      #~~
+      reference_system:
+        title: Geodetic reference frame
+        type: string
+      #~~
+      
+      
+
+               
+  multi_dimensional_data:
+    oneOf:
+      - $ref: "#/definitions/dimensional_data"
+      - $ref: "#/definitions/nondimensional_data"
+      
+  dimensional_data:
+    title: Data with custom dimensions
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          type: number
+      dims:
+        type: array
+        
+  nondimensional_data:
+    title: Data with custom dimensions
+    type: object
+    properties:
+      data:
+        type: number
+      dims:
+        type: array
+        maxItems: 0
+########################################################################
+      # #~~~
+      # reference_height: # relative to ground or sea-level?
+      #   title: Height of wind resource defintion 
+      #   type: array
+      #   items:
+      #     - title: Height
+      #       type: number
+      #       unit: m
+      # #~~~
+      # terrain_height:
+      #   title: Terrain heights
+      #   description: >-
+      #     Height of the terrain at each defined coordinate.
+      #   type: array
+      #   minItems: 1
+      #   items:
+      #     title: Terrain height
+      #     type: number
+      #     unit: m
+      # #~~~
+      # air_temperature:
+      #   title: Air temperature definition
+      #   type: array
+      #   description: >-
+      #     The air temperature at each defined coordinate. Can be a series
+      #     of air temperatures if correlated with a timeseries, in which
+      #     case the length should be the same as the time_array.
+      #   minItems: 1
+      #   items:
+      #     title: Air temperature
+      #     type: number
+      #     unit: °C
+      # #~~~
+      # air_density:
+      #   title: Air density
+      #   type: number
+      #   unit: kg/m3
+      #   minimum: 0.
+      #   default: 1.2041
+      # #~~~
+      # turbulence_intensity:
+      #   title: Turbulence intensity definition
+      #   type: array
+      #   description: >-
+      #     The turbulence intensity at each defined coordinate. Can be a
+      #     series of turbulence intensities if correlated with a timeseries,
+      #     in which case the length should be the same as the time_array.
+      #   minItems: 1
+      #   items:
+      #     title: Air temperature
+      #     type: number
+      #     unit: °C
+# 
+  #     wsp_edg: # TODO: does this belong in wind_specification? Perhaps a
+  #               # property of a wind object?
+  #       type: array
+  #       description: edges of wind speed bins for wind rose
+      
+  #     wdir_edg: # TODO: does this belong in wind_specification? Perhaps a
+  #               # property of a wind object?
+  #       type: array
+  #       description: edges of wind direction edges for wind rose
+    
+  # wind_specification:
+  #   type: object
+  #   description: >-
+  #     A wind specification object, having several options. A question is
+  #     do we need to provide a converter between all the different
+  #     possible types?
+
+  #       required:
+  #         - oneOf:
+  #           - single_wind_rose
+  #           - multiple_wind_rose
+  #           - weibull_wind_rose
+  #           - probability_wind_rose
+  #           - weibull_wind_and_turbulence_rose
+  #           - timeseries?
+  #           - gridded
+  #		 probability:
+  #		   type: array
+  #       description: >-
+  #         [n_p x n_wd x n_ws] array of the wind rose probabilities at each
+  #         resource point
+
+  #     variables:
+  #       type: object
+        
+  #       properties:
+  #         wsp_loc:
+  #             type: array
+  #             description: >-
+  #               [n_p x n_wd x n_ws] array of wind speeds at each resource point
+          
+  #         wdir_loc:
+  #             type: array
+  #             description: >-
+  #               [n_p x n_wd x n_ws] array of wind directions at each resource
+  #               point
+          
+  #         ti_loc:
+  #             type: array
+  #             description: >-
+  #               [n_p x n_wd x n_ws] array of turbulence intensities at each
+  #               resource point
+
+  # #### Older wind resource model - may be a pre-processing model now for wind resource
+  # wind_resource:
+  #   type: object
+  #   oneOf:
+      # - $ref: "#/definitions/single_wind_rose"
+      # - #ref: "#/definitions/multiple_wind_rose"
+
+  # # Wind rose definitions
+  # single_wind_rose:
+  #   type: object
+  #   oneOf:
+  #     - $ref: "#/definitions/weibull_wind_rose"
+  #     - $ref: "#/definitions/probability_wind_rose"
+  #     - $ref: "#/definitions/weibull_wind_and_turbulence_rose"
+
+  # multiple_wind_rose:
+  #   type: object
+  #   description: array of wind roses by location
+  #   type: array #ndarray([[position], [single_wind_rose]])
+  #   items:
+  #     type: array
+  #     items:
+  #       - $ref: "#/definitions/position"
+  #       - $ref: "#/definitions/single_wind_rose"  
+
+  # weibull_wind_rose:
+  #   description: A wind rose descrived as an array of weibull distributions
+  #   type: array #ndarray([[wind:direction], [probability], [distribution:weibull:A], [distribution:weibull:k]])
+  #   items:
+  #     type: array
+  #     items:
+  #       - $ref: "#/definitions/wind/properties/direction"
+  #       - $ref: "#/definitions/probability"
+  #       - $ref: "#/definitions/distribution/weibull/properties/A"
+  #       - $ref: "#/definitions/distribution/weibull/properties/k"
+
+  # probability_wind_rose:
+  #   type: object
+  #   description: A wind rose described by a 2D array of wind speed and wind directions
+
+  #   properties:
+  #     directions:
+  #       type: array
+  #       items:
+  #         $ref: "#/definitions/wind/properties/wind_direction"
+  #       description: the wind direction corresponding to the 1st dimension
+
+  #     speeds:
+  #       type: array
+  #       items:
+  #         $ref: "#/definitions/wind/properties/speed"
+  #       description: the wind speed corresponding to the 2nd dimension
+      
+  #     # include turbulence inensity in this version?
+  #     turbulence intensity:
+  #       type: array
+  #       items:
+  #         $ref "#/definitions/wind/properties/ti"
+  #       description: the turbulence intensity corresponding to the 3rd dimension
+
+  #     probability:
+  #       type: array #ndarray(probability)
+  #       items:
+  #         type: array
+  #         items:
+  #           $ref: "#/definitions/probability"
+  #       description: the probability of occurance of wind speed ndarray.shape([len(wind_directions), len(wind_speeds)])
+  # #~
+  # weibull_wind_and_turbulence_rose:
+  #   title: Wind rose of weibull distributions
+  #   description: >-
+  #     A wind rose described as an array of weibull distributions, including
+  #     wind direction, probability, and weibull parameters A and k
+  #   type: array # ndarray([[wind:direction], [probability],
+  #               # [distribution:weibull:A], [distribution:weibull:k],
+  #               # [wind:ti]])
+  #   items:
+  #     type: array
+  #     items:
+  #       # TODO: do we need title, type, etc. here? Or is it inherited/defined
+  #       # by the reference?
+  #       - $ref: "#/definitions/wind/properties/direction"
+  #       - $ref: "#/definitions/probability"
+  #       - $ref: "#/definitions/distribution/weibull/properties/A"
+  #       - $ref: "#/definitions/distribution/weibull/properties/k"
+  #       - $ref: "#/definitions/wind/ti"   
+  # #~
+  # wind:
+  #   title: Wind
+  #   type: object
+  #   required:
+  #     - direction
+  #     - speed
+  #     - ti
+  #   additionalProperties: false
+  #   properties:
+  #     direction:
+  #       id: "wind_direction"
+  #       type: number
+  #       description: The wind direction in degree, with North as the 0.
+  #       units: deg
+  #       minimum: 0.0
+  #       maximum: 360.0
+  #     #~~
+  #     speed:
+  #       anyOf:
+  #         - oneOf: # TODO: So this allows a speed object to be either a weibull
+  #                  # distribution or a number, and they both have to be
+  #                  # between 0 and 100? Has are the min/max applied to a
+  #                  # distribution?
+  #           - type: number
+  #             description: A wind speed
+  #           - $ref: "#/definitions/distributions/weibull"
+  #         - minimum: 0.0
+  #           maximum: 100.0
+  #           units: m/s
+  #     #~~
+  #     ti:
+  #       title: Turbulence intesnity
+  #       type: number
+  #       minimum: 0.0
+  #       maximum: 1.0
+
+  # # Distribution types from WindIO - generic and could be separate file
+  # distribution:
+  #   anyOf:
+  #     - oneOf:
+  #         - $ref: "scalar"
+  #         - $ref: "uniform"
+  #         - $ref: "weibull"
+  #         - $ref: "gaussian"
+  #         - $ref: "KDE"
+  #         - $ref: "GP"
+  #         - $ref: "copula"
+  #     - min:
+  #         type: number
+  #         description: truncation of the distribution
+  #       max:
+  #         type: number
+  #         description: truncation of the distribution
+  #       uncertainty:
+  #         $ref: "#/definitions/distribution"
+  #   #~~
+  #   scalar:
+  #     type: number
+  #   #~~
+  #   uniform:
+  #     title: Uniform distribution
+  #     description: A uniform distribution [min, max]
+  #     type: array
+  #     items:
+  #       - title: Minimum
+  #         type: number
+  #       - title: Maximum
+  #         type: number
+  #     additionalItems: false
+  #   #~~
+  #   lognormal:
+  #     title: Lognormal
+  #     type: object
+  #     properties:
+  #       mu:
+  #         type: number
+  #       sig:
+  #         type: number
+  #   #~~
+  #   weibull:
+  #     title: Weibull distribution
+  #     type: object
+  #     properties:
+  #       A:
+  #         type: number
+  #         description: the A parameter of a weibull distribution
+  #       k:
+  #         type: number
+  #         description: the k parameter of a weibull distribution
+  #   #~~
+  #   gaussian:
+  #     title: Gaussian curve
+  #     type: object
+  #     properties:
+  #       mu:
+  #         type: number
+  #         description: The mean value
+  #       sig:
+  #         type: number
+  #         description: The standard deviation
+  #         minimum: 0.0
+  #   #~~
+  #   KDE:
+  #     title: Kernel Density Estimator
+  #     description: |
+  #       A Kernel Density Estimator representation of a distribution.
+  #       See http://scikit-learn.org/stable/modules/density.html
+  #     type: object
+  #     properties:
+  #       kernel:
+  #         type: string
+  #         description: the type of kernel used for the KDE representation.
+  #         enum:
+  #           - gaussian
+  #           - tophat
+  #           - epanechnikov
+  #           - linear
+  #           - cosine
+  #       bandwitdh:
+  #         type: number
+  #         minimum: 0.0
+  #         description: the bandwidth of the kernel
+  #       array:
+  #         type: array
+  #         items:
+  #           type: number
+  #           description: the position of the center
+  #         description: >-
+  #           Array to describe a distribution size:n, with n the number of
+  #           normals centers
+  #   #~~
+  #   GP:
+  #     title: Gaussian Process
+  #     type: object
+  #     properties:
+  #       points:
+  #         type: array
+  #   #~~
+  #   copula:
+  #     title: Copula distribution
+  #     type: object
+  #     properties:
+  #       copula_type:
+  #         type: string
+  #         enum:
+  #           - gaussian
+  #           - archimedean
+  #           - frank
+  #           - clayton
+  #           - gumbel
+  # #~
+  # probability:
+  #   title: Probability
+  #   type: number
+  #   description: probability of an event to happen
+  #   minimum: 0.0
+  #   maximum: 1.0

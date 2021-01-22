@@ -38,23 +38,27 @@ from py_wake.site.xrsite import XRSite
 # PyWakeXRSiteLoader.add_constructor('!include', PyWakeXRSiteLoader.include)
 
 
-def yml2Site(yml):
+def yml2Site(yml, interp_method='nearest'):
     resource = load_yaml(yml, XrResourceLoader)
-    if 'general_resource' in resource['wind_resource']:
-        print(resource['wind_resource']['general_resource'])
-        data = resource['wind_resource']['general_resource']
-        ds = xr.Dataset({k: (v['dims'], v['data']) for k, v in data.items()})
-        ds = ds.rename(**{k: v for k, v in [('directions', 'wd'),
-                                            ('probability', 'P'),
-                                            ('weibull_a', 'Weibull_A'),
-                                            ('weibull_k', 'Weibull_k'),
-                                            ('sector_probability', 'Sector_frequency'),
-                                            ('wind_speed', 'WS'),
-                                            ('turbulence_intensity', 'TI')] if k in ds})
-        return XRSite(ds)
+    data = resource['wind_resource']
+    ds = xr.Dataset({k: (v['dims'], v['data']) for k, v in data.items() if hasattr(v, 'keys') and 'dims' in v},
+                    coords={k: v for k, v in data.items() if not hasattr(v, 'keys')})
+    return xr2Site(ds)
+
+
+def xr2Site(ds, interp_method='nearest'):
+    ds = ds.rename(**{k: v for k, v in [('wind_direction', 'wd'),
+                                        ('wind_speed', 'ws'),
+                                        ('wind_turbine', 'i'),
+                                        ('probability', 'P'),
+                                        ('weibull_a', 'Weibull_A'),
+                                        ('weibull_k', 'Weibull_k'),
+                                        ('sector_probability', 'Sector_frequency'),
+                                        ('turbulence_intensity', 'TI')] if k in ds})
+    if 'ws' in ds:
+        return XRSite(ds, default_ws=ds.ws, interp_method=interp_method)
     else:
-        raise NotImplementedError()
-    print(resource)
+        return XRSite(ds, interp_method=interp_method)
 
 
 def yml2WindTurbines(yml):

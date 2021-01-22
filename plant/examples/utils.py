@@ -12,10 +12,6 @@ examples_data_path = os.path.dirname(__file__) + "/example_data/"
 plant_schemas_path = os.path.dirname(__file__) + "/../schemata/"
 
 
-import yaml
-import os
-
-
 class Loader(yaml.SafeLoader):
 
     def __init__(self, stream):
@@ -55,7 +51,8 @@ class XrResourceLoader(Loader):
 
             def ds2yml(ds):
                 d = ds.to_dict()
-                return fmt({**d['coords'], **d['data_vars']})
+                return fmt({**{k: v['data'] for k, v in d['coords'].items()},
+                            **d['data_vars']})
             return ds2yml(xr.open_dataset(filename))
 
 

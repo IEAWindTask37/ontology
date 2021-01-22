@@ -18,9 +18,9 @@ if __name__ == '__main__':
     validate_yaml(data_file=examples_data_path + 'plant_energy_turbine/IEA37_15MW_turbine.yaml',
                   schema_file=plant_schemas_path + 'plant_energy_turbine.yaml')
 
-    #===================================================================================================================
+    # ===================================================================================================================
     # # validate energy resources
-    #===================================================================================================================
+    # ===================================================================================================================
 
     # Uniform Resource
     validate_yaml(data_file=examples_data_path + "plant_energy_resource/UniformResource.yaml",
@@ -35,5 +35,21 @@ if __name__ == '__main__':
                   schema_file=plant_schemas_path + "plant_energy_resource.yaml")
 
     validate_yaml(data_file=examples_data_path + "plant_energy_resource/UniformWeibullResource_nc.yaml",
+                  schema_file=plant_schemas_path + "plant_energy_resource.yaml",
+                  loader=XrResourceLoader)
+
+    # WT distributed Resource
+    validate_yaml(data_file=examples_data_path + "plant_energy_resource/WTResource.yaml",
+                  schema_file=plant_schemas_path + "plant_energy_resource.yaml")
+
+    validate_yaml(data_file=examples_data_path + "plant_energy_resource/WTResource_nc.yaml",
+                  schema_file=plant_schemas_path + "plant_energy_resource.yaml",
+                  loader=XrResourceLoader)
+
+    # Gridded Resource
+    validate_yaml(data_file=examples_data_path + "plant_energy_resource/GriddedResource.yaml",
+                  schema_file=plant_schemas_path + "plant_energy_resource.yaml")
+
+    validate_yaml(data_file=examples_data_path + "plant_energy_resource/GriddedResource_nc.yaml",
                   schema_file=plant_schemas_path + "plant_energy_resource.yaml",
                   loader=XrResourceLoader)

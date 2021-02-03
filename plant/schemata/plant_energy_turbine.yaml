@@ -18,7 +18,7 @@ properties:
     description: Name of the turbine definition
     type: string
   #~
-  power:
+  power: # Is power a good umbrella term for thrust, rotor diameter, hub height?
     title: Power
     description: Definition of the turbine power characteristics
     type: object

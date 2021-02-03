@@ -1,0 +1,78 @@
+input_format_version: 0
+title: IEA Wind Task 37 Wind Energy System Ontology version 0.1
+description: A file used as input or output of a wind plant model
+required:
+  - name
+  - site
+  - wind_farm # Or something referring to the built or "designable" wind energy conversion system
+
+
+# PROPERTIES
+properties:
+  #~
+  name:
+    title: Name
+    description: Name of the wind energy system
+    type: string
+  #~
+  site:
+    description: >-
+      TODO
+    $ref: "plant_energy_site.yaml#" # Remove "energy" as it will also influence LCOE (bathymetry) or Rename to sth like wes_site.yaml
+  #~
+  wind_farm: # Or better name for built environment
+    description: >-
+      TODO
+    $ref: "plant_wind_farm.yaml#"
+  #~
+  attributes: # Rename for system behaviour/attributes/response quantities.
+    title: Analyses
+    description: Specific anlayses of the entire wind energy system
+    type: object
+    properties:
+      #~~
+      net_AEP:
+        title: Net AEP for the plant/site
+        type: number
+      gross_AEP:
+        title: Gross AEP for the plant/site
+        type: number
+  analyses:
+    wake_model:
+      title: Wake model
+      description: Wake model used in AEP calculations
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          title: Wake model name
+          type: string
+  optimisation:
+    design_variables:
+      title: List of design variables
+      description: Design variables of the system
+      type: object
+      properties:
+        name:
+          title: Array of design variables
+        $ref: "wind_farm/properties/layouts"
+    method:
+      title: Optimisation method
+      description: Optimisation method used for layout design
+      type: object
+      properties:
+        name:
+          title: Optimisation method name
+          type: string
+    constraints:
+      title: Optimisation constraints functions
+      description: List of constraint functions
+      type: object
+      properties:
+        name:
+          title: Name of constraint
+          type: string
+    initial_layout:
+      Properties:
+        title: Initial layout
+        $ref: "#/definition/layout"

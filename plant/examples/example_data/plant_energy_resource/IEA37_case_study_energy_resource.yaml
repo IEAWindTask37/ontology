@@ -6,6 +6,6 @@ wind_resource:
         data: [.025, .024, .029, .036,.063, .065,.100, .122,.063, .038, .039, .083, .213, .046, .032, .022]
         dims: [wind_direction]
     turbulence_intensity: 
-        data: [0.075]
+        data: 0.075
         dims: []
     

@@ -76,27 +76,34 @@ properties:
         turbulence_intensity:
             title: Turbulence intensity
             $ref: "#/definitions/multi_dimensional_data"
+        reference_height:
+            title: Reference height
+            type: number
+        shear:
+            title: Shear
+            $ref: "#/definitions/shear"
+             
         
 
 
 # DEFINITIONS
 definitions:
-# reference_height:
-#   title: Reference height
-#   type: number
-# shear:
-#   title: Shear
-#   type: object
-#   required:
-#     - alpha
-#     - h_ref
-#   properties:
-#     alpha:
-#       title: Alpha
-#       type: number
-#     h_ref:
-#       title: Shear ref height
-#       type: number
+  reference_height:
+    title: Reference height
+    type: number
+  shear:
+    title: Shear
+    type: object
+    required:
+      - alpha
+      - h_ref
+    properties:
+      alpha:
+        title: Alpha
+        type: number
+      h_ref:
+        title: Shear ref height
+        type: number
 
   
 #     speedup:

@@ -1,0 +1,35 @@
+name: IEA Wind Task 37 Plant Energy Site
+boundaries: 
+  polygons:
+    - [
+        {
+          vertices:
+            [
+              {
+                x: [0., 1.],
+                y: [2., 4.]
+              }
+            ]
+        },
+        {
+          vertices:
+            [
+              {
+                x: [15., 20., 25.],
+                y: [0., 10., 20.]
+              }
+            ]
+        }
+      ]
+
+
+
+plant_energy_resource: !include ../plant_energy_resource/IEA37_case_study_energy_resource.yaml
+layouts: 
+    initial_layout: 
+        coordinates:
+            x: [0., 650., 200.861, -525.861, -525.861, 200.861, 1300., 1051.7221, 401.7221, -401.7221, -1051.7221,
+               -1300., -1051.7221, -401.7221, 401.7221, 1051.7221]
+            y: [0., 0., 618.1867, 382.0604, -382.0604, -618.1867, 0., 764.1208, 1236.3735, 1236.3735, 764.1208, 0.,
+               -764.1208, -1236.3735, -1236.3735, -764.1208]
+        

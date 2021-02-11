@@ -95,7 +95,7 @@ definitions:
         type: array
         items:
           title: Vertex coordinates
-          $ref: "#/definitions/coordinates"
+          $ref: "common.yaml#/definitions/coordinates"
   #~
   circle:
     title: Circle
@@ -110,10 +110,11 @@ definitions:
       center:
         title: Center
         description: The center coordinate of a circle
-        $ref: "#/definitions/coordinate"
+        #$ref: "#/definitions/coordinate"
+        $ref: "common.yaml#/definitions/coordinate"
       #~~
       radius:
         title: Radius
         description: The radius of a circle
         type: number
-        units: m   
+        units: m

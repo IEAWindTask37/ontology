@@ -1,15 +1,10 @@
 import yaml
-from jsonschema import validate
 import os
 from pathlib import Path
 import jsonschema
 import json
 from urllib.parse import urljoin
-from _yaml import ScannerError, ParserError
 import xarray as xr
-
-examples_data_path = os.path.dirname(__file__) + "/example_data/"
-plant_schemas_path = os.path.dirname(__file__) + "/../schemata/"
 
 
 class Loader(yaml.SafeLoader):
@@ -60,6 +55,8 @@ XrResourceLoader.add_constructor('!include', XrResourceLoader.include)
 
 
 def load_yaml(filename, loader=Loader):
+    if isinstance(filename, dict):
+        return filename  # filename already yaml dict
     with open(filename) as fid:
         return yaml.load(fid, loader)
 

@@ -1,14 +1,17 @@
-import yaml
-import os
 import numpy as np
 import xarray as xr
-from plant.examples.utils import Loader, examples_data_path, load_yaml, XrResourceLoader
+from plant.examples.utils.yml_utils import load_yaml, XrResourceLoader
 from py_wake.wind_turbines import OneTypeWindTurbines, cube_power
 from py_wake.site.xrsite import XRSite
+from plant.examples.utils import examples_data_path
+from py_wake.deficit_models.gaussian import IEA37SimpleBastankhahGaussian
+import matplotlib.pyplot as plt
 
 
 def yml2Site(yml, interp_method='nearest'):
     resource = load_yaml(yml, XrResourceLoader)
+    if 'plant_energy_resource' in resource:
+        resource = resource['plant_energy_resource']
     data = resource['wind_resource']
     ds = xr.Dataset({k: (v['dims'], v['data']) for k, v in data.items() if hasattr(v, 'keys') and 'dims' in v},
                     coords={k: v for k, v in data.items() if not hasattr(v, 'keys')})
@@ -53,9 +56,25 @@ def yml2WindTurbines(yml):
                                power_func=power_func, ct_func=ct_func, power_unit='w')
 
 
+def ymlSystem2PyWake(wind_energy_system_yml, windFarmModel):
+    wes = load_yaml(wind_energy_system_yml)
+    wf = wes['wind_farm']
+    x, y = [wf['layouts']['initial_layout']['coordinates'][xy] for xy in 'xy']
+
+    wt = yml2WindTurbines(wf['turbines'])
+    site = yml2Site(wes['site'])
+    return windFarmModel(site=site, windTurbines=wt), (x, y)
+
+
 if __name__ == '__main__':
-    wt = yml2WindTurbines(examples_data_path + "plant_energy_turbine/IEA37_10MW_turbine.yaml")
-    u = np.arange(30)
-    import matplotlib.pyplot as plt
-    plt.plot(u, wt.power(u))
+    wfm, (x, y) = ymlSystem2PyWake(examples_data_path + 'wind_energy_system/IEA37_case_study12_wind_energy_system.yaml',
+                                   IEA37SimpleBastankhahGaussian)
+    ref = np.array([9444.60012, 8497.90004, 11383.32869, 14173.40367,
+                    20979.36776, 25590.86774, 39252.85757, 43197.65856,
+                    23800.39229, 13539.36766, 15022.89800, 32644.44314,
+                    71157.32322, 18092.10102, 12326.48041, 7838.58128])
+
+    sim_res = wfm(x, y, wd=np.arange(0, 360, 22.5))
+    print("AEP", sim_res.aep(normalize_probabilities=True).sum())
+    sim_res.flow_map(wd=270).plot_wake_map()
     plt.show()

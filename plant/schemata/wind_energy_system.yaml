@@ -33,9 +33,11 @@ properties:
       #~~
       net_AEP:
         title: Net AEP for the plant/site
+        unit: GWh
         type: number
       gross_AEP:
         title: Gross AEP for the plant/site
+        unit: GWh
         type: number
   analyses:
     wake_model:

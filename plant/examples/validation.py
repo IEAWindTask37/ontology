@@ -6,6 +6,9 @@ from plant.examples.utils import examples_data_path
 
 if __name__ == '__main__':
 
+    validate_yaml(data_file=examples_data_path + 'wind_energy_system/IEA37_case_study12_wind_energy_system.yaml',
+                  schema_file=plant_schemas_path + 'wind_energy_system.yaml')
+
     validate_yaml(data_file=examples_data_path + 'plant_energy_resource/IEA37_case_study_energy_resource.yaml',
                   schema_file=plant_schemas_path + 'plant_energy_resource.yaml')
 

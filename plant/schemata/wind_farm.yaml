@@ -1,0 +1,75 @@
+input_format_version: 0
+title: definition of the wind energy conversion system
+description: A file used to define the built environment (and other non-tangible components like O&M)
+required:
+  - layouts
+  - turbines
+optional:
+  - electrical_substations
+  - electrical_collection_array
+  - foundations
+  - O_&_M
+
+# PROPERTIES
+properties:
+  #~
+  layouts:
+    description: Position of wind turbines
+    Properties:
+      $ref: "#/definition/layout"
+
+  turbines:
+    description: Turbine models installed in the WES.
+    $ref: "plant_energy_turbine.yaml#"
+  #~
+
+definitions:
+  layout:
+    title: Wind turbine layout
+    type: object
+    required:
+      - coordinates
+    properties:
+      coordinates:
+        title: Wind turbine coordinate
+        $ref: "#/definitions/coordinates"
+          
+  coordinate:
+    title: Coordinate
+    description: Point coordinate
+    type: object
+    required:
+      - x
+      - y
+    additionalProperties: false
+    properties:
+      x:
+        title: X coordinate
+        description: West-East coordinate
+        type: number
+        units: m
+      y:
+        title: Y coordinate
+        description: South-North coordinate
+        type: number
+        units: m
+  coordinates:
+    title: Coordinates
+    description: Multi-point coordinates
+    type: object
+    required:
+      - x
+      - y
+    additionalProperties: false
+    properties:
+      x:
+        title: X coordinates
+        description: West-East coordinates
+        type: array
+        units: m
+      y:
+        title: Y coordinates
+        description: South-North coordinates
+        type: array
+        units: m
+        

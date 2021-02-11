@@ -12,6 +12,9 @@ if __name__ == '__main__':
     validate_yaml(data_file=examples_data_path + 'plant_energy_site/IEA37_case_study_energy_site.yaml',
                   schema_file=plant_schemas_path + 'plant_energy_site.yaml')
 
+    validate_yaml(data_file=examples_data_path + 'plant_wind_farm/IEA37_case_study_wind_farm.yaml',
+                  schema_file=plant_schemas_path + 'plant_wind_farm.yaml')
+
     validate_yaml(data_file=examples_data_path + 'plant_energy_turbine/IEA37_10MW_turbine.yaml',
                   schema_file=plant_schemas_path + 'plant_energy_turbine.yaml')
 

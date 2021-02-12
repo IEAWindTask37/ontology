@@ -18,7 +18,7 @@ properties:
     description: Name of the turbine definition
     type: string
   #~
-  power: # Is power a good umbrella term for thrust, rotor diameter, hub height?
+  power:
     title: Power
     description: Definition of the turbine power characteristics
     type: object
@@ -91,20 +91,6 @@ properties:
             description: Wind speed values for the matching Ct values
             type: array
       #~~
-      hub_height:
-        title: Hub height
-        type: number
-        units: m
-      #~~
-      rotor_diameter:
-        title: Rotor diameter
-        type: number
-        units: m
-      #~~
-      TSR:
-        title: Tip-speed ratio
-        type: number
-      #~~
       rated_wind_speed:
         title: Rated wind speed
         type: number
@@ -124,4 +110,18 @@ properties:
         title: Rated speed
         type: number
         units: W
+  #~
+  hub_height:
+    title: Hub height
+    type: number
+    units: m
+  #~
+  rotor_diameter:
+    title: Rotor diameter
+    type: number
+    units: m
+  #~
+  TSR:
+    title: Tip-speed ratio
+    type: number
       

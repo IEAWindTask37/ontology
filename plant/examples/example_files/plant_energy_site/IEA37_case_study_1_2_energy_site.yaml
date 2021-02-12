@@ -5,5 +5,5 @@ boundaries:
             x: 0
             y: 0
         radius: 1300
-plant_energy_resource: !include ../plant_energy_resource/IEA37_case_study_energy_resource.yaml
+plant_energy_resource: !include ../plant_energy_resource/IEA37_case_study_1_2_energy_resource.yaml
         

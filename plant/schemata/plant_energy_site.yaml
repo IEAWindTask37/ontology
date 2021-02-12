@@ -33,10 +33,10 @@ properties:
         type: array
         minItems: 1
         items:
-          type: array
+          type: object
           items:
-            title: Polygon
-            $ref: "#/definitions/polygon"
+            title: Vertices
+            $ref: "common.yaml#/definitions/coordinates"
       #~~
       circle:
         title: Circle
@@ -82,20 +82,13 @@ properties:
 # DEFINITIONS
 definitions:
   #~
-  polygon:
-    title: Polygon
-    type: object
-    required:
-      - vertices
-    properties:
-      #~~
-      vertices:
-        title: Vertices
-        description: An array of x/y coordinates
-        type: array
-        items:
-          title: Vertex coordinates
-          $ref: "common.yaml#/definitions/coordinates"
+  vertices:
+    title: Vertices
+    description: An array of x/y coordinates
+    type: array
+    items:
+      title: Vertex coordinates
+      $ref: "common.yaml#/definitions/coordinates"
   #~
   circle:
     title: Circle
@@ -110,7 +103,6 @@ definitions:
       center:
         title: Center
         description: The center coordinate of a circle
-        #$ref: "#/definitions/coordinate"
         $ref: "common.yaml#/definitions/coordinate"
       #~~
       radius:

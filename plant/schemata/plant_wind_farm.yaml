@@ -16,7 +16,7 @@ properties:
   layouts:
     description: Position of wind turbines
     Properties:
-      $ref: "#/definition/layout"
+      $ref: "#/definitions/layout"
 
   turbines:
     description: Turbine models installed in the WES.

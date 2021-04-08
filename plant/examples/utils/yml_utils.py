@@ -88,7 +88,8 @@ def validate_yaml(data_file, schema_file, loader=Loader):
 
                         key = urljoin(base_uri, str(rel_path))
                         resolver.store[key] = schema_doc
-                    except (ScannerError, ParserError):
+                    # except (ScannerError, ParserError):
+                    except Exception:
                         print("Reading %s failed" % file)
 
     data = load_yaml(data_file, loader)

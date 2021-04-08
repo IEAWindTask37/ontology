@@ -38,3 +38,8 @@ definitions:
         description: South-North coordinates
         type: array
         units: m
+  data_types:
+    decimal:
+      type: number
+      minimum: 0
+      maximum: 1

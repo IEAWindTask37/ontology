@@ -21,9 +21,9 @@ properties:
   wind_farm:
     $ref: "wind_farm.yaml"
   #~
-  attributes: # Rename for system behaviour/attributes/response quantities.
-    title: Analyses
-    description: Specific anlayses of the entire wind energy system
+  attributes:
+    title: Wind energy system attributes
+    description: Specific attributes of the entire wind energy system
     type: object
     properties:
       #~~
@@ -35,6 +35,11 @@ properties:
         title: Gross AEP for the plant/site
         unit: GWh
         type: number
+      array_efficiency:
+        title: Wake array efficiency
+        type: number
+        minimum: 0
+        maximum: 1 # Define common decimal data type and refer.
   analyses:
     wake_model:
       title: Wake model
@@ -51,9 +56,21 @@ properties:
       description: Design variables of the system
       type: object
       properties:
-        name:
-          title: Array of design variables
-        $ref: "wind_farm/properties/layouts"
+        layout:
+          name:
+            title: Array of design variables
+          $ref: "wind_farm/properties/layouts"
+        turbine_types:
+          name:
+            title: Wind turbine types installed
+          $ref: "wind_farm/properties/turbines"
+        number_turbines:
+          name:
+            title: Number of turbines installed
+        turbine_hub_heights:
+          name:
+            title: Hub heights of installed turbines
+
     method:
       title: Optimisation method
       description: Optimisation method used for layout design
@@ -67,10 +84,53 @@ properties:
       description: List of constraint functions
       type: object
       properties:
-        name:
-          title: Name of constraint
-          type: string
-    initial_layout:
+        minimum_spacing:
+          title: Minimum inter-turbine spacing
+          oneOf:
+            ellipse:
+              title: Ellipse min. spacing constraint
+                major_axis:
+                  title: Spacing along the ellipse major axis
+                  type: number
+                minor_axis:
+                  title: Spacing along the ellipse minor axis
+                  type: number
+                orientation:
+                  title: Orientation angle of the ellipse
+                  type: number
+            circle:
+              title: Circular min. spacing constraint
+                radius:
+                  title: Uniform spacing or radius of circle
+                  type: number
+        area_constraints:
+          title: Parcels and exclusion zones
+          parcels:
+            title: List of parcel polygons
+            $ref: "site.yaml#/properties/boundaries"  # Or refer to subset of user defined polygons in /site/
+          exclusion_zones:
+            title: List of exclusion zone polygons
+            $ref: "site.yaml#/properties/exclusions" # Or refer to subset of user defined polygons in /site/
+
+    initial_design:
       Properties:
-        title: Initial layout
-        $ref: "wind_farm.yaml#/definition/layout"
+        layout:
+          title: Initial layout
+          $ref: "wind_farm.yaml#/definition/layout"
+        turbine_types:  # Examples for future development
+          title: Initial turbine types
+        number_turbines:
+          title: Initial number turbines
+        turbine_hub_heights:
+          title: Initial turbine hub heights
+    final_design:
+      Properties:
+        layout:
+          title: Final layout
+          $ref: "wind_farm.yaml#/definition/layout"
+        turbine_types:  # Examples for future development
+          title: Final turbine types
+        number_turbines:
+          title: Final number turbines
+        turbine_hub_heights:
+          title: Final turbine hub heights

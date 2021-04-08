@@ -1,0 +1,529 @@
+input_format_version: 0
+title: IEA Wind Task 37 Wind Energy System Ontology version 0.1
+description: A file used as input or output of a wind plant model
+required:
+  - name
+  - site
+  - wind_farm
+
+# PROPERTIES
+properties:
+  #~
+  name:
+    title: Name
+    description: Name of the wind energy system
+    type: string
+  #~
+  site:
+    title: Site definition
+    description: >-
+      A file used as input or output of a wind plant model (for overall energy
+      production estimation)
+    required:
+      - name
+      - boundaries
+      - wind_resource
+    # PROPERTIES
+    properties:
+      #~
+      name:
+        title: Name
+        description: Name of the plant site
+        type: string
+      #~
+      boundaries:
+        title: Boundaries
+        description: Definition of the site boundaries
+        type: object
+        oneOf:
+          - required:
+            - polygons
+          - required:
+            - circle
+        properties:
+          #~~
+          polygons:
+            title: Polygons
+            description: A group of polygons that define the site boundary
+            type: array
+            minItems: 1
+            items:
+              type: object
+              items:
+                title: Vertices
+                $ref: "#/definitions/coordinates"
+          #~~
+          circle:
+            title: Circle
+            $ref: "#/definitions/circle"
+      #~
+      exclusions:
+        title: Exclusions
+        description: Definition of any site exclusions
+        type: object
+        oneOf:
+          - required:
+            - polygons
+          - required:
+            - circle
+        properties:
+          #~~
+          polygons:
+            title: Polygons
+            description: A group of polygons that define the site exclusions
+            type: array
+            minItems: 1
+            items:
+              type: object
+              items:
+                title: Vertices
+                $ref: "#/definitions/coordinates"
+          #~~
+          circle:
+            title: Circle
+            $ref: "#/definitions/circle"
+
+      #~
+      wind_resource:
+        title: Wind resource
+        type: object
+        description: >-
+          A description of the wind resource available within a site. The wind resource
+          can be specified at one location within the site, or at multiple locations.
+          At each point specified within the site, the wind resource can be detailed in
+          several different ways.
+        required:
+          - name
+          - wind_resource
+        additionalProperties: false
+        # PROPERTIES
+        properties:
+          #~
+          name:
+            title: Name
+            description: Name of the plant resource
+            type: string
+          #~
+          wind_definition:
+            title: Wind definition
+            type: object
+            decription: Resource where data optionally depend on wind_speed, wind_direction and/or position
+            additionalProperties: false    
+            oneOf:
+                - required: 
+                  - probability
+                - required:
+                  - weibull_a
+                  - weibull_k
+                  - sector_probability
+            properties:
+                wind_direction:
+                    title: Wind directions
+                    description: Wind directions in degrees, [0,360[
+                    $ref: "#/definitions/multi_dimensional_coordinate"
+                wind_speed:
+                    description: Wind speeds in m/s
+                    $ref: "#/definitions/multi_dimensional_coordinate"
+                wind_turbine:
+                    title: Wind directions
+                    description: Wind turbine id
+                    $ref: "#/definitions/multi_dimensional_coordinate"
+                x:
+                    title: West-East position
+                    oneOf:
+                      - $ref: "#/definitions/multi_dimensional_data"
+                      - $ref: "#/definitions/multi_dimensional_coordinate"
+                y:
+                    title: South-North position
+                    oneOf:
+                      - $ref: "#/definitions/multi_dimensional_data"
+                      - $ref: "#/definitions/multi_dimensional_coordinate"
+                height:
+                    title: Reference height
+                    oneOf:
+                      - $ref: "#/definitions/multi_dimensional_data"
+                      - $ref: "#/definitions/multi_dimensional_coordinate" 
+                probability:
+                    description: Probability of flow cases [0,1]
+                    $ref: "#/definitions/multi_dimensional_data"
+                weibull_a:
+                    title: Weibull scale
+                    $ref: "#/definitions/multi_dimensional_data"
+                weibull_k:
+                    title: Weibull shape
+                    $ref: "#/definitions/multi_dimensional_data"
+                sector_probability:
+                    title: probability of wind directions
+                    description: Probability of wind sector [0,1]
+                    $ref: "#/definitions/multi_dimensional_data"
+                turbulence_intensity:
+                    title: Turbulence intensity
+                    $ref: "#/definitions/multi_dimensional_data"
+                reference_height:
+                    title: Reference height
+                    type: number
+                shear:
+                    title: Shear
+                    $ref: "#/definitions/shear"
+      #~
+      bathymetry:
+        title: Bathymetry
+        description: >-
+          TODO - x, y, z
+      elevation:
+        title: Elevation
+        description: >-
+          TODO - x, y, z
+      roads:
+        title: Roads
+        description: >-
+          TODO - x, y, z
+  #~
+  wind_farm:
+    title: Wind farm
+    description: >-
+      A file used to define the built environment (and other non-tangible
+      components like O&M)
+    required:
+      - layout
+      - turbines
+    optional:
+      - electrical_substations
+      - electrical_collection_array
+      - foundations
+      - O_&_M
+
+    # PROPERTIES
+    properties:
+      #~
+      layout:
+        title: Wind turbine layout
+        type: object
+        required:
+          - coordinates
+        properties:
+          coordinates:
+            title: Wind turbine coordinates
+            $ref: "#/definitions/coordinates"
+
+      turbines:
+        title: Turbine definition
+        type: object
+        description: >-
+          A simplified (from the turbine schema) definition of the turbines used in the plant.
+        required:
+          - name
+          - power
+          - hub_height
+          - rotor_diameter
+        # PROPERTIES
+        properties:
+          #~
+          name:
+            title: Name
+            description: Name of the turbine definition
+            type: string
+          #~
+          performance:
+            title: Performance
+            description: Definition of the turbine performance characteristics
+            type: object
+            oneOf:
+              - required:
+                - Cp_curve
+                - Ct_curve
+              - required:
+                - power_curve
+                - Ct_curve
+              - required:
+                - rated_power
+                - rated_wind_speed
+                - cutin_wind_speed
+                - cutout_wind_speed
+                - Ct_curve
+            properties:
+              #~~
+              Cp_curve:
+                title: Cp curve
+                description: A turbine Cp curve
+                type: object
+                required:
+                  - Cp_values
+                  - Cp_wind_speeds
+                properties:
+                  #~~~
+                  Cp_values:
+                    title: Cp values
+                    description: An array of Cp values
+                    type: array
+                  Cp_wind_speeds:
+                    title: Wind speed values
+                    description: Wind speed values for the matching Cp values
+                    type: array
+              #~~
+              power_curve:
+                title: Power curve
+                description: A tubine power curve
+                type: object
+                required:
+                  - power_values
+                  - power_wind_speeds
+                properties:
+                  #~~~
+                  power_values:
+                    title: Power values
+                    description: An array of power values
+                    type: array
+                  power_wind_speeds:
+                    title: Wind speed values
+                    description: Wind speed values for the matching power values
+                    type: array
+              #~~
+              Ct_curve:
+                title: Ct curve
+                description: A turbine Ct curve
+                type: object
+                required:
+                  - Ct_values
+                  - Ct_wind_speeds
+                properties:
+                  #~~~
+                  Ct_values:
+                    title: Ct values
+                    description: An array of Ct values
+                    type: array
+                  Ct_wind_speeds:
+                    title: Wind speed values
+                    description: Wind speed values for the matching Ct values
+                    type: array
+              #~~
+              rated_wind_speed:
+                title: Rated wind speed
+                type: number
+                units: m/s
+              #~~
+              cutin_wind_speed:
+                title: Cut-in wind speed
+                type: number
+                units: m/s
+              #~~
+              cutout_wind_speed:
+                title: Cut-out wind speed
+                type: number
+                units: m/s
+              #~~
+              rated_power:
+                title: Rated speed
+                type: number
+                units: W
+          #~
+          hub_height:
+            title: Hub height
+            type: number
+            units: m
+          #~
+          rotor_diameter:
+            title: Rotor diameter
+            type: number
+            units: m
+          #~
+          TSR:
+            title: Tip-speed ratio
+            type: number
+  #~
+  attributes: # Rename for system behaviour/attributes/response quantities.
+    title: Attributes
+    description: Specific anlayses of the entire wind energy system
+    type: object
+    properties:
+      #~~
+      net_AEP:
+        title: Net AEP for the plant/site
+        unit: GWh
+        type: number
+      gross_AEP:
+        title: Gross AEP for the plant/site
+        unit: GWh
+        type: number
+      analyses:
+        title: Analyses
+        properties:
+          wake_model:
+            title: Wake model
+            description: Wake model used in AEP calculations
+            type: object
+            additionalProperties: true
+            properties:
+              name:
+                title: Wake model name
+                type: string
+  optimisation:
+    title: Optimisation
+    properties:
+      design_variables:
+        title: Design variables
+        description: Design variables of the system
+        type: object
+        properties:
+          name:
+            title: Array of design variables
+          $ref: "#/definitions/layout"
+      method:
+        title: Optimisation method
+        description: Optimisation method used for layout design
+        type: object
+        properties:
+          name:
+            title: Name
+            type: string
+      constraints:
+        title: Constraints
+        description: List of constraint functions
+        type: object
+        properties:
+          name:
+            title: Name
+            type: string
+      initial_layout:
+        Properties:
+          title: Initial layout
+          $ref: "#/definitions/layout"
+
+definitions:
+  layout:
+    title: Wind turbine layout
+    type: object
+    required:
+      - coordinates
+    properties:
+      coordinates:
+        title: Wind turbine coordinate
+        $ref: "#/definitions/coordinates"
+  #~
+  coordinate:
+    title: Coordinate
+    description: Point coordinate
+    type: object
+    required:
+      - x
+      - y
+    additionalProperties: false
+    properties:
+      x:
+        title: X coordinate
+        description: West-East coordinate
+        type: number
+        units: m
+      y:
+        title: Y coordinate
+        description: South-North coordinate
+        type: number
+        units: m
+  #~
+  coordinates:
+    title: Coordinates
+    description: Multi-point coordinates
+    type: object
+    required:
+      - x
+      - y
+    additionalProperties: false
+    properties:
+      x:
+        title: X coordinates
+        description: West-East coordinates
+        type: array
+        units: m
+      y:
+        title: Y coordinates
+        description: South-North coordinates
+        type: array
+        units: m
+  #~
+  vertices:
+    title: Vertices
+    description: An array of x/y coordinates
+    type: array
+    items:
+      title: Vertex coordinates
+      $ref: "#/definitions/coordinates"
+  #~
+  circle:
+    title: Circle
+    description: A circle
+    type: object
+    required:
+      - center
+      - radius
+    additionalProperties: false
+    properties:
+      #~~
+      center:
+        title: Center
+        description: The center coordinate of a circle
+        $ref: "#/definitions/coordinate"
+      #~~
+      radius:
+        title: Radius
+        description: The radius of a circle
+        type: number
+        units: m
+  #~
+  reference_height:
+    title: Reference height
+    type: number
+  #~
+  shear:
+    title: Shear
+    type: object
+    required:
+      - alpha
+      - h_ref
+    properties:
+      alpha:
+        title: Alpha
+        type: number
+      h_ref:
+        title: Shear ref height
+        type: number
+  #~
+  multi_dimensional_data:
+    oneOf:
+      - $ref: "#/definitions/dimensional_data"
+      - $ref: "#/definitions/nondimensional_data"
+  #~    
+  dimensional_data:
+    title: Data with custom dimensions
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          type: [array, number]
+      dims:
+        type: array
+  #~      
+  nondimensional_data:
+    title: Data with custom dimensions
+    type: object
+    properties:
+      data:
+        type: number
+      dims:
+        type: array
+        maxItems: 0
+  #~      
+  multi_dimensional_coordinate:
+    oneOf:
+      - $ref: "#/definitions/dimensional_coordinate"
+      - $ref: "#/definitions/nondimensional_coordinate"
+  #~
+  dimensional_coordinate:
+    title: Data with custom dimensions
+    type: array
+    items:
+      type: number
+  #~  
+  nondimensional_coordinate:
+    title: Data with custom dimensions
+    type: number

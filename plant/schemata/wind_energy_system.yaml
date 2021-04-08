@@ -22,7 +22,7 @@ properties:
     $ref: "wind_farm.yaml"
   #~
   attributes:
-    title: Wind energy system attributes
+    title: Attributes
     description: Specific attributes of the entire wind energy system
     type: object
     properties:
@@ -40,16 +40,16 @@ properties:
         type: number
         minimum: 0
         maximum: 1 # Define common decimal data type and refer.
-  analyses:
-    wake_model:
-      title: Wake model
-      description: Wake model used in AEP calculations
-      type: object
-      additionalProperties: true
-      properties:
-        name:
-          title: Wake model name
-          type: string
+      analyses:
+        wake_model:
+          title: Wake model
+          description: Wake model used in AEP calculations
+          type: object
+          additionalProperties: true
+          properties:
+            name:
+              title: Wake model name
+              type: string
   optimisation:
     design_variables:
       title: List of design variables
@@ -87,8 +87,9 @@ properties:
         minimum_spacing:
           title: Minimum inter-turbine spacing
           oneOf:
-            ellipse:
+            - ellipse:
               title: Ellipse min. spacing constraint
+              properties:
                 major_axis:
                   title: Spacing along the ellipse major axis
                   type: number
@@ -98,8 +99,9 @@ properties:
                 orientation:
                   title: Orientation angle of the ellipse
                   type: number
-            circle:
+            - circle:
               title: Circular min. spacing constraint
+              properties:
                 radius:
                   title: Uniform spacing or radius of circle
                   type: number

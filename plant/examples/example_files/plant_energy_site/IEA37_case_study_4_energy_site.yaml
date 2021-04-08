@@ -22,4 +22,4 @@ boundaries:
             y: [11901.5, 9531.5, 9962.7, 10464.9, 10498.7]
         }
     ]
-plant_energy_resource: !include ../plant_energy_resource/IEA37_case_study_4_energy_resource.yaml
+energy_resource: !include ../plant_energy_resource/IEA37_case_study_4_energy_resource.yaml

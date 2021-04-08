@@ -1,5 +1,5 @@
 name: IEA Wind Task 37 case study 3.35MW Onshore Reference Turbine
-power:
+performance:
   rated_power: 3350000
   rated_wind_speed: 9.8
   cutin_wind_speed: 4.0

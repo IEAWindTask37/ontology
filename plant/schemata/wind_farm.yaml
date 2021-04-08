@@ -16,11 +16,11 @@ properties:
   layouts:
     description: Position of wind turbines
     Properties:
-      $ref: "#/definition/layout"
+      $ref: "#/definitions/layout"
 
   turbines:
     description: Turbine models installed in the WES.
-    $ref: "plant_energy_turbine.yaml#"
+    $ref: "turbine.yaml#"
   #~
 
 definitions:

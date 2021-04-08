@@ -1,6 +1,6 @@
 input_format_version: 0
 title: IEA Wind Task 37 Wind Energy System Ontology version 0.1
-description: A file used as input or output of a wind plant model
+description: A file used as input or output of a wind farm model
 required:
   - name
   - site
@@ -16,14 +16,10 @@ properties:
     type: string
   #~
   site:
-    description: >-
-      TODO
-    $ref: "plant_energy_site.yaml#" # Remove "energy" as it will also influence LCOE (bathymetry) or Rename to sth like wes_site.yaml
-  #~
-  wind_farm: # Or better name for built environment
-    description: >-
-      TODO
-    $ref: "plant_wind_farm.yaml#"
+    $ref: "site.yaml"
+  # #~
+  wind_farm:
+    $ref: "wind_farm.yaml"
   #~
   attributes: # Rename for system behaviour/attributes/response quantities.
     title: Analyses
@@ -77,4 +73,4 @@ properties:
     initial_layout:
       Properties:
         title: Initial layout
-        $ref: "#/definition/layout"
+        $ref: "wind_farm.yaml#/definition/layout"

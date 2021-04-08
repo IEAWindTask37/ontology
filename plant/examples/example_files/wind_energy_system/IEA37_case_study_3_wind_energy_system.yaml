@@ -5,5 +5,5 @@ attributes:
   net_AEP: 938.57362950
   analyses:
     wake_model:
-      name: Bastankhah’s Gaussian wake model(simplified version) 
+      name: Bastankhah’s Gaussian wake model (simplified version) 
       

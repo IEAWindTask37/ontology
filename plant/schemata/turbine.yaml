@@ -1,11 +1,11 @@
 input_format_version: 0
-title: Plant Turbine Definition
+title: Turbine Definition
 type: object
 description: >-
   A simplified (from the turbine schema) definition of the turbines used in the plant.
 required:
   - name
-  - power
+  - performance
   - hub_height
   - rotor_diameter
 
@@ -18,9 +18,9 @@ properties:
     description: Name of the turbine definition
     type: string
   #~
-  power:
-    title: Power
-    description: Definition of the turbine power characteristics
+  performance:
+    title: Performance
+    description: Definition of the turbine performance characteristics
     type: object
     oneOf:
       - required:

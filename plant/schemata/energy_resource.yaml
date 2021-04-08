@@ -1,6 +1,6 @@
-# Draft schema definition for site energy resource
-input_format_version: 0 # What is this for?
-title: Plant energy resource
+# Draft schema definition for energy resource
+input_format_version: 0
+title: Energy resource
 type: object
 description: >-
   A description of the wind resource available within a site. The wind resource
@@ -63,7 +63,7 @@ properties:
         probability:
             description: Probability of flow cases [0,1]
             $ref: "#/definitions/multi_dimensional_data"
-        weibull_a:            
+        weibull_a:
             title: Weibull scale
             $ref: "#/definitions/multi_dimensional_data"
         weibull_k:

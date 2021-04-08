@@ -1,5 +1,5 @@
 name: IEA Wind Task 37 10MW Offshore Reference Turbine
-power:
+performance:
   rated_power: 10000000
   rated_wind_speed: 11.0
   cutin_wind_speed: 4.0

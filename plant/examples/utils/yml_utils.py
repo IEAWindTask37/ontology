@@ -34,7 +34,7 @@ class XrResourceLoader(Loader):
         ext = os.path.splitext(filename)[1].lower()
         if ext in ['.yaml', '.yml']:
             with open(filename, 'r') as f:
-                return yaml.load(f, XRResourceLoader)
+                return yaml.load(f, XrResourceLoader)
         elif ext in ['.nc']:
             def fmt(v):
                 if isinstance(v, dict):
